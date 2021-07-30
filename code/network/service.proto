@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package network;
+option go_package=".;network";
+
+import "connect.proto";
+
+message control_data {
+    enum type {
+        connect    = 0;
+        disconnect = 1;
+        keepalive  = 2;
+    }
+    type _type = 1;
+    oneof payload {
+        connect_request  creq = 10;
+        connect_response crep = 11;
+    }
+}
+
+message data {
+    bytes data = 1;
+}
+
+service natpass {
+    rpc control(stream control_data) returns(stream control_data);
+    rpc forward(stream data) returns(stream data);
+}

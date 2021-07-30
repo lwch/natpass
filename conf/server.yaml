@@ -1,0 +1,5 @@
+listen: 6154       # 监听端口号
+secret: 0123456789 # 预共享密钥
+tls:
+  key: /dir/to/tls/key/file # tls密钥
+  crt: /dir/to/tls/crt/file # tls证书

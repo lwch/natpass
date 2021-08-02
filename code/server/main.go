@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -35,6 +36,8 @@ func main() {
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Listen))
 	runtime.Assert(err)
+
+	logging.Info("listen on %d", cfg.Listen)
 
 	runtime.Assert(svr.Serve(listener))
 }

@@ -97,6 +97,7 @@ func (h *Handler) handleConnectReq(data *network.ControlData) {
 	rep.Ok = true
 	rep.LocalCid = cid
 	connectResponse(h.ctl, rep, data.GetTo(), data.GetFrom())
+	go tn.ForwardLocal(h.fwd)
 }
 
 func (h *Handler) handleConnectRep(data *network.ControlData) {

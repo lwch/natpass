@@ -6,6 +6,7 @@ import (
 	"natpass/code/network"
 	"natpass/code/server/global"
 	"sync"
+	"time"
 
 	"github.com/lwch/logging"
 	"google.golang.org/grpc/metadata"
@@ -113,6 +114,7 @@ func (h *Handler) Forward(svr network.Natpass_ForwardServer) error {
 	if len(id) == 0 {
 		return errors.New("missing id")
 	}
+	defer h.close(id[0])
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go h.forward(ctx, svr, id[0])
@@ -135,10 +137,14 @@ func (h *Handler) Forward(svr network.Natpass_ForwardServer) error {
 }
 
 func (h *Handler) forward(ctx context.Context, svr network.Natpass_ForwardServer, id string) {
-	h.RLock()
-	ch := h.chForward[id]
-	h.RUnlock()
 	for {
+		h.RLock()
+		ch := h.chForward[id]
+		h.RUnlock()
+		if ch == nil {
+			time.Sleep(time.Second)
+			continue
+		}
 		select {
 		case <-ctx.Done():
 			return

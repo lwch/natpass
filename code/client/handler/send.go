@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"context"
@@ -14,7 +14,7 @@ func createTunnel(ctx context.Context, cfg global.Tunnel, cli network.Natpass_Co
 	cid, err := runtime.UUID(cidLength)
 	runtime.Assert(err)
 	sendConnect(cli, cid, cfg, id, cfg.Target)
-	return id
+	return cid
 }
 
 func sendConnect(cli network.Natpass_ControlClient, cid string, cfg global.Tunnel,

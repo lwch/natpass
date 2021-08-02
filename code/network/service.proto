@@ -25,7 +25,8 @@ message control_data {
 message data {
     string from = 1;
     string   to = 2;
-    bytes  data = 3;
+    string  cid = 3;
+    bytes  data = 4;
 }
 
 service natpass {

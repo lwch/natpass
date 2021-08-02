@@ -4,7 +4,7 @@ import "sync"
 
 type Mgr struct {
 	sync.RWMutex
-	data map[string]*Tunnel
+	data map[string]*Tunnel // channel id => tunnel
 }
 
 func NewMgr() *Mgr {
@@ -13,7 +13,13 @@ func NewMgr() *Mgr {
 
 func (mgr *Mgr) Add(t *Tunnel) {
 	mgr.Lock()
-	mgr.data[t.local] = t
-	mgr.data[t.remote] = t
+	mgr.data[t.localChannelID] = t
+	mgr.data[t.remoteChannelID] = t
 	mgr.Unlock()
+}
+
+func (mgr *Mgr) Find(id string) *Tunnel {
+	mgr.RLock()
+	defer mgr.RUnlock()
+	return mgr.data[id]
 }

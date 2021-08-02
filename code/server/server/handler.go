@@ -98,5 +98,50 @@ func (h *Handler) close(id string) {
 }
 
 func (h *Handler) Forward(svr network.Natpass_ForwardServer) error {
-	return nil
+	md, ok := metadata.FromIncomingContext(svr.Context())
+	if !ok {
+		return errors.New("get context failed")
+	}
+	secret := md.Get("secret")
+	if len(secret) == 0 {
+		return errors.New("missing secret")
+	}
+	if secret[0] != h.cfg.Secret {
+		return errors.New("invalid secret")
+	}
+	id := md.Get("id")
+	if len(id) == 0 {
+		return errors.New("missing id")
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go h.forward(ctx, svr, id[0])
+	for {
+		data, err := svr.Recv()
+		if err != nil {
+			return err
+		}
+		h.RLock()
+		ch := h.chForward[data.GetTo()]
+		h.RUnlock()
+		if ch == nil {
+			logging.Error("channel %s not found", data.GetTo())
+			continue
+		}
+		ch <- data
+	}
+}
+
+func (h *Handler) forward(ctx context.Context, svr network.Natpass_ForwardServer, id string) {
+	h.RLock()
+	ch := h.chForward[id]
+	h.RUnlock()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case data := <-ch:
+			svr.Send(data)
+		}
+	}
 }

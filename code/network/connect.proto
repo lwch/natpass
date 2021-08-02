@@ -16,8 +16,9 @@ message connect_request {
 }
 
 message connect_response {
-    string name = 1;
-    bool     ok = 2;
-    string  msg = 3;
-    string  cid = 4;
+    string       name = 1;
+    bool           ok = 2;
+    string        msg = 3;
+    string remote_cid = 4;
+    string  local_cid = 5;
 }

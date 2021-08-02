@@ -35,6 +35,12 @@ func LoadConf(dir string) *Configure {
 	runtime.Assert(err)
 	defer f.Close()
 	runtime.Assert(yaml.NewDecoder(f).Decode(&cfg))
+	for i, t := range cfg.Tunnel {
+		if t.Type != "tcp" {
+			t.Type = "udp"
+		}
+		cfg.Tunnel[i] = t
+	}
 	return &Configure{
 		ID:      cfg.ID,
 		Server:  cfg.Server,

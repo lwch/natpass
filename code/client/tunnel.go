@@ -40,32 +40,13 @@ func sendConnect(cli network.Natpass_ControlClient, cid string, cfg global.Tunne
 	runtime.Assert(err)
 }
 
-func connectFailed(cli network.Natpass_ControlClient, name, msg, from, to string) {
+func connectResponse(cli network.Natpass_ControlClient, payload *network.ConnectResponse, from, to string) {
 	cli.Send(&network.ControlData{
 		XType: network.ControlData_connect_rep,
 		From:  from,
 		To:    to,
 		Payload: &network.ControlData_Crep{
-			Crep: &network.ConnectResponse{
-				Name: name,
-				Ok:   false,
-				Msg:  msg,
-			},
-		},
-	})
-}
-
-func connectOK(cli network.Natpass_ControlClient, name, id, from, to string) {
-	cli.Send(&network.ControlData{
-		XType: network.ControlData_connect_rep,
-		From:  from,
-		To:    to,
-		Payload: &network.ControlData_Crep{
-			Crep: &network.ConnectResponse{
-				Name: name,
-				Ok:   true,
-				Cid:  id,
-			},
+			Crep: payload,
 		},
 	})
 }

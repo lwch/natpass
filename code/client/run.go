@@ -5,6 +5,7 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/client/tunnel"
 	"natpass/code/network"
+	"net"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
@@ -34,24 +35,27 @@ func run(cfg *global.Configure, cli network.NatpassClient) {
 	runtime.Assert(err)
 	logging.Info("connect to server %s ok", cfg.Server)
 
-	req := make(map[string]string, len(cfg.Tunnels))
-	cfgs := make(map[string]global.Tunnel, len(cfg.Tunnels))
+	cfgs := make(map[string]global.Tunnel, len(cfg.Tunnels)) // name => config
+	conns := make(map[string]net.Conn)                       // local_cid => connection
 	for _, t := range cfg.Tunnels {
-		id := createTunnel(ctx, t, ctlCli, cfg.ID)
-		req[t.Name] = id
+		l, err := tunnel.NewListener(t.Type, t.Name, t.LocalAddr, t.LocalPort)
+		runtime.Assert(err)
 		cfgs[t.Name] = t
+		go l.Loop(func(c net.Conn, name string) {
+			id := createTunnel(ctx, cfgs[name], ctlCli, cfg.ID)
+			conns[id] = c
+		})
 	}
 
 	mgr := tunnel.NewMgr()
-	go handleControl(ctlCli, req, cfgs, mgr)
+	go handleControl(ctlCli, conns, mgr)
 
 	for {
 		fwdCli.Recv()
 	}
 }
 
-func handleControl(cli network.Natpass_ControlClient, req map[string]string,
-	cfgs map[string]global.Tunnel, mgr *tunnel.Mgr) {
+func handleControl(cli network.Natpass_ControlClient, conns map[string]net.Conn, mgr *tunnel.Mgr) {
 	for {
 		data, err := cli.Recv()
 		if err != nil {
@@ -60,21 +64,53 @@ func handleControl(cli network.Natpass_ControlClient, req map[string]string,
 		}
 		switch data.GetXType() {
 		case network.ControlData_connect_req:
-			req := data.GetCreq()
-			cid, err := runtime.UUID(cidLength)
-			if err != nil {
-				logging.Error("generate channel_id failed, err=%v", err)
-				connectFailed(cli, req.GetName(), err.Error(), data.GetTo(), data.GetFrom())
-				continue
-			}
-			t := "tcp"
-			if req.GetXType() == network.ConnectRequest_udp {
-				t = "udp"
-			}
-			tn := tunnel.NewConnect(req.GetName(), cid, req.GetCid(), t, req.GetAddr(), req.GetPort())
-			mgr.Add(tn)
-			connectOK(cli, req.GetName(), cid, data.GetTo(), data.GetFrom())
+			handleConnectReq(cli, data, mgr)
 		case network.ControlData_connect_rep:
+			handleConnectRep(cli, data, conns, mgr)
 		}
 	}
+}
+
+func handleConnectReq(cli network.Natpass_ControlClient, data *network.ControlData, mgr *tunnel.Mgr) {
+	req := data.GetCreq()
+	cid, err := runtime.UUID(cidLength)
+	rep := &network.ConnectResponse{
+		Name:      req.GetName(),
+		RemoteCid: req.GetCid(),
+	}
+	if err != nil {
+		logging.Error("generate channel_id failed, err=%v", err)
+		rep.Ok = false
+		rep.Msg = err.Error()
+		connectResponse(cli, rep, data.GetTo(), data.GetFrom())
+		return
+	}
+	t := "tcp"
+	if req.GetXType() == network.ConnectRequest_udp {
+		t = "udp"
+	}
+	tn, err := tunnel.NewConnect(req.GetName(), cid, req.GetCid(), t, req.GetAddr(), req.GetPort())
+	if err != nil {
+		logging.Error("new connect failed: %v", err)
+		rep.Ok = false
+		rep.Msg = err.Error()
+		connectResponse(cli, rep, data.GetTo(), data.GetFrom())
+		return
+	}
+	mgr.Add(tn)
+	rep.Ok = true
+	rep.LocalCid = cid
+	connectResponse(cli, rep, data.GetTo(), data.GetFrom())
+}
+
+func handleConnectRep(cli network.Natpass_ControlClient, data *network.ControlData,
+	conns map[string]net.Conn, mgr *tunnel.Mgr) {
+	rep := data.GetCrep()
+	if !rep.GetOk() {
+		logging.Error("connect %s failed, err=%s", rep.GetName(), rep.GetMsg())
+		return
+	}
+	tn, err := tunnel.NewListen(rep.GetName(), rep.GetRemoteCid(), rep.GetLocalCid(), conns[rep.GetRemoteCid()])
+	runtime.Assert(err)
+	mgr.Add(tn)
 }

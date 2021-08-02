@@ -128,6 +128,8 @@ func (h *Handler) Forward(svr network.Natpass_ForwardServer) error {
 			logging.Error("channel %s not found", data.GetTo())
 			continue
 		}
+		logging.Debug("forward %d bytes: %s => %s",
+			len(data.GetData()), data.GetFrom(), data.GetTo())
 		ch <- data
 	}
 }

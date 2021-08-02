@@ -35,6 +35,9 @@ func (h *Handler) Control(svr network.Natpass_ControlServer) error {
 	if secret[0] != h.cfg.Secret {
 		return errors.New("invalid secret")
 	}
+	defer func() {
+		logging.Info("client %s disconnected", id[0])
+	}()
 	for {
 		data, err := svr.Recv()
 		if err != nil {

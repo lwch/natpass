@@ -7,9 +7,10 @@ import "connect.proto";
 
 message control_data {
     enum type {
-        connect    = 0;
-        disconnect = 1;
-        keepalive  = 2;
+        come       = 0;
+        connect    = 1;
+        disconnect = 2;
+        keepalive  = 3;
     }
     type _type = 1;
     oneof payload {

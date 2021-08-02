@@ -28,7 +28,7 @@ func main() {
 	tls, err := credentials.NewServerTLSFromFile(cfg.TLSCrt, cfg.TLSKey)
 	runtime.Assert(err)
 
-	handler := server.NewHandler()
+	handler := server.NewHandler(cfg)
 
 	svr := grpc.NewServer(grpc.Creds(tls))
 	network.RegisterNatpassServer(svr, handler)

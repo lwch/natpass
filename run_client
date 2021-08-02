@@ -1,0 +1,3 @@
+#!/bin/sh
+./build
+./bin/np-cli -conf test/client.yaml

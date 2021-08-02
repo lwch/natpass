@@ -7,12 +7,15 @@ import "connect.proto";
 
 message control_data {
     enum type {
-        come       = 0;
-        connect    = 1;
-        disconnect = 2;
-        keepalive  = 3;
+        come        = 0;
+        connect_req = 1;
+        connect_rep = 2;
+        disconnect  = 3;
+        keepalive   = 4;
     }
-    type _type = 1;
+    type  _type = 1;
+    string from = 2;
+    string   to = 3;
     oneof payload {
         connect_request  creq = 10;
         connect_response crep = 11;
@@ -20,7 +23,9 @@ message control_data {
 }
 
 message data {
-    bytes data = 1;
+    string from = 1;
+    string   to = 2;
+    bytes  data = 3;
 }
 
 service natpass {

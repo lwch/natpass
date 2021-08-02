@@ -5,27 +5,25 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/client/tunnel"
 	"natpass/code/network"
-	"sync"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 	"google.golang.org/grpc/metadata"
 )
 
-func makeContext(id, secret string) context.Context {
-	return metadata.AppendToOutgoingContext(context.Background(),
-		"id", id,
-		"secret", secret)
+func makeContext(secret string) context.Context {
+	return metadata.AppendToOutgoingContext(context.Background(), "secret", secret)
 }
 
 func handshake(cfg *global.Configure, cli network.Natpass_ControlClient) error {
 	return cli.Send(&network.ControlData{
 		XType: network.ControlData_come,
+		From:  cfg.ID,
 	})
 }
 
 func run(cfg *global.Configure, cli network.NatpassClient) {
-	ctx := makeContext(cfg.ID, cfg.Secret)
+	ctx := makeContext(cfg.Secret)
 
 	ctlCli, err := cli.Control(ctx)
 	runtime.Assert(err)
@@ -36,18 +34,47 @@ func run(cfg *global.Configure, cli network.NatpassClient) {
 	runtime.Assert(err)
 	logging.Info("connect to server %s ok", cfg.Server)
 
-	var wg sync.WaitGroup
-	wg.Add(len(cfg.Tunnels))
+	req := make(map[string]string, len(cfg.Tunnels))
+	cfgs := make(map[string]global.Tunnel, len(cfg.Tunnels))
 	for _, t := range cfg.Tunnels {
-		tn := tunnel.New(ctx, t, ctlCli, fwdCli)
-		go func(t global.Tunnel) {
-			defer func() {
-				wg.Done()
-				logging.Error("tunnel for %s closed", t.Name)
-			}()
-			tn.Run()
-		}(t)
+		id := createTunnel(ctx, t, ctlCli, cfg.ID)
+		req[t.Name] = id
+		cfgs[t.Name] = t
 	}
 
-	wg.Wait()
+	mgr := tunnel.NewMgr()
+	go handleControl(ctlCli, req, cfgs, mgr)
+
+	for {
+		fwdCli.Recv()
+	}
+}
+
+func handleControl(cli network.Natpass_ControlClient, req map[string]string,
+	cfgs map[string]global.Tunnel, mgr *tunnel.Mgr) {
+	for {
+		data, err := cli.Recv()
+		if err != nil {
+			logging.Error("handler: %v", err)
+			return
+		}
+		switch data.GetXType() {
+		case network.ControlData_connect_req:
+			req := data.GetCreq()
+			cid, err := runtime.UUID(cidLength)
+			if err != nil {
+				logging.Error("generate channel_id failed, err=%v", err)
+				connectFailed(cli, req.GetName(), err.Error(), data.GetTo(), data.GetFrom())
+				continue
+			}
+			t := "tcp"
+			if req.GetXType() == network.ConnectRequest_udp {
+				t = "udp"
+			}
+			tn := tunnel.NewConnect(req.GetName(), cid, req.GetCid(), t, req.GetAddr(), req.GetPort())
+			mgr.Add(tn)
+			connectOK(cli, req.GetName(), cid, data.GetTo(), data.GetFrom())
+		case network.ControlData_connect_rep:
+		}
+	}
 }

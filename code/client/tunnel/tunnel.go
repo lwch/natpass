@@ -1,58 +1,27 @@
 package tunnel
 
 import (
-	"context"
 	"natpass/code/client/global"
-	"natpass/code/network"
 
-	"github.com/lwch/runtime"
+	"github.com/lwch/logging"
 )
 
 type Tunnel struct {
-	ctx context.Context
-	cli network.Natpass_ForwardClient
-
-	// runtime
-	local  string // local channel id
-	remote string // remote channel id
+	local  string
+	remote string
 }
 
-func New(ctx context.Context, cfg global.Tunnel,
-	ctlCli network.Natpass_ControlClient,
-	fwdCli network.Natpass_ForwardClient) *Tunnel {
-	cid, err := runtime.UUID(32)
-	runtime.Assert(err)
-	t := &Tunnel{
-		ctx:   ctx,
-		cli:   fwdCli,
-		local: cid,
+func NewListen(name, local, remote string, cfg global.Tunnel) *Tunnel {
+	return &Tunnel{
+		local:  local,
+		remote: remote,
 	}
-	t.sendConnect(ctlCli, cfg)
-	return t
 }
 
-func (t *Tunnel) sendConnect(cli network.Natpass_ControlClient, cfg global.Tunnel) {
-	tpy := network.ConnectRequest_tcp
-	if cfg.Type != "tcp" {
-		tpy = network.ConnectRequest_udp
-	}
-	err := cli.Send(&network.ControlData{
-		XType: network.ControlData_connect,
-		Payload: &network.ControlData_Creq{
-			Creq: &network.ConnectRequest{
-				Name:  cfg.Name,
-				Cid:   t.local,
-				XType: tpy,
-				Addr:  cfg.RemoteAddr,
-				Port:  uint32(cfg.RemotePort),
-			},
-		},
-	})
-	runtime.Assert(err)
-}
-
-func (t *Tunnel) Run() {
-	for {
-		t.cli.Recv()
+func NewConnect(name, local, remote string, t, addr string, port uint32) *Tunnel {
+	logging.Info("new connect: name=%s, remote=%s://%s:%d", name, t, addr, port)
+	return &Tunnel{
+		local:  local,
+		remote: remote,
 	}
 }

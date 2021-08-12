@@ -25,7 +25,7 @@ client端配置如下：
 
     id: this               # 客户端ID
     server: 127.0.0.1:6154 # 服务器地址
-    secret: 0123456789     # 预共享密钥
+    secret: 0123456789     # 预共享密钥，必须与server端相同，否则握手失败
     tunnel:                     # 远端tunnel列表可为空
       - name: rdp               # 链路名称
         target: that            # 目标客户端ID

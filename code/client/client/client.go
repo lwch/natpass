@@ -53,6 +53,8 @@ func (c *Client) Run() {
 		switch msg.GetXType() {
 		case network.Msg_connect_req:
 			c.handleConnect(msg.GetFrom(), msg.GetTo(), msg.GetCreq())
+		case network.Msg_disconnect:
+			c.handleDisconnect(msg.GetXDisconnect())
 		case network.Msg_forward:
 			c.handleData(msg.GetXData())
 		}
@@ -195,6 +197,22 @@ func (c *Client) send(id, target string, data []byte) {
 	c.conn.WriteMessage(&msg, time.Second)
 }
 
+func (c *Client) handleDisconnect(data *network.Disconnect) {
+	id := data.GetId()
+
+	c.RLock()
+	tn := c.tunnels[id]
+	c.RUnlock()
+
+	if tn != nil {
+		tn.close()
+
+		c.Lock()
+		delete(c.tunnels, id)
+		c.Unlock()
+	}
+}
+
 func (c *Client) handleData(data *network.Data) {
 	id := data.GetCid()
 	c.RLock()
@@ -205,4 +223,20 @@ func (c *Client) handleData(data *network.Data) {
 		return
 	}
 	tn.write(data.GetData())
+}
+
+func (c *Client) disconnect(id, to string) {
+	var msg network.Msg
+	msg.From = c.cfg.ID
+	msg.To = to
+	msg.XType = network.Msg_disconnect
+	msg.Payload = &network.Msg_XDisconnect{
+		XDisconnect: &network.Disconnect{
+			Id: id,
+		},
+	}
+	c.conn.WriteMessage(&msg, time.Second)
+	c.Lock()
+	delete(c.tunnels, id)
+	c.Unlock()
 }

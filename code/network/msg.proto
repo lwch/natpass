@@ -16,15 +16,17 @@ message msg {
         keepalive   = 1;
         connect_req = 2;
         connect_rep = 3;
-        forward     = 4;
+        disconnect  = 4;
+        forward     = 5;
     }
     type  _type = 1;
     string from = 2;
     string   to = 3;
     oneof payload {
-        handshake_payload hsp = 10;
-        connect_request  creq = 11;
-        connect_response crep = 12;
-        data            _data = 13;
+        handshake_payload  hsp = 10;
+        connect_request   creq = 11;
+        connect_response  crep = 12;
+        disconnect _disconnect = 13;
+        data             _data = 14;
     }
 }

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"io"
 	"net"
+
+	"github.com/lwch/logging"
 )
 
 type tunnel struct {
@@ -23,7 +25,11 @@ func newTunnel(id, target string, cli *Client, conn net.Conn) *tunnel {
 }
 
 func (tn *tunnel) close() {
-	tn.c.Close()
+	logging.Info("disconnect tunnel %s", tn.id)
+	err := tn.c.Close()
+	if err == nil {
+		tn.cli.disconnect(tn.id, tn.target)
+	}
 }
 
 func (tn *tunnel) loop() {

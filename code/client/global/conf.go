@@ -1,6 +1,7 @@
 package global
 
 import (
+	"crypto/md5"
 	"os"
 
 	"github.com/lwch/runtime"
@@ -20,7 +21,7 @@ type Tunnel struct {
 type Configure struct {
 	ID      string
 	Server  string
-	Secret  string
+	Enc     [md5.Size]byte
 	Tunnels []Tunnel
 }
 
@@ -44,7 +45,7 @@ func LoadConf(dir string) *Configure {
 	return &Configure{
 		ID:      cfg.ID,
 		Server:  cfg.Server,
-		Secret:  cfg.Secret,
+		Enc:     md5.Sum([]byte(cfg.Secret)),
 		Tunnels: cfg.Tunnel,
 	}
 }

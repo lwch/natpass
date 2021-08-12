@@ -1,24 +1,22 @@
 syntax = "proto3";
 
 package network;
-option go_package=".;network";
+option go_package="./;network";
 
 message connect_request {
     enum type {
         tcp = 0;
         udp = 1;
     }
-    string name = 1;
-    string  cid = 2;
+    string   id = 1;
+    string name = 2;
     type  _type = 3;
     string addr = 4;
     uint32 port = 5;
 }
 
 message connect_response {
-    string       name = 1;
-    bool           ok = 2;
-    string        msg = 3;
-    string remote_cid = 4;
-    string  local_cid = 5;
+    string   id = 1;
+    bool     ok = 2;
+    string  msg = 3;
 }

@@ -1,15 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
+	"natpass/code/client/client"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"os"
 
 	"github.com/lwch/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 func main() {
@@ -23,12 +23,11 @@ func main() {
 
 	cfg := global.LoadConf(*conf)
 
-	conn, err := grpc.Dial(cfg.Server,
-		grpc.WithTransportCredentials(credentials.NewTLS(nil)))
+	conn, err := tls.Dial("tcp", cfg.Server, nil)
 	runtime.Assert(err)
-	defer conn.Close()
+	c := network.NewConn(conn)
+	defer c.Close()
 
-	cli := network.NewNatpassClient(conn)
-
-	run(cfg, cli)
+	cli := client.New(cfg, c)
+	cli.Run()
 }

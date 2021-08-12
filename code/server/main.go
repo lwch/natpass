@@ -1,18 +1,14 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
-	"natpass/code/network"
 	"natpass/code/server/global"
-	"natpass/code/server/server"
-	"net"
 	"os"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 func main() {
@@ -26,18 +22,13 @@ func main() {
 
 	cfg := global.LoadConf(*conf)
 
-	tls, err := credentials.NewServerTLSFromFile(cfg.TLSCrt, cfg.TLSKey)
+	cert, err := tls.LoadX509KeyPair(cfg.TLSCrt, cfg.TLSKey)
 	runtime.Assert(err)
-
-	handler := server.NewHandler(cfg)
-
-	svr := grpc.NewServer(grpc.Creds(tls))
-	network.RegisterNatpassServer(svr, handler)
-
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Listen))
+	l, err := tls.Listen("tcp", fmt.Sprintf(":%d", cfg.Listen), &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	})
 	runtime.Assert(err)
-
 	logging.Info("listen on %d", cfg.Listen)
 
-	runtime.Assert(svr.Serve(listener))
+	run(cfg, l)
 }

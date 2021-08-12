@@ -1,18 +1,22 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
+	"natpass/code/client/client"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"os"
 
+	"github.com/lwch/daemon"
 	"github.com/lwch/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 func main() {
+	bak := flag.Bool("d", false, "backend running")
+	pid := flag.String("pid", "", "pid file dir")
+	user := flag.String("u", "", "daemon user")
 	conf := flag.String("conf", "", "configure file path")
 	flag.Parse()
 
@@ -21,14 +25,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *bak {
+		daemon.Start(0, *pid, *user, "-conf", *conf)
+		return
+	}
+
 	cfg := global.LoadConf(*conf)
 
-	conn, err := grpc.Dial(cfg.Server,
-		grpc.WithTransportCredentials(credentials.NewTLS(nil)))
+	conn, err := tls.Dial("tcp", cfg.Server, nil)
 	runtime.Assert(err)
-	defer conn.Close()
+	c := network.NewConn(conn)
+	defer c.Close()
 
-	cli := network.NewNatpassClient(conn)
-
-	run(cfg, cli)
+	cli := client.New(cfg, c)
+	cli.Run()
 }

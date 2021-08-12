@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package network;
+option go_package="./;network";
+
+import "connect.proto";
+import "forward.proto";
+
+message handshake_payload {
+    bytes enc = 1;
+}
+
+message msg {
+    enum type {
+        handshake   = 0;
+        keepalive   = 1;
+        connect_req = 2;
+        connect_rep = 3;
+        disconnect  = 4;
+        forward     = 5;
+    }
+    type  _type = 1;
+    string from = 2;
+    string   to = 3;
+    oneof payload {
+        handshake_payload  hsp = 10;
+        connect_request   creq = 11;
+        connect_response  crep = 12;
+        disconnect _disconnect = 13;
+        data             _data = 14;
+    }
+}

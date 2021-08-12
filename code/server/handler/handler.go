@@ -14,13 +14,15 @@ import (
 type Handler struct {
 	sync.RWMutex
 	cfg     *global.Configure
-	clients map[string]*client
+	clients map[string]*client    // client id => client
+	tunnels map[string][2]*client // tunnel id => endpoints
 }
 
 func New(cfg *global.Configure) *Handler {
 	return &Handler{
 		cfg:     cfg,
 		clients: make(map[string]*client),
+		tunnels: make(map[string][2]*client),
 	}
 }
 
@@ -56,6 +58,8 @@ func (h *Handler) Handle(conn net.Conn) {
 	h.clients[cli.id] = cli
 	h.Unlock()
 
+	defer h.closeAll(cli)
+
 	cli.run()
 }
 
@@ -83,5 +87,56 @@ func (h *Handler) onMessage(msg *network.Msg) {
 		logging.Error("client %s not found", to)
 		return
 	}
+	h.msgFilter(msg)
 	cli.writeMessage(msg)
+}
+
+func (h *Handler) msgFilter(msg *network.Msg) {
+	from := msg.GetFrom()
+	to := msg.GetTo()
+	switch msg.GetXType() {
+	case network.Msg_connect_rep:
+		if msg.GetCrep().GetOk() {
+			h.RLock()
+			fromCli := h.clients[from]
+			toCli := h.clients[to]
+			h.RUnlock()
+			id := msg.GetCrep().GetId()
+			var pair [2]*client
+			if fromCli != nil {
+				fromCli.addTunnel(id)
+				pair[0] = fromCli
+			}
+			if toCli != nil {
+				toCli.addTunnel(id)
+				pair[1] = toCli
+			}
+			h.Lock()
+			h.tunnels[id] = pair
+			h.Unlock()
+		}
+	case network.Msg_disconnect:
+
+	}
+}
+
+func (h *Handler) closeAll(cli *client) {
+	tunnels := cli.getTunnels()
+	for _, t := range tunnels {
+		h.RLock()
+		pair := h.tunnels[t]
+		h.RUnlock()
+		if pair[0] != nil {
+			pair[0].close(t)
+		}
+		if pair[1] != nil {
+			pair[1].close(t)
+		}
+		h.Lock()
+		delete(h.tunnels, t)
+		h.Unlock()
+	}
+	h.Lock()
+	delete(h.clients, cli.id)
+	h.Unlock()
 }

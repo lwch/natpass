@@ -1,6 +1,8 @@
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/google/go-cmp v0.5.5 h1:Khx7svrCpmxxtHBq5j2mp/xVjsi8hQMfNLvJFAlrGgU=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/lwch/daemon v0.0.0-20210628111519-5911af6cec06 h1:XjJzeWTT8D/HqwNzwIb/9cckClRVVEvtX5Kpyh0lywI=
+github.com/lwch/daemon v0.0.0-20210628111519-5911af6cec06/go.mod h1:W8nrk3qpI/wbnqlC9nLWLtahF/CRtJ2Ea4B3MM2eAK0=
 github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6 h1:R52s6I/vW1NfNaJdY+Yr/ivkiFicouKmK0v3nvDQh4s=
 github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=

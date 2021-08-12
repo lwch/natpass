@@ -5,17 +5,23 @@ import (
 	"natpass/code/network"
 	"natpass/code/server/global"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/lwch/logging"
 )
 
 type Handler struct {
-	cfg *global.Configure
+	sync.RWMutex
+	cfg     *global.Configure
+	clients map[string]*client
 }
 
 func New(cfg *global.Configure) *Handler {
-	return &Handler{cfg}
+	return &Handler{
+		cfg:     cfg,
+		clients: make(map[string]*client),
+	}
 }
 
 func (h *Handler) Handle(conn net.Conn) {
@@ -39,7 +45,13 @@ func (h *Handler) Handle(conn net.Conn) {
 		return
 	}
 	logging.Info("%s connected", id)
-	select {}
+
+	cli := newClient(id, c)
+	h.Lock()
+	h.clients[cli.id] = cli
+	h.Unlock()
+
+	cli.run()
 }
 
 func (h *Handler) readHandshake(c *network.Conn) (string, error) {

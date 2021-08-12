@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net"
 
@@ -35,10 +36,15 @@ func (tn *tunnel) close() {
 	}
 }
 
-func (tn *tunnel) loop() {
+func (tn *tunnel) loop(ctx context.Context) {
 	defer tn.close()
 	buf := make([]byte, 32*1024)
 	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
 		n, err := tn.c.Read(buf)
 		if err != nil {
 			return

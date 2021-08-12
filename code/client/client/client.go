@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/network"
@@ -35,11 +36,14 @@ func (c *Client) Run() {
 	runtime.Assert(err)
 	logging.Info("%s connected", c.cfg.Server)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	for _, t := range c.cfg.Tunnels {
 		if t.Type == "tcp" {
-			go c.handleTcpTunnel(t)
+			go c.handleTcpTunnel(ctx, t)
 		} else {
-			go c.handleUdpTunnel(t)
+			go c.handleUdpTunnel(ctx, t)
 		}
 	}
 
@@ -54,7 +58,7 @@ func (c *Client) Run() {
 		}
 		switch msg.GetXType() {
 		case network.Msg_connect_req:
-			c.handleConnect(msg.GetFrom(), msg.GetTo(), msg.GetCreq())
+			c.handleConnect(ctx, msg.GetFrom(), msg.GetTo(), msg.GetCreq())
 		case network.Msg_disconnect:
 			c.handleDisconnect(msg.GetXDisconnect())
 		case network.Msg_forward:
@@ -64,7 +68,7 @@ func (c *Client) Run() {
 }
 
 // handleTcpTunnel local listen to tcp tunnel
-func (c *Client) handleTcpTunnel(t global.Tunnel) {
+func (c *Client) handleTcpTunnel(ctx context.Context, t global.Tunnel) {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("close tcp tunnel: %s, err=%v", t.Name, err)
@@ -77,6 +81,11 @@ func (c *Client) handleTcpTunnel(t global.Tunnel) {
 	runtime.Assert(err)
 	defer l.Close()
 	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
 		conn, err := l.Accept()
 		if err != nil {
 			logging.Error("accept from %s tunnel, err=%v", t.Name, err)
@@ -97,17 +106,17 @@ func (c *Client) handleTcpTunnel(t global.Tunnel) {
 		c.tunnels[tn.id] = tn
 		c.Unlock()
 
-		go tn.loop()
+		go tn.loop(ctx)
 	}
 }
 
 // handleUdpTunnel local listen to udp tunnel
-func (c *Client) handleUdpTunnel(t global.Tunnel) {
+func (c *Client) handleUdpTunnel(ctx context.Context, t global.Tunnel) {
 	// TODO
 }
 
 // handleConnect handle connect request message from remote, local dial to remomte addr
-func (c *Client) handleConnect(from, to string, req *network.ConnectRequest) {
+func (c *Client) handleConnect(ctx context.Context, from, to string, req *network.ConnectRequest) {
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
@@ -122,7 +131,7 @@ func (c *Client) handleConnect(from, to string, req *network.ConnectRequest) {
 	c.tunnels[tn.id] = tn
 	c.Unlock()
 	c.connectOK(to, req.GetId())
-	go tn.loop()
+	go tn.loop(ctx)
 }
 
 // handleDisconnect handle disconnect message from remote, this means remote connection is closed

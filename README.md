@@ -8,8 +8,7 @@
 
 ## 编译
 
-    CGO_ENABLED=0 go build -o bin/np-svr code/server/*.go
-    CGO_ENABLED=0 go build -o bin/np-cli code/client/*.go
+    ./build
 
 ## 配置
 

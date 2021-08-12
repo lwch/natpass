@@ -41,7 +41,7 @@ func (h *Handler) Handle(conn net.Conn) {
 				logging.Error("invalid handshake from %s", c.RemoteAddr().String())
 				return
 			}
-			logging.Error("read handshake from %s %d times, err=%v", c.RemoteAddr().String(), err)
+			logging.Error("read handshake from %s %d times, err=%v", c.RemoteAddr().String(), i+1, err)
 			continue
 		}
 		break

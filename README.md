@@ -34,3 +34,13 @@ client端配置如下：
         local_port: 3389        # 本地监听端口号
         remote_addr: 127.0.0.1  # 目标客户端连接地址
         remote_port: 3389       # 目标客户端连接端口号
+
+## 运行
+
+server端运行：
+
+    ./np-svr -conf server.yaml
+
+client端运行：
+
+    ./np-cli -conf client.yaml

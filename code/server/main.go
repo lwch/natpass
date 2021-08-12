@@ -31,6 +31,8 @@ func main() {
 
 	cfg := global.LoadConf(*conf)
 
+	logging.SetSizeRotate(cfg.LogDir, "np-svr", cfg.LogSize, cfg.LogRotate, true)
+
 	cert, err := tls.LoadX509KeyPair(cfg.TLSCrt, cfg.TLSKey)
 	runtime.Assert(err)
 	l, err := tls.Listen("tcp", fmt.Sprintf(":%d", cfg.Listen), &tls.Config{

@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/lwch/daemon"
+	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
 
@@ -31,6 +32,8 @@ func main() {
 	}
 
 	cfg := global.LoadConf(*conf)
+
+	logging.SetSizeRotate(cfg.LogDir, "np-cli", cfg.LogSize, cfg.LogRotate, true)
 
 	conn, err := tls.Dial("tcp", cfg.Server, nil)
 	runtime.Assert(err)

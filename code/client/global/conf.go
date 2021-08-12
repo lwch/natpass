@@ -19,17 +19,25 @@ type Tunnel struct {
 }
 
 type Configure struct {
-	ID      string
-	Server  string
-	Enc     [md5.Size]byte
-	Tunnels []Tunnel
+	ID        string
+	Server    string
+	Enc       [md5.Size]byte
+	LogDir    string
+	LogSize   int
+	LogRotate int
+	Tunnels   []Tunnel
 }
 
 func LoadConf(dir string) *Configure {
 	var cfg struct {
-		ID     string   `yaml:"id"`
-		Server string   `yaml:"server"`
-		Secret string   `yaml:"secret"`
+		ID     string `yaml:"id"`
+		Server string `yaml:"server"`
+		Secret string `yaml:"secret"`
+		Log    struct {
+			Dir    string `yaml:"dir"`
+			Size   int    `yaml:"size"`
+			Rotate int    `yaml:"rotate"`
+		} `yaml:"log"`
 		Tunnel []Tunnel `yaml:"tunnel"`
 	}
 	f, err := os.Open(dir)
@@ -43,9 +51,12 @@ func LoadConf(dir string) *Configure {
 		cfg.Tunnel[i] = t
 	}
 	return &Configure{
-		ID:      cfg.ID,
-		Server:  cfg.Server,
-		Enc:     md5.Sum([]byte(cfg.Secret)),
-		Tunnels: cfg.Tunnel,
+		ID:        cfg.ID,
+		Server:    cfg.Server,
+		Enc:       md5.Sum([]byte(cfg.Secret)),
+		LogDir:    cfg.Log.Dir,
+		LogSize:   cfg.Log.Size,
+		LogRotate: cfg.Log.Rotate,
+		Tunnels:   cfg.Tunnel,
 	}
 }

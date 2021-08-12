@@ -20,6 +20,7 @@ type Client struct {
 	tunnels map[string]*tunnel
 }
 
+// New create client
 func New(cfg *global.Configure, conn *network.Conn) *Client {
 	return &Client{
 		cfg:     cfg,
@@ -28,6 +29,7 @@ func New(cfg *global.Configure, conn *network.Conn) *Client {
 	}
 }
 
+// Run main loop
 func (c *Client) Run() {
 	err := c.writeHandshake()
 	runtime.Assert(err)
@@ -61,19 +63,7 @@ func (c *Client) Run() {
 	}
 }
 
-func (c *Client) writeHandshake() error {
-	var msg network.Msg
-	msg.XType = network.Msg_handshake
-	msg.From = c.cfg.ID
-	msg.To = "server"
-	msg.Payload = &network.Msg_Hsp{
-		Hsp: &network.HandshakePayload{
-			Enc: c.cfg.Enc[:],
-		},
-	}
-	return c.conn.WriteMessage(&msg, 5*time.Second)
-}
-
+// handleTcpTunnel local listen to tcp tunnel
 func (c *Client) handleTcpTunnel(t global.Tunnel) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -111,31 +101,12 @@ func (c *Client) handleTcpTunnel(t global.Tunnel) {
 	}
 }
 
+// handleUdpTunnel local listen to udp tunnel
 func (c *Client) handleUdpTunnel(t global.Tunnel) {
 	// TODO
 }
 
-func (c *Client) sendConnect(id string, t global.Tunnel) {
-	tp := network.ConnectRequest_tcp
-	if t.Type != "tcp" {
-		tp = network.ConnectRequest_udp
-	}
-	var msg network.Msg
-	msg.From = c.cfg.ID
-	msg.To = t.Target
-	msg.XType = network.Msg_connect_req
-	msg.Payload = &network.Msg_Creq{
-		Creq: &network.ConnectRequest{
-			Id:    id,
-			Name:  t.Name,
-			XType: tp,
-			Addr:  t.RemoteAddr,
-			Port:  uint32(t.RemotePort),
-		},
-	}
-	c.conn.WriteMessage(&msg, 5*time.Second)
-}
-
+// handleConnect handle connect request message from remote, local dial to remomte addr
 func (c *Client) handleConnect(from, to string, req *network.ConnectRequest) {
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
@@ -154,49 +125,7 @@ func (c *Client) handleConnect(from, to string, req *network.ConnectRequest) {
 	go tn.loop()
 }
 
-func (c *Client) connectError(to, id, m string) {
-	var msg network.Msg
-	msg.From = c.cfg.ID
-	msg.To = to
-	msg.XType = network.Msg_connect_rep
-	msg.Payload = &network.Msg_Crep{
-		Crep: &network.ConnectResponse{
-			Id:  id,
-			Ok:  false,
-			Msg: m,
-		},
-	}
-	c.conn.WriteMessage(&msg, time.Second)
-}
-
-func (c *Client) connectOK(to, id string) {
-	var msg network.Msg
-	msg.From = c.cfg.ID
-	msg.To = to
-	msg.XType = network.Msg_connect_rep
-	msg.Payload = &network.Msg_Crep{
-		Crep: &network.ConnectResponse{
-			Id: id,
-			Ok: true,
-		},
-	}
-	c.conn.WriteMessage(&msg, time.Second)
-}
-
-func (c *Client) send(id, target string, data []byte) {
-	var msg network.Msg
-	msg.From = c.cfg.ID
-	msg.To = target
-	msg.XType = network.Msg_forward
-	msg.Payload = &network.Msg_XData{
-		XData: &network.Data{
-			Cid:  id,
-			Data: data,
-		},
-	}
-	c.conn.WriteMessage(&msg, time.Second)
-}
-
+// handleDisconnect handle disconnect message from remote, this means remote connection is closed
 func (c *Client) handleDisconnect(data *network.Disconnect) {
 	id := data.GetId()
 
@@ -213,6 +142,7 @@ func (c *Client) handleDisconnect(data *network.Disconnect) {
 	}
 }
 
+// handleData handle forward data message, write data to local connection
 func (c *Client) handleData(data *network.Data) {
 	id := data.GetCid()
 	c.RLock()
@@ -223,20 +153,4 @@ func (c *Client) handleData(data *network.Data) {
 		return
 	}
 	tn.write(data.GetData())
-}
-
-func (c *Client) disconnect(id, to string) {
-	var msg network.Msg
-	msg.From = c.cfg.ID
-	msg.To = to
-	msg.XType = network.Msg_disconnect
-	msg.Payload = &network.Msg_XDisconnect{
-		XDisconnect: &network.Disconnect{
-			Id: id,
-		},
-	}
-	c.conn.WriteMessage(&msg, time.Second)
-	c.Lock()
-	delete(c.tunnels, id)
-	c.Unlock()
 }

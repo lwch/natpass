@@ -50,6 +50,12 @@ func (c *client) addTunnel(id string) {
 	c.Unlock()
 }
 
+func (c *client) removeTunnel(id string) {
+	c.Lock()
+	delete(c.tunnels, id)
+	c.Unlock()
+}
+
 func (c *client) getTunnels() []string {
 	ret := make([]string, 0, len(c.tunnels))
 	c.RLock()

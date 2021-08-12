@@ -100,7 +100,7 @@ func (c *Client) handleTcpTunnel(t global.Tunnel) {
 			continue
 		}
 
-		tn := newTunnel(id, t.Target, c, conn)
+		tn := newTunnel(id, t.Name, t.Target, c, conn)
 		c.sendConnect(tn.id, t)
 
 		c.Lock()
@@ -146,7 +146,7 @@ func (c *Client) handleConnect(from, to string, req *network.ConnectRequest) {
 		c.connectError(to, req.GetId(), err.Error())
 		return
 	}
-	tn := newTunnel(req.GetId(), from, c, conn)
+	tn := newTunnel(req.GetId(), req.GetName(), from, c, conn)
 	c.Lock()
 	c.tunnels[tn.id] = tn
 	c.Unlock()

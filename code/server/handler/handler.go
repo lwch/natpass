@@ -26,8 +26,13 @@ func New(cfg *global.Configure) *Handler {
 
 func (h *Handler) Handle(conn net.Conn) {
 	c := network.NewConn(conn)
-	defer c.Close()
 	var id string
+	defer func() {
+		if len(id) > 0 {
+			logging.Info("%s disconnected", id)
+		}
+		c.Close()
+	}()
 	var err error
 	for i := 0; i < 10; i++ {
 		id, err = h.readHandshake(c)
@@ -46,7 +51,7 @@ func (h *Handler) Handle(conn net.Conn) {
 	}
 	logging.Info("%s connected", id)
 
-	cli := newClient(id, c)
+	cli := newClient(h, id, c)
 	h.Lock()
 	h.clients[cli.id] = cli
 	h.Unlock()
@@ -67,4 +72,16 @@ func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 		return "", errInvalidHandshake
 	}
 	return msg.GetFrom(), nil
+}
+
+func (h *Handler) onMessage(msg *network.Msg) {
+	to := msg.GetTo()
+	h.RLock()
+	cli := h.clients[to]
+	h.RUnlock()
+	if cli == nil {
+		logging.Error("client %s not found", to)
+		return
+	}
+	cli.writeMessage(msg)
 }

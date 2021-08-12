@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"net"
@@ -49,7 +50,12 @@ func (c *Client) Run() {
 			logging.Error("read message: %v", err)
 			return
 		}
-		logging.Info("read message: %s", msg.String())
+		switch msg.GetXType() {
+		case network.Msg_connect_req:
+			c.handleConnect(msg.GetFrom(), msg.GetTo(), msg.GetCreq())
+		case network.Msg_forward:
+			c.handleData(msg.GetXData())
+		}
 	}
 }
 
@@ -84,12 +90,22 @@ func (c *Client) handleTcpTunnel(t global.Tunnel) {
 			logging.Error("accept from %s tunnel, err=%v", t.Name, err)
 			continue
 		}
-		tn := newTunnel(c, conn)
+
+		id, err := runtime.UUID(16, "0123456789abcdef")
+		if err != nil {
+			conn.Close()
+			logging.Error("generate tunnel id failed, err=%v", err)
+			continue
+		}
+
+		tn := newTunnel(id, t.Target, c, conn)
 		c.sendConnect(tn.id, t)
 
 		c.Lock()
 		c.tunnels[tn.id] = tn
 		c.Unlock()
+
+		go tn.loop()
 	}
 }
 
@@ -116,4 +132,77 @@ func (c *Client) sendConnect(id string, t global.Tunnel) {
 		},
 	}
 	c.conn.WriteMessage(&msg, 5*time.Second)
+}
+
+func (c *Client) handleConnect(from, to string, req *network.ConnectRequest) {
+	dial := "tcp"
+	if req.GetXType() == network.ConnectRequest_udp {
+		dial = "udp"
+	}
+	conn, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
+	if err != nil {
+		c.connectError(to, req.GetId(), err.Error())
+		return
+	}
+	tn := newTunnel(req.GetId(), from, c, conn)
+	c.Lock()
+	c.tunnels[tn.id] = tn
+	c.Unlock()
+	c.connectOK(to, req.GetId())
+	go tn.loop()
+}
+
+func (c *Client) connectError(to, id, m string) {
+	var msg network.Msg
+	msg.From = c.cfg.ID
+	msg.To = to
+	msg.XType = network.Msg_connect_rep
+	msg.Payload = &network.Msg_Crep{
+		Crep: &network.ConnectResponse{
+			Id:  id,
+			Ok:  false,
+			Msg: m,
+		},
+	}
+	c.conn.WriteMessage(&msg, time.Second)
+}
+
+func (c *Client) connectOK(to, id string) {
+	var msg network.Msg
+	msg.From = c.cfg.ID
+	msg.To = to
+	msg.XType = network.Msg_connect_rep
+	msg.Payload = &network.Msg_Crep{
+		Crep: &network.ConnectResponse{
+			Id: id,
+			Ok: true,
+		},
+	}
+	c.conn.WriteMessage(&msg, time.Second)
+}
+
+func (c *Client) send(id, target string, data []byte) {
+	var msg network.Msg
+	msg.From = c.cfg.ID
+	msg.To = target
+	msg.XType = network.Msg_forward
+	msg.Payload = &network.Msg_XData{
+		XData: &network.Data{
+			Cid:  id,
+			Data: data,
+		},
+	}
+	c.conn.WriteMessage(&msg, time.Second)
+}
+
+func (c *Client) handleData(data *network.Data) {
+	id := data.GetCid()
+	c.RLock()
+	tn := c.tunnels[id]
+	c.RUnlock()
+	if tn == nil {
+		logging.Error("tunnel %s not found", id)
+		return
+	}
+	tn.write(data.GetData())
 }

@@ -9,14 +9,16 @@ import (
 )
 
 type client struct {
-	id string
-	c  *network.Conn
+	parent *Handler
+	id     string
+	c      *network.Conn
 }
 
-func newClient(id string, conn *network.Conn) *client {
+func newClient(parent *Handler, id string, conn *network.Conn) *client {
 	return &client{
-		id: id,
-		c:  conn,
+		parent: parent,
+		id:     id,
+		c:      conn,
 	}
 }
 
@@ -30,6 +32,10 @@ func (c *client) run() {
 			logging.Error("read message from %s: %v", c.id, err)
 			return
 		}
-		logging.Info("read message: %s", msg.String())
+		c.parent.onMessage(msg)
 	}
+}
+
+func (c *client) writeMessage(msg *network.Msg) error {
+	return c.c.WriteMessage(msg, time.Second)
 }

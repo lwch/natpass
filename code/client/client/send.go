@@ -98,3 +98,11 @@ func (c *Client) disconnect(id, to string) {
 	delete(c.tunnels, id)
 	c.Unlock()
 }
+
+func (c *Client) sendKeepalive() {
+	var msg network.Msg
+	msg.From = c.cfg.ID
+	msg.To = "server"
+	msg.XType = network.Msg_keepalive
+	c.conn.WriteMessage(&msg, time.Second)
+}

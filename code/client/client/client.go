@@ -39,6 +39,8 @@ func (c *Client) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	go c.keepalive(ctx)
+
 	for _, t := range c.cfg.Tunnels {
 		if t.Type == "tcp" {
 			go c.handleTcpTunnel(ctx, t)
@@ -107,6 +109,18 @@ func (c *Client) handleTcpTunnel(ctx context.Context, t global.Tunnel) {
 		c.Unlock()
 
 		go tn.loop(ctx)
+	}
+}
+
+func (c *Client) keepalive(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+		time.Sleep(10 * time.Second)
+		c.sendKeepalive()
 	}
 }
 

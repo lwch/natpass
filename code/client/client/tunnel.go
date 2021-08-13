@@ -58,7 +58,7 @@ func (tn *tunnel) loop(ctx context.Context) {
 }
 
 func (tn *tunnel) write(data []byte) error {
-	logging.Debug("tunnel %s write from remote %s bytes", tn.name, len(data))
+	logging.Debug("tunnel %s write from remote %d bytes", tn.name, len(data))
 	_, err := io.Copy(tn.c, bytes.NewReader(data))
 	return err
 }

@@ -2,6 +2,7 @@ package global
 
 import (
 	"crypto/md5"
+	"natpass/code/utils"
 	"os"
 
 	"github.com/lwch/runtime"
@@ -23,7 +24,7 @@ type Configure struct {
 	Server    string
 	Enc       [md5.Size]byte
 	LogDir    string
-	LogSize   int
+	LogSize   utils.Bytes
 	LogRotate int
 	Tunnels   []Tunnel
 }
@@ -34,9 +35,9 @@ func LoadConf(dir string) *Configure {
 		Server string `yaml:"server"`
 		Secret string `yaml:"secret"`
 		Log    struct {
-			Dir    string `yaml:"dir"`
-			Size   int    `yaml:"size"`
-			Rotate int    `yaml:"rotate"`
+			Dir    string      `yaml:"dir"`
+			Size   utils.Bytes `yaml:"size"`
+			Rotate int         `yaml:"rotate"`
 		} `yaml:"log"`
 		Tunnel []Tunnel `yaml:"tunnel"`
 	}

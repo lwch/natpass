@@ -33,7 +33,7 @@ func main() {
 
 	cfg := global.LoadConf(*conf)
 
-	logging.SetSizeRotate(cfg.LogDir, "np-cli", cfg.LogSize, cfg.LogRotate, true)
+	logging.SetSizeRotate(cfg.LogDir, "np-cli", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
 
 	conn, err := tls.Dial("tcp", cfg.Server, nil)
 	runtime.Assert(err)

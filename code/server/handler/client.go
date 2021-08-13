@@ -11,18 +11,18 @@ import (
 
 type client struct {
 	sync.RWMutex
-	parent  *Handler
-	id      string
-	c       *network.Conn
-	tunnels map[string]struct{}
+	parent *Handler
+	id     string
+	c      *network.Conn
+	links  map[string]struct{} // link id => struct{}
 }
 
 func newClient(parent *Handler, id string, conn *network.Conn) *client {
 	return &client{
-		parent:  parent,
-		id:      id,
-		c:       conn,
-		tunnels: make(map[string]struct{}),
+		parent: parent,
+		id:     id,
+		c:      conn,
+		links:  make(map[string]struct{}),
 	}
 }
 
@@ -44,23 +44,23 @@ func (c *client) writeMessage(msg *network.Msg) error {
 	return c.c.WriteMessage(msg, time.Second)
 }
 
-func (c *client) addTunnel(id string) {
+func (c *client) addLink(id string) {
 	c.Lock()
-	c.tunnels[id] = struct{}{}
+	c.links[id] = struct{}{}
 	c.Unlock()
 }
 
-func (c *client) removeTunnel(id string) {
+func (c *client) removeLink(id string) {
 	c.Lock()
-	delete(c.tunnels, id)
+	delete(c.links, id)
 	c.Unlock()
 }
 
-func (c *client) getTunnels() []string {
-	ret := make([]string, 0, len(c.tunnels))
+func (c *client) getLinks() []string {
+	ret := make([]string, 0, len(c.links))
 	c.RLock()
-	for tn := range c.tunnels {
-		ret = append(ret, tn)
+	for link := range c.links {
+		ret = append(ret, link)
 	}
 	c.RUnlock()
 	return ret
@@ -78,6 +78,6 @@ func (c *client) close(id string) {
 	}
 	c.c.WriteMessage(&msg, time.Second)
 	c.Lock()
-	delete(c.tunnels, id)
+	delete(c.links, id)
 	c.Unlock()
 }

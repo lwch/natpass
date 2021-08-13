@@ -15,7 +15,7 @@ type Handler struct {
 	sync.RWMutex
 	cfg     *global.Configure
 	clients map[string]*client    // client id => client
-	tunnels map[string][2]*client // tunnel id => endpoints
+	links   map[string][2]*client // link id => endpoints
 }
 
 // New create handler
@@ -23,7 +23,7 @@ func New(cfg *global.Configure) *Handler {
 	return &Handler{
 		cfg:     cfg,
 		clients: make(map[string]*client),
-		tunnels: make(map[string][2]*client),
+		links:   make(map[string][2]*client),
 	}
 }
 
@@ -112,33 +112,33 @@ func (h *Handler) msgHook(msg *network.Msg) {
 			id := msg.GetCrep().GetId()
 			var pair [2]*client
 			if fromCli != nil {
-				fromCli.addTunnel(id)
+				fromCli.addLink(id)
 				pair[0] = fromCli
 			}
 			if toCli != nil {
-				toCli.addTunnel(id)
+				toCli.addLink(id)
 				pair[1] = toCli
 			}
 			h.Lock()
-			h.tunnels[id] = pair
+			h.links[id] = pair
 			h.Unlock()
 		}
 	case network.Msg_disconnect:
 		if fromCli != nil {
-			fromCli.removeTunnel(msg.GetXDisconnect().GetId())
+			fromCli.removeLink(msg.GetXDisconnect().GetId())
 		}
 		if toCli != nil {
-			toCli.removeTunnel(msg.GetXDisconnect().GetId())
+			toCli.removeLink(msg.GetXDisconnect().GetId())
 		}
 	}
 }
 
-// closeAll close all tunnel from client
+// closeAll close all links from client
 func (h *Handler) closeAll(cli *client) {
-	tunnels := cli.getTunnels()
-	for _, t := range tunnels {
+	links := cli.getLinks()
+	for _, t := range links {
 		h.RLock()
-		pair := h.tunnels[t]
+		pair := h.links[t]
 		h.RUnlock()
 		if pair[0] != nil {
 			pair[0].close(t)
@@ -147,7 +147,7 @@ func (h *Handler) closeAll(cli *client) {
 			pair[1].close(t)
 		}
 		h.Lock()
-		delete(h.tunnels, t)
+		delete(h.links, t)
 		h.Unlock()
 	}
 	h.Lock()

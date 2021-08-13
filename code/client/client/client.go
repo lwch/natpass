@@ -16,17 +16,17 @@ import (
 
 type Client struct {
 	sync.RWMutex
-	cfg     *global.Configure
-	conn    *network.Conn
-	tunnels map[string]*tunnel
+	cfg   *global.Configure
+	conn  *network.Conn
+	links map[string]*link
 }
 
 // New create client
 func New(cfg *global.Configure, conn *network.Conn) *Client {
 	return &Client{
-		cfg:     cfg,
-		conn:    conn,
-		tunnels: make(map[string]*tunnel),
+		cfg:   cfg,
+		conn:  conn,
+		links: make(map[string]*link),
 	}
 }
 
@@ -97,18 +97,18 @@ func (c *Client) handleTcpTunnel(ctx context.Context, t global.Tunnel) {
 		id, err := runtime.UUID(16, "0123456789abcdef")
 		if err != nil {
 			conn.Close()
-			logging.Error("generate tunnel id failed, err=%v", err)
+			logging.Error("generate link id failed, err=%v", err)
 			continue
 		}
 
-		tn := newTunnel(id, t.Name, t.Target, c, conn)
-		c.sendConnect(tn.id, t)
+		link := newLink(id, t.Name, t.Target, c, conn)
+		c.sendConnect(link.id, t)
 
 		c.Lock()
-		c.tunnels[tn.id] = tn
+		c.links[link.id] = link
 		c.Unlock()
 
-		go tn.loop(ctx)
+		go link.loop(ctx)
 	}
 }
 
@@ -140,12 +140,12 @@ func (c *Client) handleConnect(ctx context.Context, from, to string, req *networ
 		c.connectError(to, req.GetId(), err.Error())
 		return
 	}
-	tn := newTunnel(req.GetId(), req.GetName(), from, c, conn)
+	link := newLink(req.GetId(), req.GetName(), from, c, conn)
 	c.Lock()
-	c.tunnels[tn.id] = tn
+	c.links[link.id] = link
 	c.Unlock()
 	c.connectOK(to, req.GetId())
-	go tn.loop(ctx)
+	go link.loop(ctx)
 }
 
 // handleDisconnect handle disconnect message from remote, this means remote connection is closed
@@ -153,14 +153,14 @@ func (c *Client) handleDisconnect(data *network.Disconnect) {
 	id := data.GetId()
 
 	c.RLock()
-	tn := c.tunnels[id]
+	tn := c.links[id]
 	c.RUnlock()
 
 	if tn != nil {
 		tn.close()
 
 		c.Lock()
-		delete(c.tunnels, id)
+		delete(c.links, id)
 		c.Unlock()
 	}
 }
@@ -169,10 +169,10 @@ func (c *Client) handleDisconnect(data *network.Disconnect) {
 func (c *Client) handleData(data *network.Data) {
 	id := data.GetCid()
 	c.RLock()
-	tn := c.tunnels[id]
+	tn := c.links[id]
 	c.RUnlock()
 	if tn == nil {
-		logging.Error("tunnel %s not found", id)
+		logging.Error("link %s not found", id)
 		return
 	}
 	tn.write(data.GetData())

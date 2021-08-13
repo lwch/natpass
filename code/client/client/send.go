@@ -95,7 +95,7 @@ func (c *Client) disconnect(id, to string) {
 	}
 	c.conn.WriteMessage(&msg, time.Second)
 	c.Lock()
-	delete(c.tunnels, id)
+	delete(c.links, id)
 	c.Unlock()
 }
 

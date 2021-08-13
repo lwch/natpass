@@ -9,17 +9,17 @@ import (
 	"github.com/lwch/logging"
 )
 
-type tunnel struct {
+type link struct {
 	cli    *Client
-	id     string
-	name   string
-	target string
+	id     string // link id
+	name   string // tunnel name
+	target string // remote client id
 	c      net.Conn
 }
 
-func newTunnel(id, name, target string, cli *Client, conn net.Conn) *tunnel {
-	logging.Info("create tunnel %s: %s", name, id)
-	return &tunnel{
+func newLink(id, name, target string, cli *Client, conn net.Conn) *link {
+	logging.Info("create link %s: %s", name, id)
+	return &link{
 		cli:    cli,
 		id:     id,
 		name:   name,
@@ -28,16 +28,16 @@ func newTunnel(id, name, target string, cli *Client, conn net.Conn) *tunnel {
 	}
 }
 
-func (tn *tunnel) close() {
-	logging.Info("disconnect tunnel %s: %s", tn.name, tn.id)
-	err := tn.c.Close()
+func (l *link) close() {
+	logging.Info("disconnect tunnel %s on link %s", l.name, l.id)
+	err := l.c.Close()
 	if err == nil {
-		tn.cli.disconnect(tn.id, tn.target)
+		l.cli.disconnect(l.id, l.target)
 	}
 }
 
-func (tn *tunnel) loop(ctx context.Context) {
-	defer tn.close()
+func (l *link) loop(ctx context.Context) {
+	defer l.close()
 	buf := make([]byte, 32*1024)
 	for {
 		select {
@@ -45,20 +45,20 @@ func (tn *tunnel) loop(ctx context.Context) {
 			return
 		default:
 		}
-		n, err := tn.c.Read(buf)
+		n, err := l.c.Read(buf)
 		if err != nil {
 			return
 		}
 		if n == 0 {
 			continue
 		}
-		logging.Debug("tunnel %s read from local %d bytes", tn.name, n)
-		tn.cli.send(tn.id, tn.target, buf[:n])
+		logging.Debug("link %s on tunnel %s read from local %d bytes", l.id, l.name, n)
+		l.cli.send(l.id, l.target, buf[:n])
 	}
 }
 
-func (tn *tunnel) write(data []byte) error {
-	logging.Debug("tunnel %s write from remote %d bytes", tn.name, len(data))
-	_, err := io.Copy(tn.c, bytes.NewReader(data))
+func (l *link) write(data []byte) error {
+	logging.Debug("link %s on tunnel %s write from remote %d bytes", l.id, l.name, len(data))
+	_, err := io.Copy(l.c, bytes.NewReader(data))
 	return err
 }

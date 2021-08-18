@@ -14,6 +14,8 @@ go:
   - 1.15.x
   - 1.16.x
 
-script: go test -race -coverprofile=coverage.txt -covermode=atomic
+script:
+  - ./build
+  - go test -race -coverprofile=coverage.txt -covermode=atomic
 
 after_success: bash <(curl -s https://codecov.io/bash)

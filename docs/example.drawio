@@ -1,1 +1,158 @@
-<mxfile host="app.diagrams.net" modified="2021-08-18T02:51:59.992Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36" version="14.9.7" etag="-TL2oSFCYkVo1ZSSN9x8" type="github"><diagram id="Kjf8sS8rRDm6eebZkxfj">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2021-08-18T03:22:00.152Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36" etag="IcTnZ268V_m9gRKW7Rle" version="14.9.7" type="github">
+  <diagram id="Kjf8sS8rRDm6eebZkxfj" name="第 1 页">
+    <mxGraphModel dx="1038" dy="579" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="219" as="sourcePoint" />
+            <mxPoint x="390" y="130" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="290" y="219" />
+              <mxPoint x="290" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.71;exitY=1.066;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="356" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-3" value="" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/allied_telesis/security/Router_VPN.svg;" vertex="1" parent="1">
+          <mxGeometry x="280" y="220" width="55.800000000000004" height="39.6" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.694;entryY=-0.054;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.717;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-4" target="WTAgDNwTBJ27G1_lSc48-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="436" y="150" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="500" y="150" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-4" value="" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/allied_telesis/security/Router_VPN.svg;" vertex="1" parent="1">
+          <mxGeometry x="490" y="221" width="55.800000000000004" height="39.6" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="260" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="290" y="330" />
+              <mxPoint x="290" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=-0.005;exitY=0.676;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-5" target="WTAgDNwTBJ27G1_lSc48-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="402" />
+              <mxPoint x="230" y="402" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-5" value="内网设备&lt;br&gt;172.16.1.100" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer_with_Server.svg;" vertex="1" parent="1">
+          <mxGeometry x="276.7" y="360" width="62.400000000000006" height="62.400000000000006" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="130" as="sourcePoint" />
+            <mxPoint x="530" y="222" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="530" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.681;entryY=0.015;entryDx=0;entryDy=0;entryPerimeter=0;exitX=-0.014;exitY=0.759;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-6" target="WTAgDNwTBJ27G1_lSc48-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-6" value="np-svr&lt;br&gt;公网服务" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/allied_telesis/computer_and_terminals/Server_Desktop.svg;" vertex="1" parent="1">
+          <mxGeometry x="393" y="110" width="42.599999999999994" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="357" as="sourcePoint" />
+            <mxPoint x="500" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.053;exitY=0.33;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-8" target="WTAgDNwTBJ27G1_lSc48-28">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="381" />
+              <mxPoint x="590" y="381" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-8" value="内网设备&lt;br&gt;192.168.1.100" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer_with_Server.svg;" vertex="1" parent="1">
+          <mxGeometry x="486.7" y="360" width="62.400000000000006" height="62.400000000000006" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-16" value="办公网络&lt;br&gt;172.16.1.1/24" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="180" y="221" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-17" value="家庭网络&lt;br&gt;192.168.1.1/24" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="224.8" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-18">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="276" y="380" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="276" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="410" as="sourcePoint" />
+            <mxPoint x="200" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-18" value="" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.vvd.cloud_computing;fillColor=#066A90;" vertex="1" parent="1">
+          <mxGeometry x="160" y="375" width="50" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="410" as="targetPoint" />
+            <mxPoint x="170" y="470" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-19" value="rdp客户端" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#434445;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.vvd.administrator;" vertex="1" parent="1">
+          <mxGeometry x="174.25" y="480" width="21.5" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-21" value="np-cli&lt;br&gt;监听3389端口" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="375" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="410" as="sourcePoint" />
+            <mxPoint x="650" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="WTAgDNwTBJ27G1_lSc48-28">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="400" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-28" value="" style="pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;aspect=fixed;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.vvd.cloud_computing;fillColor=#066A90;" vertex="1" parent="1">
+          <mxGeometry x="610" y="375" width="50" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="410" as="targetPoint" />
+            <mxPoint x="620" y="470" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-31" value="np-cli&lt;br&gt;连接到3389端口" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="665" y="377" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="WTAgDNwTBJ27G1_lSc48-32" value="内网设备&lt;br&gt;192.168.1.101" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer_with_Server.svg;" vertex="1" parent="1">
+          <mxGeometry x="603.8" y="480" width="62.400000000000006" height="62.400000000000006" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

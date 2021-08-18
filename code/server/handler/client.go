@@ -11,23 +11,29 @@ import (
 
 type client struct {
 	sync.RWMutex
-	parent *Handler
-	id     string
-	c      *network.Conn
-	links  map[string]struct{} // link id => struct{}
+	parent  *Handler
+	id      string
+	c       *network.Conn
+	links   map[string]struct{} // link id => struct{}
+	updated time.Time
 }
 
 func newClient(parent *Handler, id string, conn *network.Conn) *client {
 	return &client{
-		parent: parent,
-		id:     id,
-		c:      conn,
-		links:  make(map[string]struct{}),
+		parent:  parent,
+		id:      id,
+		c:       conn,
+		links:   make(map[string]struct{}),
+		updated: time.Now(),
 	}
 }
 
 func (c *client) run() {
 	for {
+		if time.Since(c.updated).Seconds() > 600 {
+			c.parent.closeAll(c)
+			return
+		}
 		msg, err := c.c.ReadMessage(time.Second)
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {

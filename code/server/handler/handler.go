@@ -94,6 +94,7 @@ func (h *Handler) onMessage(msg *network.Msg) {
 		logging.Error("client %s not found", to)
 		return
 	}
+	cli.updated = time.Now()
 	h.msgHook(msg)
 	cli.writeMessage(msg)
 }

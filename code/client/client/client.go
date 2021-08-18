@@ -167,7 +167,7 @@ func (c *Client) handleDisconnect(data *network.Disconnect) {
 
 // handleData handle forward data message, write data to local connection
 func (c *Client) handleData(data *network.Data) {
-	id := data.GetCid()
+	id := data.GetLid()
 	c.RLock()
 	tn := c.links[id]
 	c.RUnlock()

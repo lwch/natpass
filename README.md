@@ -9,6 +9,21 @@
 
 ![rdp](docs/example.jpg)
 
+工作流程如下：
+
+1. 办公网络与家庭网络中的np-cli创建tls连接到np-svr
+2. np-cli服务发送握手包，并将配置文件中的secret字段进行md5哈希
+3. np-svr等待握手报文，若等待超时则为非法链接，直接断开
+4. 办公网络客户机创建新连接到172.16.1.100的3389端口
+5. 172.16.1.100上的np-cli接收到新请求后创建新的link并生成链接id
+6. 172.16.1.100上的np-cli发送connect_request消息，告知连接类型和链接目标地址和端口
+7. np-svr转发connect_request消息至192.168.1.100上的np-cli
+8. 192.168.1.100上的np-cli接收到connect_request消息，根据请求信息创建链接到目标地址和端口
+9. 192.168.1.100上的np-cli根据链接创建结果返回connect_response消息
+10. np-svr转发connect_response消息至172.16.1.100上的np-cli
+11. 172.168.1.100上的np-cli接收到connect_response消息后根据是否成功来决定是否需要断开rdp客户端链接
+12. 链路打通，两端各自发送data消息到对应链路
+
 ## 编译
 
     ./build

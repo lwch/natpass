@@ -76,7 +76,7 @@ func (c *Client) send(id, target string, data []byte) {
 	msg.XType = network.Msg_forward
 	msg.Payload = &network.Msg_XData{
 		XData: &network.Data{
-			Cid:  id,
+			Lid:  id,
 			Data: data,
 		},
 	}

@@ -4,7 +4,10 @@
 
 ## 实现原理
 
-基于tls链接，server端转发流量
+基于tls链接，protobuf进行数据传输，下面举例在办公网络穿透到家庭网络，
+并通过rdp进行连接家庭网络下的某台windows设备
+
+![rdp](docs/example.jpg)
 
 ## 编译
 

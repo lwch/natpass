@@ -29,9 +29,9 @@ server端配置(10.0.1.1)：
 
 家庭网络client配置(192.168.1.100)：
 
-    id: home               # 客户端ID
+    id: home              # 客户端ID
     server: 10.0.1.1:6154 # 服务器地址
-    secret: 0123456789     # 预共享密钥，必须与server端相同，否则握手失败
+    secret: 0123456789    # 预共享密钥，必须与server端相同，否则握手失败
     log:
       dir: ./logs # 路径
       size: 50M   # 单个文件大小

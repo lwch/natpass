@@ -15,7 +15,7 @@
 
 ![rdp](docs/example.jpg)
 
-server端配置：
+server端配置(10.0.1.1)：
 
     listen: 6154       # 监听端口号
     secret: 0123456789 # 预共享密钥
@@ -27,7 +27,7 @@ server端配置：
       key: /dir/to/tls/key/file # tls密钥
       crt: /dir/to/tls/crt/file # tls证书
 
-家庭网络client配置：
+家庭网络client配置(192.168.1.100)：
 
     id: home               # 客户端ID
     server: 10.0.1.1:6154 # 服务器地址
@@ -37,7 +37,7 @@ server端配置：
       size: 50M   # 单个文件大小
       rotate: 7   # 保留数量
 
-办公网络client配置：
+办公网络client配置(172.16.1.100)：
 
     id: work               # 客户端ID
     server: 10.0.1.1:6154 # 服务器地址

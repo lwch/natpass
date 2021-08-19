@@ -36,7 +36,7 @@ jobs:
         go-version: ${{ matrix.go }}
 
     - name: Build Server
-      run: go build -v code/server/*.go
+      run: go build -v code/server/main.go code/server/run.go
 
     - name: Build Client
-      run: go test -v code/client/*.go
+      run: go test -v code/client/main.go

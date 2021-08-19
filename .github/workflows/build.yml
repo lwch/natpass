@@ -9,14 +9,31 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-18.04
+      - ubuntu-20.04
+      - windows-2016
+      - windows-2019
+      - macos-10.15
+      - macos-11
+    strategy:
+      matrix:
+        go:
+          - 1.10
+          - 1.11
+          - 1.12
+          - 1.13
+          - 1.14
+          - 1.15
+          - 1.16
+          - 1.17
     steps:
     - uses: actions/checkout@v2
 
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.17
+        go-version: ${{ matrix.go }}
 
     - name: Build Server
       run: go build -v code/server/*.go

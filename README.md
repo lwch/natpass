@@ -1,5 +1,7 @@
 # natpass
 
+[![natpass](https://github.com/lwch/natpass/actions/workflows/build.yml/badge.svg)](https://github.com/lwch/natpass/actions/workflows/build.yml)
+
 内网穿透工具
 
 ## 实现原理

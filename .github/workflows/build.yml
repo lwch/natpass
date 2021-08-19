@@ -1,0 +1,25 @@
+name: natpass
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Build Server
+      run: go build -v code/server/*.go
+
+    - name: Build Client
+      run: go test -v code/client/*.go

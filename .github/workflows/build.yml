@@ -15,7 +15,7 @@ jobs:
         os:
           - ubuntu-18.04
           - ubuntu-20.04
-          - windows-2016
+          # - windows-2016 # tar command error
           - windows-2019
           - macos-10.15
           - macos-11

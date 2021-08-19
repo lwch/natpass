@@ -31,6 +31,13 @@ func newClient(parent *Handler, id string, conn *network.Conn) *client {
 func (c *client) run() {
 	for {
 		if time.Since(c.updated).Seconds() > 600 {
+			links := make([]string, 0, len(c.links))
+			c.RLock()
+			for id := range c.links {
+				links = append(links, id)
+			}
+			c.RUnlock()
+			logging.Info("%s is not keepalived, links: %v", c.id, links)
 			c.parent.closeAll(c)
 			return
 		}

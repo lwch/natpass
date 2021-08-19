@@ -33,17 +33,17 @@ server端配置(10.0.1.1)：
     server: 10.0.1.1:6154 # 服务器地址
     secret: 0123456789    # 预共享密钥，必须与server端相同，否则握手失败
     log:
-      dir: ./logs # 路径
+      dir: /opt/natpass/logs # 路径
       size: 50M   # 单个文件大小
       rotate: 7   # 保留数量
 
 办公网络client配置(172.16.1.100)：
 
-    id: work               # 客户端ID
+    id: work              # 客户端ID
     server: 10.0.1.1:6154 # 服务器地址
-    secret: 0123456789     # 预共享密钥，必须与server端相同，否则握手失败
+    secret: 0123456789    # 预共享密钥，必须与server端相同，否则握手失败
     log:
-      dir: ./logs # 路径
+      dir: /opt/natpass/logs # 路径
       size: 50M   # 单个文件大小
       rotate: 7   # 保留数量
     tunnel:                         # 远端tunnel列表可为空

@@ -9,15 +9,16 @@ on:
 jobs:
 
   build:
-    runs-on:
-      - ubuntu-18.04
-      - ubuntu-20.04
-      - windows-2016
-      - windows-2019
-      - macos-10.15
-      - macos-11
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os:
+          - ubuntu-18.04
+          - ubuntu-20.04
+          - windows-2016
+          - windows-2019
+          - macos-10.15
+          - macos-11
         go:
           - 1.10
           - 1.11

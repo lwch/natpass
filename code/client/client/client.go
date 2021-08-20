@@ -14,6 +14,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
+// Client client
 type Client struct {
 	sync.RWMutex
 	cfg   *global.Configure

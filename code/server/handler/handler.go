@@ -11,6 +11,7 @@ import (
 	"github.com/lwch/logging"
 )
 
+// Handler handler
 type Handler struct {
 	sync.RWMutex
 	cfg     *global.Configure

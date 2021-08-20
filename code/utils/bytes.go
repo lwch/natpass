@@ -2,8 +2,10 @@ package utils
 
 import "github.com/dustin/go-humanize"
 
+// Bytes bytes for yaml decode
 type Bytes uint64
 
+// UnmarshalYAML custom decode bytes
 func (bt *Bytes) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var str string
 	err := unmarshal(&str)
@@ -18,6 +20,7 @@ func (bt *Bytes) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+// Bytes bytes count
 func (bt *Bytes) Bytes() uint64 {
 	return uint64(*bt)
 }

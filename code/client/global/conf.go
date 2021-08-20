@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Tunnel tunnel config
 type Tunnel struct {
 	Name       string `yaml:"name"`
 	Target     string `yaml:"target"`
@@ -19,6 +20,7 @@ type Tunnel struct {
 	RemotePort uint16 `yaml:"remote_port"`
 }
 
+// Configure client configure
 type Configure struct {
 	ID        string
 	Server    string
@@ -29,6 +31,7 @@ type Configure struct {
 	Tunnels   []Tunnel
 }
 
+// LoadConf load configure file
 func LoadConf(dir string) *Configure {
 	var cfg struct {
 		ID     string `yaml:"id"`

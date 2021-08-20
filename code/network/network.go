@@ -15,6 +15,7 @@ import (
 
 var errTooLong = errors.New("too long")
 
+// Conn network connection
 type Conn struct {
 	c         net.Conn
 	lockRead  sync.Mutex
@@ -22,14 +23,17 @@ type Conn struct {
 	sizeRead  [2]byte
 }
 
+// NewConn create connection
 func NewConn(c net.Conn) *Conn {
 	return &Conn{c: c}
 }
 
+// Close close connection
 func (c *Conn) Close() {
 	c.c.Close()
 }
 
+// ReadMessage read message with timeout
 func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, error) {
 	c.lockRead.Lock()
 	defer c.lockRead.Unlock()
@@ -52,6 +56,7 @@ func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, error) {
 	return &msg, nil
 }
 
+// WriteMessage write message with timeout
 func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
 	c.lockWrite.Lock()
 	defer c.lockWrite.Unlock()
@@ -70,10 +75,12 @@ func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
 	return err
 }
 
+// RemoteAddr get connection remote address
 func (c *Conn) RemoteAddr() net.Addr {
 	return c.c.RemoteAddr()
 }
 
+// LocalAddr get connection local address
 func (c *Conn) LocalAddr() net.Addr {
 	return c.c.LocalAddr()
 }

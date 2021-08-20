@@ -1,4 +1,0 @@
-#!/bin/sh
-./build
-killall np-svr
-./bin/np-svr -conf test/server.yaml

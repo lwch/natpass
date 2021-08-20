@@ -1,4 +1,0 @@
-#!/bin/sh
-./build
-killall np-cli
-./bin/np-cli -conf test/client.yaml

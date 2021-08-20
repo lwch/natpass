@@ -49,6 +49,7 @@ func (c *client) run() {
 			logging.Error("read message from %s: %v", c.id, err)
 			return
 		}
+		c.updated = time.Now()
 		c.parent.onMessage(msg)
 	}
 }

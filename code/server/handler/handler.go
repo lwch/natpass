@@ -83,16 +83,15 @@ func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 
 // onMessage forward message
 func (h *Handler) onMessage(msg *network.Msg) {
+	if msg.GetXType() == network.Msg_keepalive {
+		return
+	}
 	to := msg.GetTo()
 	h.RLock()
 	cli := h.clients[to]
 	h.RUnlock()
 	if cli == nil {
 		logging.Error("client %s not found", to)
-		return
-	}
-	cli.updated = time.Now()
-	if msg.GetXType() == network.Msg_keepalive {
 		return
 	}
 	h.msgHook(msg)

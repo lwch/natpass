@@ -95,12 +95,14 @@ server端配置(10.0.1.1)：
 
 ## iperf3压测对比
 
+使用相同参数，iperf3压测1分钟
+
     # natpass
     [ ID] Interval           Transfer     Bitrate         Retr
     [  5]   0.00-60.00  sec  69.6 MBytes  9.73 Mbits/sec   38             sender
     [  5]   0.00-63.74  sec  62.1 MBytes  8.17 Mbits/sec                  receiver
 
-    # frp单路复用stcp
+    # frp单路复用stcp，tls
     [ ID] Interval           Transfer     Bitrate         Retr
-    [  5]   0.00-60.00  sec  67.5 MBytes  9.44 Mbits/sec   16             sender
-    [  5]   0.00-60.09  sec  58.6 MBytes  8.18 Mbits/sec                  receiver
+    [  5]   0.00-60.00  sec  67.5 MBytes  9.44 Mbits/sec   42             sender
+    [  5]   0.00-60.22  sec  58.7 MBytes  8.17 Mbits/sec                  receiver

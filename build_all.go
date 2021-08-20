@@ -44,13 +44,13 @@ var targets = []target{
 	// netbsd
 	{"netbsd", "386", "", ".tar.gz"},
 	{"netbsd", "amd64", "", ".tar.gz"},
-	{"linux", "arm", "", ".tar.gz"},
-	{"linux", "arm64", "", ".tar.gz"},
+	{"netbsd", "arm", "", ".tar.gz"},
+	{"netbsd", "arm64", "", ".tar.gz"},
 	// openbsd
 	{"openbsd", "386", "", ".tar.gz"},
 	{"openbsd", "amd64", "", ".tar.gz"},
-	{"linux", "arm", "", ".tar.gz"},
-	{"linux", "arm64", "", ".tar.gz"},
+	{"openbsd", "arm", "", ".tar.gz"},
+	{"openbsd", "arm64", "", ".tar.gz"},
 	// windows
 	{"windows", "386", ".exe", ".zip"},
 	{"windows", "amd64", ".exe", ".zip"},

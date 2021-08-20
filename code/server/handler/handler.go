@@ -83,9 +83,6 @@ func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 
 // onMessage forward message
 func (h *Handler) onMessage(msg *network.Msg) {
-	if msg.GetXType() == network.Msg_keepalive {
-		return
-	}
 	to := msg.GetTo()
 	h.RLock()
 	cli := h.clients[to]
@@ -95,6 +92,9 @@ func (h *Handler) onMessage(msg *network.Msg) {
 		return
 	}
 	cli.updated = time.Now()
+	if msg.GetXType() == network.Msg_keepalive {
+		return
+	}
 	h.msgHook(msg)
 	cli.writeMessage(msg)
 }

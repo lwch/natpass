@@ -14,12 +14,33 @@ import (
 	"github.com/lwch/runtime"
 )
 
+var (
+	_VERSION       string = "0.0.0"
+	_GIT_HASH      string
+	_GIT_REVERSION string
+	_BUILD_TIME    string
+)
+
+func showVersion() {
+	fmt.Printf("version: v%s\ntime: %s\ncommit: %s.%s\n",
+		_VERSION,
+		_BUILD_TIME,
+		_GIT_HASH, _GIT_REVERSION)
+	os.Exit(0)
+}
+
 func main() {
 	bak := flag.Bool("d", false, "backend running")
 	pid := flag.String("pid", "", "pid file dir")
 	user := flag.String("u", "", "daemon user")
 	conf := flag.String("conf", "", "configure file path")
+	version := flag.Bool("v", false, "show version info")
 	flag.Parse()
+
+	if *version {
+		showVersion()
+		os.Exit(0)
+	}
 
 	if len(*conf) == 0 {
 		fmt.Println("missing -conf param")

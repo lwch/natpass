@@ -1,3 +1,13 @@
 #!/bin/sh
-CGO_ENABLED=0 go build -o bin/np-svr code/server/*.go
-CGO_ENABLED=0 go build -o bin/np-cli code/client/*.go
+
+VERSION="0.0.1"
+HASH=`git log -n1 --pretty=format:%h`
+REVERSION=`git log --oneline|wc -l|tr -d ' '`
+BUILD_TIME=`date +'%Y-%m-%d %H:%M:%S'`
+LDFLAGS="-X 'main._GIT_HASH=$HASH'
+-X 'main._GIT_REVERSION=$REVERSION'
+-X 'main._BUILD_TIME=$BUILD_TIME'
+-X 'main._VERSION=$VERSION'"
+
+CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
+CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go

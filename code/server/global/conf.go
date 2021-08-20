@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Configure server configure
 type Configure struct {
 	Listen    uint16
 	Enc       [md5.Size]byte
@@ -19,6 +20,7 @@ type Configure struct {
 	LogRotate int
 }
 
+// LoadConf load configure file
 func LoadConf(dir string) *Configure {
 	var cfg struct {
 		Listen uint16 `yaml:"listen"`

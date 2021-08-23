@@ -50,7 +50,7 @@ func (link *Link) Close() {
 
 func debug(data []byte, op, id string, idx int) {
 	str := hex.Dump(data)
-	os.MkdirAll("logs", 0755)
+	os.MkdirAll("dump", 0755)
 	ioutil.WriteFile(fmt.Sprintf("dump/%s_%s_%d.log", id, op, idx), []byte(str), 0644)
 }
 

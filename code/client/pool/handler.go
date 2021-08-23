@@ -65,6 +65,7 @@ func (p *Pool) handleDisconnect(data *network.Disconnect) {
 	p.RUnlock()
 
 	if link != nil {
+		logging.Info("disconnect link %s from remote", id)
 		link.Close()
 	}
 }

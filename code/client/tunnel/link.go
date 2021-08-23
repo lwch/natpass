@@ -58,7 +58,7 @@ func (link *Link) loop() {
 		if n == 0 {
 			continue
 		}
-		logging.Info("link %s on tunnel %s read from local %d bytes", link.ID, link.tunnel.Name, n)
+		logging.Debug("link %s on tunnel %s read from local %d bytes", link.ID, link.tunnel.Name, n)
 		link.sendData(link.ID, link.target, buf[:n])
 	}
 }

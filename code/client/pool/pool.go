@@ -99,7 +99,6 @@ func (p *Pool) connect(cfg *global.Configure) {
 			logging.Error("read message: %v", err)
 			return
 		}
-		logging.Info("recv: %s", msg.GetXType().String())
 		switch msg.GetXType() {
 		case network.Msg_connect_req:
 			p.handleConnectReq(c, msg.GetFrom(), msg.GetTo(), msg.GetCreq())

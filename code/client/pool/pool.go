@@ -64,6 +64,7 @@ func (p *Pool) Loop(cfg *global.Configure) {
 		go func(i int) {
 			for {
 				p.connect(cfg, i)
+				time.Sleep(time.Second)
 			}
 		}(i)
 	}

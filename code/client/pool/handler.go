@@ -33,7 +33,7 @@ func (p *Pool) handleConnectReq(conn *network.Conn, from, to string, req *networ
 		RemoteAddr: req.GetAddr(),
 		RemotePort: uint16(req.GetPort()),
 	}, p)
-	tn.NewLink(req.GetId(), from, link, p.writeChannel)
+	tn.NewLink(req.GetId(), from, link)
 	p.Add(tn)
 	p.sendConnectOK(conn, to, from, req.GetId())
 }

@@ -3,7 +3,6 @@ package tunnel
 import (
 	"bytes"
 	"io"
-	"natpass/code/network"
 	"net"
 
 	"github.com/lwch/logging"
@@ -14,19 +13,17 @@ type Link struct {
 	ID     string // link id
 	target string // remote client id
 	conn   net.Conn
-	write  chan *network.Msg
 	OnWork chan struct{}
 	closed bool
 }
 
-func newLink(id, target string, tunnel *Tunnel, conn net.Conn, write chan *network.Msg) *Link {
+func newLink(id, target string, tunnel *Tunnel, conn net.Conn) *Link {
 	logging.Info("create link %s: %s", tunnel.Name, id)
 	return &Link{
 		tunnel: tunnel,
 		ID:     id,
 		target: target,
 		conn:   conn,
-		write:  write,
 		OnWork: make(chan struct{}),
 		closed: false,
 	}
@@ -41,7 +38,7 @@ func (link *Link) Close() {
 	link.closed = true
 	err := link.conn.Close()
 	if err == nil {
-		link.sendDisconnect(link.ID, link.target)
+		link.tunnel.super.SendDisconnect(link.ID, link.target)
 	}
 	link.tunnel.Close(link)
 }
@@ -60,7 +57,7 @@ func (link *Link) loop() {
 			continue
 		}
 		logging.Debug("link %s on tunnel %s read from local %d bytes", link.ID, link.tunnel.Name, n)
-		link.sendData(link.ID, link.target, buf[:n])
+		link.tunnel.super.SendData(link.ID, link.target, buf[:n])
 	}
 }
 

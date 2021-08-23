@@ -17,25 +17,20 @@ import (
 // Pool connection pool
 type Pool struct {
 	sync.RWMutex
-	count        int
-	writeChannel chan *network.Msg
-	tunnels      map[string]*tunnel.Tunnel // tunnel name => tunnel
-	links        map[string]*tunnel.Link   // link id => link
+	count   int
+	write   chan *network.Msg
+	tunnels map[string]*tunnel.Tunnel // tunnel name => tunnel
+	links   map[string]*tunnel.Link   // link id => link
 }
 
 // New create connection pool
 func New(count int) *Pool {
 	return &Pool{
-		count:        count,
-		writeChannel: make(chan *network.Msg, 100),
-		tunnels:      make(map[string]*tunnel.Tunnel),
-		links:        make(map[string]*tunnel.Link),
+		count:   count,
+		write:   make(chan *network.Msg, 100),
+		tunnels: make(map[string]*tunnel.Tunnel),
+		links:   make(map[string]*tunnel.Link),
 	}
-}
-
-// WriteChan get write channel
-func (p *Pool) WriteChan() chan *network.Msg {
-	return p.writeChannel
 }
 
 // Loop main loop
@@ -82,7 +77,7 @@ func (p *Pool) connect(cfg *global.Configure) {
 	go func() {
 		for {
 			select {
-			case msg := <-p.writeChannel:
+			case msg := <-p.write:
 				msg.From = cfg.ID
 				c.WriteMessage(msg, time.Second)
 			case <-ctx.Done():

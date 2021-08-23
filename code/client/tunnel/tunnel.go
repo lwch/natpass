@@ -2,7 +2,6 @@ package tunnel
 
 import (
 	"natpass/code/client/global"
-	"natpass/code/network"
 	"net"
 	"sync"
 
@@ -12,8 +11,10 @@ import (
 
 type Super interface {
 	LinkClose(string, string) // tunnel name, link id
-	WriteChan() chan *network.Msg
 	AddLink(*Link)
+	SendConnect(string, global.Tunnel)
+	SendDisconnect(string, string)
+	SendData(id, to string, data []byte)
 }
 
 // Tunnel tunnel
@@ -35,8 +36,8 @@ func New(cfg global.Tunnel, super Super) *Tunnel {
 	}
 }
 
-func (tunnel *Tunnel) NewLink(id, target string, conn net.Conn, write chan *network.Msg) {
-	link := newLink(id, target, tunnel, conn, write)
+func (tunnel *Tunnel) NewLink(id, target string, conn net.Conn) {
+	link := newLink(id, target, tunnel, conn)
 	tunnel.Lock()
 	tunnel.links[link.ID] = link
 	tunnel.Unlock()
@@ -81,8 +82,8 @@ func (tunnel *Tunnel) handleTcp() {
 			continue
 		}
 
-		link := newLink(id, tunnel.cfg.Target, tunnel, conn, tunnel.super.WriteChan())
-		link.sendConnect(link.ID, tunnel.cfg)
+		link := newLink(id, tunnel.cfg.Target, tunnel, conn)
+		tunnel.super.SendConnect(link.ID, tunnel.cfg)
 
 		tunnel.super.AddLink(link)
 		tunnel.Lock()

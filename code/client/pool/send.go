@@ -1,11 +1,12 @@
-package tunnel
+package pool
 
 import (
 	"natpass/code/client/global"
 	"natpass/code/network"
 )
 
-func (link *Link) sendConnect(id string, t global.Tunnel) {
+// SendConnect send connect request message
+func (p *Pool) SendConnect(id string, t global.Tunnel) {
 	tp := network.ConnectRequest_tcp
 	if t.Type != "tcp" {
 		tp = network.ConnectRequest_udp
@@ -22,10 +23,11 @@ func (link *Link) sendConnect(id string, t global.Tunnel) {
 			Port:  uint32(t.RemotePort),
 		},
 	}
-	link.write <- &msg
+	p.write <- &msg
 }
 
-func (link *Link) sendDisconnect(id, to string) {
+// SendDisconnect send disconnect message
+func (p *Pool) SendDisconnect(id, to string) {
 	var msg network.Msg
 	msg.To = to
 	msg.XType = network.Msg_disconnect
@@ -34,10 +36,11 @@ func (link *Link) sendDisconnect(id, to string) {
 			Id: id,
 		},
 	}
-	link.write <- &msg
+	p.write <- &msg
 }
 
-func (link *Link) sendData(id, to string, data []byte) {
+// SendData send forward data
+func (p *Pool) SendData(id, to string, data []byte) {
 	dup := func(data []byte) []byte {
 		ret := make([]byte, len(data))
 		copy(ret, data)
@@ -52,5 +55,5 @@ func (link *Link) sendData(id, to string, data []byte) {
 			Data: dup(data),
 		},
 	}
-	link.write <- &msg
+	p.write <- &msg
 }

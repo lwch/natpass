@@ -53,6 +53,7 @@ func (link *Link) loop() {
 	for {
 		n, err := link.conn.Read(buf)
 		if err != nil {
+			logging.Error("read data on tunnel %s link %s failed, err=%v", link.tunnel.Name, link.ID, err)
 			return
 		}
 		if n == 0 {

@@ -63,8 +63,11 @@ func (h *Handler) Handle(conn net.Conn) {
 	logging.Info("%s connected", id)
 
 	// split id and index
+	trimID := id
 	n := strings.LastIndex(id, "-")
-	trimID := id[:n]
+	if n != -1 {
+		trimID = id[:n]
+	}
 
 	cli := newClient(h, id, c)
 	h.Lock()

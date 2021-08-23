@@ -2,8 +2,12 @@ package tunnel
 
 import (
 	"bytes"
+	"encoding/hex"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
+	"os"
 
 	"github.com/lwch/logging"
 )
@@ -15,6 +19,7 @@ type Link struct {
 	conn   net.Conn
 	OnWork chan struct{}
 	closed bool
+	idx    int
 }
 
 func newLink(id, target string, tunnel *Tunnel, conn net.Conn) *Link {
@@ -43,6 +48,12 @@ func (link *Link) Close() {
 	link.tunnel.Close(link)
 }
 
+func debug(data []byte, id string, idx int) {
+	str := hex.Dump(data)
+	os.MkdirAll("logs", 0755)
+	ioutil.WriteFile(fmt.Sprintf("logs/dump_%s_%d.log", id, idx), []byte(str), 0644)
+}
+
 func (link *Link) loop() {
 	defer link.Close()
 	<-link.OnWork
@@ -56,6 +67,8 @@ func (link *Link) loop() {
 		if n == 0 {
 			continue
 		}
+		debug(buf[:n], link.ID, link.idx)
+		link.idx++
 		logging.Debug("link %s on tunnel %s read from local %d bytes", link.ID, link.tunnel.Name, n)
 		link.tunnel.super.SendData(link.ID, link.target, buf[:n])
 	}
@@ -63,6 +76,8 @@ func (link *Link) loop() {
 
 // WriteData write data from remote
 func (link *Link) WriteData(data []byte) error {
+	debug(data, link.ID, link.idx)
+	link.idx++
 	logging.Debug("link %s on tunnel %s write from remote %d bytes", link.ID, link.tunnel.Name, len(data))
 	_, err := io.Copy(link.conn, bytes.NewReader(data))
 	return err

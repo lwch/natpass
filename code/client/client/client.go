@@ -178,3 +178,10 @@ func (c *Client) handleData(data *network.Data) {
 	}
 	tn.write(data.GetData())
 }
+
+func (c *Client) closeLink(l *link) {
+	l.close()
+	c.Lock()
+	delete(c.links, l.id)
+	c.Unlock()
+}

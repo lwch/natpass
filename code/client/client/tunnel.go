@@ -37,7 +37,7 @@ func (l *link) close() {
 }
 
 func (l *link) loop(ctx context.Context) {
-	defer l.close()
+	defer l.cli.closeLink(l)
 	buf := make([]byte, 32*1024)
 	for {
 		select {

@@ -40,6 +40,8 @@ func (tunnel *Tunnel) NewLink(id, target string, conn net.Conn, write chan *netw
 	tunnel.Lock()
 	tunnel.links[link.ID] = link
 	tunnel.Unlock()
+	go link.loop()
+	link.OnWork <- struct{}{}
 }
 
 // Handle tunnel handler

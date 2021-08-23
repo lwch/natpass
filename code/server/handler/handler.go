@@ -75,6 +75,14 @@ func (h *Handler) Handle(conn net.Conn) {
 	h.conns[trimID] = h.conns[trimID] + 1
 	h.Unlock()
 
+	defer func() {
+		h.Lock()
+		if h.conns[trimID] > 0 {
+			h.conns[trimID] = h.conns[trimID] - 1
+		}
+		h.Unlock()
+	}()
+
 	defer h.closeAll(cli)
 
 	cli.run()

@@ -80,5 +80,8 @@ func (link *Link) WriteData(data []byte) error {
 	link.idx++
 	logging.Debug("link %s on tunnel %s write from remote %d bytes", link.ID, link.tunnel.Name, len(data))
 	_, err := io.Copy(link.conn, bytes.NewReader(data))
+	if err != nil {
+		logging.Error("write data on tunnel %s link %s failed, err=%v", link.tunnel.Name, link.ID, err)
+	}
 	return err
 }

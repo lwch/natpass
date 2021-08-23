@@ -1,17 +1,15 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"fmt"
-	"natpass/code/client/client"
 	"natpass/code/client/global"
-	"natpass/code/network"
+	"natpass/code/client/pool"
+	"natpass/code/client/tunnel"
 	"os"
 
 	"github.com/lwch/daemon"
 	"github.com/lwch/logging"
-	"github.com/lwch/runtime"
 )
 
 var (
@@ -57,11 +55,13 @@ func main() {
 	logging.SetSizeRotate(cfg.LogDir, "np-cli", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
 	defer logging.Flush()
 
-	conn, err := tls.Dial("tcp", cfg.Server, nil)
-	runtime.Assert(err)
-	c := network.NewConn(conn)
-	defer c.Close()
+	pl := pool.New(cfg.Links)
 
-	cli := client.New(cfg, c)
-	cli.Run()
+	for _, t := range cfg.Tunnels {
+		tn := tunnel.New(t, pl)
+		pl.Add(tn)
+		go tn.Handle()
+	}
+
+	pl.Loop(cfg)
 }

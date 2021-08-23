@@ -25,6 +25,7 @@ type Configure struct {
 	ID        string
 	Server    string
 	Enc       [md5.Size]byte
+	Links     int
 	LogDir    string
 	LogSize   utils.Bytes
 	LogRotate int
@@ -37,6 +38,7 @@ func LoadConf(dir string) *Configure {
 		ID     string `yaml:"id"`
 		Server string `yaml:"server"`
 		Secret string `yaml:"secret"`
+		Links  int    `yaml:"links"`
 		Log    struct {
 			Dir    string      `yaml:"dir"`
 			Size   utils.Bytes `yaml:"size"`
@@ -54,10 +56,14 @@ func LoadConf(dir string) *Configure {
 		}
 		cfg.Tunnel[i] = t
 	}
+	if cfg.Links <= 0 {
+		cfg.Links = 3
+	}
 	return &Configure{
 		ID:        cfg.ID,
 		Server:    cfg.Server,
 		Enc:       md5.Sum([]byte(cfg.Secret)),
+		Links:     cfg.Links,
 		LogDir:    cfg.Log.Dir,
 		LogSize:   cfg.Log.Size,
 		LogRotate: cfg.Log.Rotate,

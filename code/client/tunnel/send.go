@@ -38,13 +38,18 @@ func (link *Link) sendDisconnect(id, to string) {
 }
 
 func (link *Link) sendData(id, to string, data []byte) {
+	dup := func(data []byte) []byte {
+		ret := make([]byte, len(data))
+		copy(ret, data)
+		return ret
+	}
 	var msg network.Msg
 	msg.To = to
 	msg.XType = network.Msg_forward
 	msg.Payload = &network.Msg_XData{
 		XData: &network.Data{
 			Lid:  id,
-			Data: data,
+			Data: dup(data),
 		},
 	}
 	link.write <- &msg

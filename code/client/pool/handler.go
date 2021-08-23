@@ -26,7 +26,7 @@ func (p *Pool) handleConnectReq(conn *network.Conn, from, to string, req *networ
 	port, _ := strconv.ParseUint(pt, 10, 16)
 	tn := tunnel.New(global.Tunnel{
 		Name:       req.GetName(),
-		Target:     to,
+		Target:     from,
 		Type:       dial,
 		LocalAddr:  host,
 		LocalPort:  uint16(port),

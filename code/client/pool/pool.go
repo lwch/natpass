@@ -108,6 +108,14 @@ func (p *Pool) connect(cfg *global.Configure, idx int) {
 			logging.Error("read message: %v", err)
 			return
 		}
+		from := msg.GetFrom()
+		if len(from) > 0 {
+			n := strings.LastIndex(from, "-")
+			if n != -1 {
+				from = from[:n]
+			}
+			msg.From = from
+		}
 		switch msg.GetXType() {
 		case network.Msg_connect_req:
 			p.handleConnectReq(c, msg.GetFrom(), msg.GetTo(), msg.GetCreq())

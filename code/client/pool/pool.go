@@ -92,7 +92,7 @@ func (p *Pool) connect(cfg *global.Configure, idx int) {
 	runtime.Assert(err)
 	c := network.NewConn(conn)
 	defer c.Close()
-	err = p.writeHandshake(c, cfg)
+	err = p.writeHandshake(c, cfg, idx)
 	runtime.Assert(err)
 	logging.Info("%s connected", cfg.Server)
 
@@ -136,10 +136,10 @@ func (p *Pool) AddLink(link *tunnel.Link) {
 	p.links[link.ID] = link
 }
 
-func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure) error {
+func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure, idx int) error {
 	var msg network.Msg
 	msg.XType = network.Msg_handshake
-	msg.From = cfg.ID
+	msg.From = fmt.Sprintf("%s-%d", cfg.ID, idx)
 	msg.To = "server"
 	msg.Payload = &network.Msg_Hsp{
 		Hsp: &network.HandshakePayload{

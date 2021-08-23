@@ -14,22 +14,46 @@ import (
 	"github.com/lwch/runtime"
 )
 
+type connectData struct {
+	to   string
+	id   string
+	name string
+	tp   network.ConnectRequestType
+	addr string
+	port uint16
+}
+
+type disconnectData struct {
+	to string
+	id string
+}
+
+type forwardData struct {
+	to   string
+	id   string
+	data []byte
+}
+
 // Pool connection pool
 type Pool struct {
 	sync.RWMutex
-	count   int
-	write   chan *network.Msg
-	tunnels map[string]*tunnel.Tunnel // tunnel name => tunnel
-	links   map[string]*tunnel.Link   // link id => link
+	count           int
+	writeConnect    chan connectData
+	writeDisconnect chan disconnectData
+	writeForward    chan forwardData
+	tunnels         map[string]*tunnel.Tunnel // tunnel name => tunnel
+	links           map[string]*tunnel.Link   // link id => link
 }
 
 // New create connection pool
 func New(count int) *Pool {
 	return &Pool{
-		count:   count,
-		write:   make(chan *network.Msg, 100),
-		tunnels: make(map[string]*tunnel.Tunnel),
-		links:   make(map[string]*tunnel.Link),
+		count:           count,
+		writeConnect:    make(chan connectData),
+		writeDisconnect: make(chan disconnectData),
+		writeForward:    make(chan forwardData),
+		tunnels:         make(map[string]*tunnel.Tunnel),
+		links:           make(map[string]*tunnel.Link),
 	}
 }
 
@@ -57,7 +81,6 @@ func (p *Pool) LinkClose(name, id string) {
 	delete(p.links, id)
 }
 
-// connect connect server
 func (p *Pool) connect(cfg *global.Configure) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -74,17 +97,7 @@ func (p *Pool) connect(cfg *global.Configure) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go func() {
-		for {
-			select {
-			case msg := <-p.write:
-				msg.From = cfg.ID
-				c.WriteMessage(msg, time.Second)
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
+	go p.send(ctx, c, cfg.ID)
 	for {
 		msg, err := c.ReadMessage(time.Second)
 		if err != nil {
@@ -133,4 +146,45 @@ func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure) error {
 		},
 	}
 	return conn.WriteMessage(&msg, 5*time.Second)
+}
+
+func (p *Pool) send(ctx context.Context, conn *network.Conn, from string) {
+	for {
+		var msg network.Msg
+		msg.From = from
+		select {
+		case m := <-p.writeConnect:
+			msg.XType = network.Msg_connect_req
+			msg.To = m.to
+			msg.Payload = &network.Msg_Creq{
+				Creq: &network.ConnectRequest{
+					Id:    m.id,
+					Name:  m.name,
+					XType: m.tp,
+					Addr:  m.addr,
+					Port:  uint32(m.port),
+				},
+			}
+		case m := <-p.writeDisconnect:
+			msg.XType = network.Msg_disconnect
+			msg.To = m.to
+			msg.Payload = &network.Msg_XDisconnect{
+				XDisconnect: &network.Disconnect{
+					Id: m.id,
+				},
+			}
+		case m := <-p.writeForward:
+			msg.XType = network.Msg_forward
+			msg.To = m.to
+			msg.Payload = &network.Msg_XData{
+				XData: &network.Data{
+					Lid:  m.id,
+					Data: m.data,
+				},
+			}
+		case <-ctx.Done():
+			return
+		}
+		conn.WriteMessage(&msg, time.Second)
+	}
 }

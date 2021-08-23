@@ -90,8 +90,7 @@ func build(t target) {
 	logging.Info("build server...")
 	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
 		"-ldflags", ldflags,
-		path.Join("code", "server", "main.go"),
-		path.Join("code", "server", "run.go"))
+		path.Join("code", "server", "main.go"))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(os.Environ(),

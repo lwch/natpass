@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"natpass/code/server/global"
+	"natpass/code/server/handler"
+	"net"
 	"os"
 
 	"github.com/lwch/daemon"
@@ -64,4 +66,15 @@ func main() {
 	logging.Info("listen on %d", cfg.Listen)
 
 	run(cfg, l)
+}
+
+func run(cfg *global.Configure, l net.Listener) {
+	h := handler.New(cfg)
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			continue
+		}
+		go h.Handle(conn)
+	}
 }

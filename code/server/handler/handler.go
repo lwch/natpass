@@ -2,9 +2,11 @@ package handler
 
 import (
 	"bytes"
+	"fmt"
 	"natpass/code/network"
 	"natpass/code/server/global"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,6 +19,8 @@ type Handler struct {
 	cfg     *global.Configure
 	clients map[string]*client    // client id => client
 	links   map[string][2]*client // link id => endpoints
+	conns   map[string]int        // client id => connection count
+	idx     int
 }
 
 // New create handler
@@ -25,6 +29,8 @@ func New(cfg *global.Configure) *Handler {
 		cfg:     cfg,
 		clients: make(map[string]*client),
 		links:   make(map[string][2]*client),
+		conns:   make(map[string]int),
+		idx:     0,
 	}
 }
 
@@ -56,14 +62,35 @@ func (h *Handler) Handle(conn net.Conn) {
 	}
 	logging.Info("%s connected", id)
 
+	// split id and index
+	n := strings.LastIndex(id, "-")
+	trimID := id[:n]
+
 	cli := newClient(h, id, c)
 	h.Lock()
 	h.clients[cli.id] = cli
+	h.conns[trimID] = h.conns[trimID] + 1
 	h.Unlock()
 
 	defer h.closeAll(cli)
 
 	cli.run()
+}
+
+func (h *Handler) getClient(id string) *client {
+	h.RLock()
+	total := h.conns[id]
+	h.RUnlock()
+	for i := 0; i < total; i++ {
+		h.RLock()
+		cli := h.clients[fmt.Sprintf("%s-%d", id, h.idx%total)]
+		h.RUnlock()
+		h.idx++
+		if cli != nil {
+			return cli
+		}
+	}
+	return nil
 }
 
 // readHandshake read handshake message and compare secret encoded from md5
@@ -88,24 +115,20 @@ func (h *Handler) onMessage(msg *network.Msg) {
 		return
 	}
 	to := msg.GetTo()
-	h.RLock()
-	cli := h.clients[to]
-	h.RUnlock()
+	cli := h.getClient(to)
 	if cli == nil {
 		logging.Error("client %s not found", to)
 		return
 	}
-	h.msgHook(msg)
+	h.msgHook(msg, cli)
 	cli.writeMessage(msg)
 }
 
 // msgHook hook from on message
-func (h *Handler) msgHook(msg *network.Msg) {
+func (h *Handler) msgHook(msg *network.Msg, toCli *client) {
 	from := msg.GetFrom()
-	to := msg.GetTo()
 	h.RLock()
 	fromCli := h.clients[from]
-	toCli := h.clients[to]
 	h.RUnlock()
 	switch msg.GetXType() {
 	case network.Msg_connect_rep:

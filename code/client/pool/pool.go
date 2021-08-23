@@ -3,6 +3,7 @@ package pool
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/tunnel"
 	"natpass/code/network"
@@ -60,11 +61,11 @@ func New(count int) *Pool {
 // Loop main loop
 func (p *Pool) Loop(cfg *global.Configure) {
 	for i := 0; i < p.count; i++ {
-		go func() {
+		go func(i int) {
 			for {
-				p.connect(cfg)
+				p.connect(cfg, i)
 			}
-		}()
+		}(i)
 	}
 	select {}
 }
@@ -81,7 +82,7 @@ func (p *Pool) LinkClose(name, id string) {
 	delete(p.links, id)
 }
 
-func (p *Pool) connect(cfg *global.Configure) {
+func (p *Pool) connect(cfg *global.Configure, idx int) {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("connect error: %v", err)
@@ -97,7 +98,7 @@ func (p *Pool) connect(cfg *global.Configure) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go p.send(ctx, c, cfg.ID)
+	go p.send(ctx, c, fmt.Sprintf("%s-%d", cfg.ID, idx))
 	for {
 		msg, err := c.ReadMessage(time.Second)
 		if err != nil {

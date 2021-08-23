@@ -31,14 +31,11 @@ func (p *Pool) SendDisconnect(id, to string) {
 
 // SendData send forward data
 func (p *Pool) SendData(id, to string, data []byte) {
-	dup := func(data []byte) []byte {
-		ret := make([]byte, len(data))
-		copy(ret, data)
-		return ret
-	}
+	dup := make([]byte, len(data))
+	copy(dup, data)
 	p.writeForward <- forwardData{
 		to:   to,
 		id:   id,
-		data: dup(data),
+		data: dup,
 	}
 }

@@ -38,7 +38,7 @@ func (link *Link) Close() {
 	link.closed = true
 	err := link.conn.Close()
 	if err == nil {
-		// link.tunnel.super.SendDisconnect(link.ID, link.target)
+		link.tunnel.super.SendDisconnect(link.ID, link.target)
 	}
 	link.tunnel.Close(link)
 }

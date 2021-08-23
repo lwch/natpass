@@ -37,9 +37,9 @@ func (link *Link) sendDisconnect(id, to string) {
 	link.write <- &msg
 }
 
-func (link *Link) sendData(id, target string, data []byte) {
+func (link *Link) sendData(id, to string, data []byte) {
 	var msg network.Msg
-	msg.To = target
+	msg.To = to
 	msg.XType = network.Msg_forward
 	msg.Payload = &network.Msg_XData{
 		XData: &network.Data{

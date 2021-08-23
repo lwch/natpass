@@ -101,9 +101,9 @@ func (p *Pool) connect(cfg *global.Configure) {
 		}
 		switch msg.GetXType() {
 		case network.Msg_connect_req:
-			p.handleConnect(c, msg.GetFrom(), msg.GetTo(), msg.GetCreq())
+			p.handleConnectReq(c, msg.GetFrom(), msg.GetTo(), msg.GetCreq())
 		case network.Msg_connect_rep:
-			logging.Info("connected")
+			p.handleConnectRep(msg.GetCrep())
 		case network.Msg_disconnect:
 			p.handleDisconnect(msg.GetXDisconnect())
 		case network.Msg_forward:

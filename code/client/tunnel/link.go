@@ -15,7 +15,7 @@ type Link struct {
 	target string // remote client id
 	conn   net.Conn
 	write  chan *network.Msg
-	onWork bool
+	OnWork chan struct{}
 	closed bool
 }
 
@@ -27,7 +27,7 @@ func newLink(id, target string, tunnel *Tunnel, conn net.Conn, write chan *netwo
 		target: target,
 		conn:   conn,
 		write:  write,
-		onWork: false,
+		OnWork: make(chan struct{}),
 		closed: false,
 	}
 }
@@ -48,6 +48,7 @@ func (link *Link) Close() {
 
 func (link *Link) loop() {
 	defer link.Close()
+	<-link.OnWork
 	buf := make([]byte, 32*1024)
 	for {
 		n, err := link.conn.Read(buf)

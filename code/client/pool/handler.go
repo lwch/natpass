@@ -12,7 +12,7 @@ import (
 	"github.com/lwch/logging"
 )
 
-func (p *Pool) handleConnect(conn *network.Conn, from, to string, req *network.ConnectRequest) {
+func (p *Pool) handleConnectReq(conn *network.Conn, from, to string, req *network.ConnectRequest) {
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
@@ -36,6 +36,25 @@ func (p *Pool) handleConnect(conn *network.Conn, from, to string, req *network.C
 	tn.NewLink(req.GetId(), req.GetName(), link, p.writeChannel)
 	p.Add(tn)
 	p.sendConnectOK(conn, to, from, req.GetId())
+}
+
+func (p *Pool) handleConnectRep(rep *network.ConnectResponse) {
+	id := rep.GetId()
+
+	p.RLock()
+	link := p.links[id]
+	p.RUnlock()
+
+	if link == nil {
+		logging.Error("link %s not found", id)
+		return
+	}
+
+	if rep.GetOk() {
+		link.OnWork <- struct{}{}
+	} else {
+		link.Close()
+	}
 }
 
 func (p *Pool) handleDisconnect(data *network.Disconnect) {

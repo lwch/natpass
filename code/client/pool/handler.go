@@ -35,6 +35,7 @@ func (p *Pool) handleConnect(conn *network.Conn, from, to string, req *network.C
 	}, p)
 	tn.NewLink(req.GetId(), req.GetName(), link, p.writeChannel)
 	p.Add(tn)
+	p.sendConnectOK(conn, to, from, req.GetId())
 }
 
 func (p *Pool) handleDisconnect(data *network.Disconnect) {
@@ -71,6 +72,20 @@ func (p *Pool) sendConnectError(conn *network.Conn, from, to, id, m string) {
 			Id:  id,
 			Ok:  false,
 			Msg: m,
+		},
+	}
+	conn.WriteMessage(&msg, time.Second)
+}
+
+func (c *Pool) sendConnectOK(conn *network.Conn, from, to, id string) {
+	var msg network.Msg
+	msg.From = from
+	msg.To = to
+	msg.XType = network.Msg_connect_rep
+	msg.Payload = &network.Msg_Crep{
+		Crep: &network.ConnectResponse{
+			Id: id,
+			Ok: true,
 		},
 	}
 	conn.WriteMessage(&msg, time.Second)

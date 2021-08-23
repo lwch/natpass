@@ -73,7 +73,7 @@ func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
 	if len(data) > math.MaxUint16 {
 		return errTooLong
 	}
-	buf := make([]byte, len(data)+4)
+	buf := make([]byte, len(data)+6)
 	binary.BigEndian.PutUint16(buf, uint16(len(data)))
 	enc := crc32.ChecksumIEEE(data)
 	binary.BigEndian.PutUint32(buf[2:], enc)

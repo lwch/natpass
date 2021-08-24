@@ -58,7 +58,7 @@ func (p *Pool) Get(id ...string) *Conn {
 		p.idx++
 		p.Unlock()
 		if len(id) > 0 {
-			conn.addLink(id[0])
+			conn.AddLink(id[0])
 		}
 		return conn
 	}

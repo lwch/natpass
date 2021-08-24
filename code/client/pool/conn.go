@@ -140,7 +140,7 @@ func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 		if err == nil {
 			continue
 		}
-		logging.Error("write message error on %d: %v", conn.ID, err)
+		logging.Error("write message error on %s: %v", conn.ID, err)
 		return
 	}
 }

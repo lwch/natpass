@@ -148,37 +148,33 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 		return
 	}
 	logging.Info("link: %s, from: %p, to: %p", linkID, from, cli)
-	h.msgHook(msg, cli)
+	h.msgHook(msg, from, cli)
 	cli.writeMessage(msg)
 }
 
 // msgHook hook from on message
-func (h *Handler) msgHook(msg *network.Msg, toCli *client) {
-	from := msg.GetFrom()
-	h.RLock()
-	fromCli := h.clients[from]
-	h.RUnlock()
+func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
 	case network.Msg_connect_req:
 		id := msg.GetCrep().GetId()
 		var pair [2]*client
-		if fromCli != nil {
-			fromCli.addLink(id)
-			pair[0] = fromCli
+		if from != nil {
+			from.addLink(id)
+			pair[0] = from
 		}
-		if toCli != nil {
-			toCli.addLink(id)
-			pair[1] = toCli
+		if to != nil {
+			to.addLink(id)
+			pair[1] = to
 		}
 		h.Lock()
 		h.links[id] = pair
 		h.Unlock()
 	case network.Msg_disconnect:
-		if fromCli != nil {
-			fromCli.removeLink(msg.GetXDisconnect().GetId())
+		if from != nil {
+			from.removeLink(msg.GetXDisconnect().GetId())
 		}
-		if toCli != nil {
-			toCli.removeLink(msg.GetXDisconnect().GetId())
+		if to != nil {
+			to.removeLink(msg.GetXDisconnect().GetId())
 		}
 	}
 }

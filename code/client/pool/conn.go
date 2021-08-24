@@ -43,7 +43,8 @@ func (conn *Conn) hasLink(id string) bool {
 	return ok
 }
 
-func (conn *Conn) addLink(id string) {
+// AddLink attach read message
+func (conn *Conn) AddLink(id string) {
 	conn.Lock()
 	conn.read[id] = make(chan *network.Msg)
 	conn.Unlock()

@@ -66,7 +66,7 @@ func main() {
 		go tn.Handle(pl)
 	}
 
-	for i := 0; i < cfg.Links; i++ {
+	for i := 0; i < cfg.Links-pl.Size(); i++ {
 		go func() {
 			for {
 				conn := pl.Get()
@@ -87,7 +87,7 @@ func main() {
 						linkID = msg.GetXData().GetLid()
 					}
 					if len(linkID) > 0 {
-						logging.Error("link of %s not found", linkID)
+						logging.Error("link of %s not found, type=%s", linkID, msg.GetXType().String())
 						continue
 					}
 				}
@@ -123,6 +123,7 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, req *network.Con
 	})
 	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
 	conn.SendConnectOK(from, req.GetId())
+	conn.AddLink(req.GetId())
 	lk.Forward()
 	lk.OnWork <- struct{}{}
 }

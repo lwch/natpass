@@ -69,7 +69,7 @@ func (p *Pool) Get(id ...string) *Conn {
 	}
 	c := newConn(p, conn)
 	if len(id) > 0 {
-		c.addLink(id[0])
+		c.AddLink(id[0])
 	}
 
 	p.Lock()
@@ -111,4 +111,8 @@ func (p *Pool) onClose(id string) {
 	p.Lock()
 	delete(p.conns, id)
 	p.Unlock()
+}
+
+func (p *Pool) Size() int {
+	return len(p.conns)
 }

@@ -14,11 +14,12 @@ import (
 
 // Handler handler
 type Handler struct {
-	sync.RWMutex
-	cfg     *global.Configure
-	clients map[string]*client    // client id => client
-	links   map[string][2]*client // link id => endpoints
-	idx     int
+	cfg         *global.Configure
+	lockClients sync.RWMutex
+	clients     map[string]*client // client id => client
+	lockLinks   sync.RWMutex
+	links       map[string][2]*client // link id => endpoints
+	idx         int
 }
 
 // New create handler
@@ -67,9 +68,9 @@ func (h *Handler) Handle(conn net.Conn) {
 	}
 
 	cli := newClient(h, id, trimID, c)
-	h.Lock()
+	h.lockClients.Lock()
 	h.clients[cli.id] = cli
-	h.Unlock()
+	h.lockClients.Unlock()
 
 	defer h.closeAll(cli)
 
@@ -78,20 +79,20 @@ func (h *Handler) Handle(conn net.Conn) {
 
 func (h *Handler) connsByTrimID(id string) []*client {
 	ret := make([]*client, 0, 10)
-	h.RLock()
+	h.lockClients.RLock()
 	for _, cli := range h.clients {
 		if cli.trimID == id {
 			ret = append(ret, cli)
 		}
 	}
-	h.RUnlock()
+	h.lockClients.RUnlock()
 	return ret
 }
 
 func (h *Handler) getClient(linkID, targetID string) *client {
-	h.RLock()
+	h.lockLinks.RLock()
 	pair := h.links[linkID]
-	h.RUnlock()
+	h.lockLinks.RUnlock()
 
 	if pair[0] != nil && pair[0].trimID == targetID {
 		return pair[0]
@@ -147,7 +148,6 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 		logging.Error("client %s not found", to)
 		return
 	}
-	logging.Info("link: %s, from: %p, to: %p", linkID, from, cli)
 	h.msgHook(msg, from, cli)
 	cli.writeMessage(msg)
 }
@@ -166,9 +166,9 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 			to.addLink(id)
 			pair[1] = to
 		}
-		h.Lock()
+		h.lockLinks.Lock()
 		h.links[id] = pair
-		h.Unlock()
+		h.lockLinks.Unlock()
 	case network.Msg_disconnect:
 		id := msg.GetXDisconnect().GetId()
 		if from != nil {
@@ -177,9 +177,9 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 		if to != nil {
 			to.removeLink(id)
 		}
-		h.Lock()
+		h.lockLinks.Lock()
 		delete(h.links, id)
-		h.Unlock()
+		h.lockLinks.Unlock()
 	}
 	msg.From = from.trimID
 }
@@ -188,20 +188,20 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 func (h *Handler) closeAll(cli *client) {
 	links := cli.getLinks()
 	for _, t := range links {
-		h.RLock()
+		h.lockLinks.RLock()
 		pair := h.links[t]
-		h.RUnlock()
+		h.lockLinks.RUnlock()
 		if pair[0] != nil {
 			pair[0].close(t)
 		}
 		if pair[1] != nil {
 			pair[1].close(t)
 		}
-		h.Lock()
+		h.lockLinks.Lock()
 		delete(h.links, t)
-		h.Unlock()
+		h.lockLinks.Unlock()
 	}
-	h.Lock()
+	h.lockClients.Lock()
 	delete(h.clients, cli.id)
-	h.Unlock()
+	h.lockClients.Unlock()
 }

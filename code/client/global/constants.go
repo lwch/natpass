@@ -3,6 +3,6 @@ package global
 import "time"
 
 const (
-	ReadTimeout  = time.Second
-	WriteTimeout = time.Second
+	ReadTimeout  = 5 * time.Second
+	WriteTimeout = 5 * time.Second
 )

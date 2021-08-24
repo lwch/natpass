@@ -65,6 +65,8 @@ func (link *Link) remoteRead() {
 				link.id, link.parent.Name, msg.GetCrep().GetMsg())
 			return
 		case network.Msg_disconnect:
+			logging.Info("disconnect link %s on tunnel %s from remote",
+				link.id, link.parent.Name)
 			return
 		}
 	}
@@ -78,7 +80,7 @@ func (link *Link) localRead() {
 		n, err := link.local.Read(buf)
 		if err != nil {
 			link.remote.SendDisconnect(link.target, link.id)
-			// logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
+			logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
 			return
 		}
 		if n == 0 {

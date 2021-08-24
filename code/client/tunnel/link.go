@@ -11,12 +11,13 @@ import (
 )
 
 type Link struct {
-	parent *Tunnel
-	id     string // link id
-	target string // target id
-	local  net.Conn
-	remote *pool.Conn
-	OnWork chan struct{}
+	parent          *Tunnel
+	id              string // link id
+	target          string // target id
+	local           net.Conn
+	remote          *pool.Conn
+	OnWork          chan struct{}
+	closeFromRemote bool
 }
 
 func NewLink(parent *Tunnel, id, target string, local net.Conn, remote *pool.Conn) *Link {
@@ -67,6 +68,7 @@ func (link *Link) remoteRead() {
 		case network.Msg_disconnect:
 			logging.Info("disconnect link %s on tunnel %s from remote",
 				link.id, link.parent.Name)
+			link.closeFromRemote = true
 			return
 		}
 	}
@@ -79,8 +81,10 @@ func (link *Link) localRead() {
 	for {
 		n, err := link.local.Read(buf)
 		if err != nil {
-			link.remote.SendDisconnect(link.target, link.id)
-			logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
+			if !link.closeFromRemote {
+				link.remote.SendDisconnect(link.target, link.id)
+			}
+			// logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
 			return
 		}
 		if n == 0 {

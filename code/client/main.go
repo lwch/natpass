@@ -70,6 +70,10 @@ func main() {
 		go func() {
 			for {
 				conn := pl.Get()
+				if conn == nil {
+					time.Sleep(time.Second)
+					continue
+				}
 				for {
 					msg := <-conn.ChanUnknown()
 					if msg == nil {

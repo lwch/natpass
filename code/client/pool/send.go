@@ -102,3 +102,14 @@ func (conn *Conn) SendData(to, id string, data []byte) {
 	case <-time.After(global.WriteTimeout):
 	}
 }
+
+// SendKeepalive send keepalive message
+func (conn *Conn) SendKeepalive() {
+	var msg network.Msg
+	msg.To = "server"
+	msg.XType = network.Msg_keepalive
+	select {
+	case conn.write <- &msg:
+	case <-time.After(global.WriteTimeout):
+	}
+}

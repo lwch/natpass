@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"context"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"strings"
@@ -30,8 +31,10 @@ func newConn(parent *Pool, conn *network.Conn, id string) *Conn {
 		write:       make(chan *network.Msg),
 	}
 	logging.Info("new connection: %s", ret.ID)
-	go ret.loopRead()
-	go ret.loopWrite()
+	ctx, cancel := context.WithCancel(context.Background())
+	go ret.loopRead(cancel)
+	go ret.loopWrite(cancel)
+	go ret.keepalive(ctx)
 	return ret
 }
 
@@ -83,8 +86,9 @@ func (conn *Conn) Close() {
 	logging.Error("connection %s closed", conn.ID)
 }
 
-func (conn *Conn) loopRead() {
+func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	defer conn.Close()
+	defer cancel()
 	for {
 		msg, err := conn.conn.ReadMessage(global.ReadTimeout)
 		if err != nil {
@@ -123,8 +127,9 @@ func (conn *Conn) loopRead() {
 	}
 }
 
-func (conn *Conn) loopWrite() {
+func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 	defer conn.Close()
+	defer cancel()
 	for {
 		msg := <-conn.write
 		if msg == nil {
@@ -149,4 +154,15 @@ func (conn *Conn) ChanRead(id string) <-chan *network.Msg {
 
 func (conn *Conn) ChanUnknown() <-chan *network.Msg {
 	return conn.unknownRead
+}
+
+func (conn *Conn) keepalive(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(10 * time.Second):
+			conn.SendKeepalive()
+		}
+	}
 }

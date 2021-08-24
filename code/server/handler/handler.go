@@ -170,13 +170,18 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 		h.links[id] = pair
 		h.Unlock()
 	case network.Msg_disconnect:
+		id := msg.GetXDisconnect().GetId()
 		if from != nil {
-			from.removeLink(msg.GetXDisconnect().GetId())
+			from.removeLink(id)
 		}
 		if to != nil {
-			to.removeLink(msg.GetXDisconnect().GetId())
+			to.removeLink(id)
 		}
+		h.Lock()
+		delete(h.links, id)
+		h.Unlock()
 	}
+	msg.From = from.trimID
 }
 
 // closeAll close all links from client

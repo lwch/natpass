@@ -1,7 +1,6 @@
 package pool
 
 import (
-	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"strings"
@@ -21,9 +20,9 @@ type Conn struct {
 	write       chan *network.Msg            // link id => channel
 }
 
-func newConn(parent *Pool, conn *network.Conn) *Conn {
+func newConn(parent *Pool, conn *network.Conn, id string) *Conn {
 	ret := &Conn{
-		ID:          fmt.Sprintf("%d", time.Now().UnixNano()),
+		ID:          id,
 		parent:      parent,
 		conn:        conn,
 		read:        make(map[string]chan *network.Msg),
@@ -131,7 +130,7 @@ func (conn *Conn) loopWrite() {
 		if msg == nil {
 			return
 		}
-		msg.From = conn.parent.cfg.ID
+		msg.From = conn.ID
 		err := conn.conn.WriteMessage(msg, global.WriteTimeout)
 		if err == nil {
 			continue

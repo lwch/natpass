@@ -3,7 +3,6 @@ package pool
 import (
 	"crypto/tls"
 	"fmt"
-	"math/rand"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"sync"
@@ -60,11 +59,12 @@ func (p *Pool) Get(id ...string) *Conn {
 		return conn
 	}
 
-	conn := p.connect()
+	cid := fmt.Sprintf("%s-%d", p.cfg.ID, time.Now().UnixNano())
+	conn := p.connect(cid)
 	if conn == nil {
 		return nil
 	}
-	c := newConn(p, conn)
+	c := newConn(p, conn, cid)
 
 	p.Lock()
 	p.conns[c.ID] = c
@@ -73,7 +73,7 @@ func (p *Pool) Get(id ...string) *Conn {
 	return c
 }
 
-func (p *Pool) connect() *network.Conn {
+func (p *Pool) connect(id string) *network.Conn {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("connect error: %v", err)
@@ -82,16 +82,16 @@ func (p *Pool) connect() *network.Conn {
 	conn, err := tls.Dial("tcp", p.cfg.Server, nil)
 	runtime.Assert(err)
 	c := network.NewConn(conn)
-	err = p.writeHandshake(c, p.cfg, rand.Int())
+	err = p.writeHandshake(c, p.cfg, id)
 	runtime.Assert(err)
 	logging.Info("%s connected", p.cfg.Server)
 	return c
 }
 
-func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure, idx int) error {
+func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure, id string) error {
 	var msg network.Msg
 	msg.XType = network.Msg_handshake
-	msg.From = fmt.Sprintf("%s-%d", cfg.ID, idx)
+	msg.From = id
 	msg.To = "server"
 	msg.Payload = &network.Msg_Hsp{
 		Hsp: &network.HandshakePayload{

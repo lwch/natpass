@@ -33,7 +33,7 @@ func New(cfg *global.Configure) *Pool {
 }
 
 func (p *Pool) getConns() []*Conn {
-	ret := make([]*Conn, len(p.conns))
+	ret := make([]*Conn, 0, len(p.conns))
 	p.RLock()
 	for _, conn := range p.conns {
 		ret = append(ret, conn)

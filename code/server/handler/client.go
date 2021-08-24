@@ -60,12 +60,13 @@ func (c *client) run() {
 func (c *client) writeMessage(msg *network.Msg) error {
 	for i := 0; i < 10; i++ {
 		err := c.c.WriteMessage(msg, c.parent.cfg.WriteTimeout)
-		if err != nil {
-			if strings.Contains(err.Error(), "i/o timeout") {
-				continue
-			}
-			return err
+		if err == nil {
+			return nil
 		}
+		if strings.Contains(err.Error(), "i/o timeout") {
+			continue
+		}
+		return err
 	}
 	return errors.New("too many retry")
 }

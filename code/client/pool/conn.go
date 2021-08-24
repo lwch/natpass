@@ -131,12 +131,13 @@ func loopWrite(conn *network.Conn, msg *network.Msg, timeout time.Duration) erro
 	var err error
 	for i := 0; i < 10; i++ {
 		err = conn.WriteMessage(msg, timeout)
-		if err != nil {
-			if strings.Contains(err.Error(), "i/o timeout") {
-				continue
-			}
-			return err
+		if err == nil {
+			return nil
 		}
+		if strings.Contains(err.Error(), "i/o timeout") {
+			continue
+		}
+		return err
 	}
 	return errors.New("too many retry")
 }

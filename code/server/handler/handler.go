@@ -69,7 +69,7 @@ func (h *Handler) Handle(conn net.Conn) {
 		trimID = id[:n]
 	}
 
-	cli := newClient(h, id, c)
+	cli := newClient(h, id, trimID, c)
 	h.Lock()
 	h.clients[cli.id] = cli
 	h.conns[trimID] = h.conns[trimID] + 1
@@ -88,13 +88,24 @@ func (h *Handler) Handle(conn net.Conn) {
 	cli.run()
 }
 
-func (h *Handler) getClient(id string) *client {
+func (h *Handler) getClient(linkID, targetID string) *client {
 	h.RLock()
-	total := h.conns[id]
+	pair := h.links[linkID]
+	h.RUnlock()
+
+	if pair[0] != nil && pair[0].trimID == targetID {
+		return pair[0]
+	}
+	if pair[1] != nil && pair[1].trimID == targetID {
+		return pair[1]
+	}
+
+	h.RLock()
+	total := h.conns[targetID]
 	h.RUnlock()
 	for i := 0; i < total; i++ {
 		h.RLock()
-		cli := h.clients[fmt.Sprintf("%s-%d", id, h.idx%total)]
+		cli := h.clients[fmt.Sprintf("%s-%d", targetID, h.idx%total)]
 		h.RUnlock()
 		h.idx++
 		if cli != nil {
@@ -126,7 +137,18 @@ func (h *Handler) onMessage(msg *network.Msg) {
 		return
 	}
 	to := msg.GetTo()
-	cli := h.getClient(to)
+	var linkID string
+	switch msg.GetXType() {
+	case network.Msg_connect_req:
+		linkID = msg.GetCreq().GetId()
+	case network.Msg_connect_rep:
+		linkID = msg.GetCrep().GetId()
+	case network.Msg_disconnect:
+		linkID = msg.GetXDisconnect().GetId()
+	case network.Msg_forward:
+		linkID = msg.GetXData().GetLid()
+	}
+	cli := h.getClient(linkID, to)
 	if cli == nil {
 		logging.Error("client %s not found", to)
 		return

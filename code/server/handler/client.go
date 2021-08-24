@@ -13,15 +13,17 @@ type client struct {
 	sync.RWMutex
 	parent  *Handler
 	id      string
+	trimID  string
 	c       *network.Conn
 	links   map[string]struct{} // link id => struct{}
 	updated time.Time
 }
 
-func newClient(parent *Handler, id string, conn *network.Conn) *client {
+func newClient(parent *Handler, id, trimID string, conn *network.Conn) *client {
 	return &client{
 		parent:  parent,
 		id:      id,
+		trimID:  trimID,
 		c:       conn,
 		links:   make(map[string]struct{}),
 		updated: time.Now(),

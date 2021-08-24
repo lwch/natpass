@@ -20,7 +20,7 @@ type Conn struct {
 	c         net.Conn
 	lockRead  sync.Mutex
 	lockWrite sync.Mutex
-	sizeRead  [6]byte
+	sizeRead  [2]byte
 }
 
 // NewConn create connection

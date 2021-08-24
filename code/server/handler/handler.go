@@ -156,7 +156,7 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
 	case network.Msg_connect_req:
-		id := msg.GetCrep().GetId()
+		id := msg.GetCreq().GetId()
 		var pair [2]*client
 		if from != nil {
 			from.addLink(id)

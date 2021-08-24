@@ -62,9 +62,16 @@ func (conn *Conn) Close() {
 		delete(conn.read, id)
 	}
 	conn.Unlock()
-	close(conn.unknownRead)
-	close(conn.write)
+	if conn.unknownRead != nil {
+		close(conn.unknownRead)
+		conn.unknownRead = nil
+	}
+	if conn.write != nil {
+		close(conn.write)
+		conn.write = nil
+	}
 	conn.parent.onClose(conn.ID)
+	logging.Error("connection %s closed", conn.ID)
 }
 
 func (conn *Conn) loopRead() {
@@ -99,6 +106,9 @@ func (conn *Conn) loopRead() {
 		case ch <- msg:
 		case <-time.After(global.ReadTimeout):
 			logging.Error("write read channel for link %s timeouted", linkID)
+			if ch == conn.unknownRead {
+				continue
+			}
 			close(ch)
 		}
 	}
@@ -108,6 +118,9 @@ func (conn *Conn) loopWrite() {
 	defer conn.Close()
 	for {
 		msg := <-conn.write
+		if msg == nil {
+			return
+		}
 		msg.From = conn.parent.cfg.ID
 		err := conn.conn.WriteMessage(msg, global.WriteTimeout)
 		if err == nil {

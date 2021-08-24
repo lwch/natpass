@@ -81,7 +81,6 @@ func (p *Pool) connect() *network.Conn {
 	conn, err := tls.Dial("tcp", p.cfg.Server, nil)
 	runtime.Assert(err)
 	c := network.NewConn(conn)
-	defer c.Close()
 	err = p.writeHandshake(c, p.cfg, rand.Int())
 	runtime.Assert(err)
 	logging.Info("%s connected", p.cfg.Server)

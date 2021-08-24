@@ -52,7 +52,7 @@ func (c *client) run() {
 			return
 		}
 		c.updated = time.Now()
-		c.parent.onMessage(msg)
+		c.parent.onMessage(c.c, msg)
 	}
 }
 

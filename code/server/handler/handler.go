@@ -159,22 +159,20 @@ func (h *Handler) msgHook(msg *network.Msg, toCli *client) {
 	fromCli := h.clients[from]
 	h.RUnlock()
 	switch msg.GetXType() {
-	case network.Msg_connect_rep:
-		if msg.GetCrep().GetOk() {
-			id := msg.GetCrep().GetId()
-			var pair [2]*client
-			if fromCli != nil {
-				fromCli.addLink(id)
-				pair[0] = fromCli
-			}
-			if toCli != nil {
-				toCli.addLink(id)
-				pair[1] = toCli
-			}
-			h.Lock()
-			h.links[id] = pair
-			h.Unlock()
+	case network.Msg_connect_req:
+		id := msg.GetCrep().GetId()
+		var pair [2]*client
+		if fromCli != nil {
+			fromCli.addLink(id)
+			pair[0] = fromCli
 		}
+		if toCli != nil {
+			toCli.addLink(id)
+			pair[1] = toCli
+		}
+		h.Lock()
+		h.links[id] = pair
+		h.Unlock()
 	case network.Msg_disconnect:
 		if fromCli != nil {
 			fromCli.removeLink(msg.GetXDisconnect().GetId())

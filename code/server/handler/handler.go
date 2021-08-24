@@ -126,7 +126,7 @@ func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 }
 
 // onMessage forward message
-func (h *Handler) onMessage(conn *network.Conn, msg *network.Msg) {
+func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) {
 	if msg.GetXType() == network.Msg_keepalive {
 		return
 	}
@@ -147,7 +147,7 @@ func (h *Handler) onMessage(conn *network.Conn, msg *network.Msg) {
 		logging.Error("client %s not found", to)
 		return
 	}
-	logging.Info("link: %s, to: %s, conn: %s, cli: %s, type: %s", linkID, to, conn.RemoteAddr().String(), cli.id, msg.GetXType().String())
+	logging.Info("link: %s, from: %p, to: %p", linkID, from, cli)
 	h.msgHook(msg, cli)
 	cli.writeMessage(msg)
 }

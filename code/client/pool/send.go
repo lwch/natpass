@@ -3,39 +3,86 @@ package pool
 import (
 	"natpass/code/client/global"
 	"natpass/code/network"
+	"time"
 )
 
-// SendConnect send connect request message
-func (p *Pool) SendConnect(id string, t global.Tunnel) {
+// SendConnectReq send connect request message
+func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 	tp := network.ConnectRequest_tcp
-	if t.Type != "tcp" {
+	if cfg.Type != "tcp" {
 		tp = network.ConnectRequest_udp
 	}
-	p.writeConnect <- connectData{
-		to:   t.Target,
-		id:   id,
-		name: t.Name,
-		tp:   tp,
-		addr: t.RemoteAddr,
-		port: t.RemotePort,
+	var msg network.Msg
+	msg.To = cfg.Target
+	msg.XType = network.Msg_connect_req
+	msg.Payload = &network.Msg_Creq{
+		Creq: &network.ConnectRequest{
+			Id:    id,
+			Name:  cfg.Name,
+			XType: tp,
+			Addr:  cfg.RemoteAddr,
+			Port:  uint32(cfg.RemotePort),
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(global.WriteTimeout):
 	}
 }
 
-// SendDisconnect send disconnect message
-func (p *Pool) SendDisconnect(id, to string) {
-	p.writeDisconnect <- disconnectData{
-		to: to,
-		id: id,
+// SendConnectError send connect error response message
+func (conn *Conn) SendConnectError(to, id, info string) {
+	var msg network.Msg
+	msg.To = to
+	msg.XType = network.Msg_connect_rep
+	msg.Payload = &network.Msg_Crep{
+		Crep: &network.ConnectResponse{
+			Id:  id,
+			Ok:  false,
+			Msg: info,
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(global.WriteTimeout):
 	}
 }
 
-// SendData send forward data
-func (p *Pool) SendData(id, to string, data []byte) {
-	dup := make([]byte, len(data))
-	copy(dup, data)
-	p.writeForward <- forwardData{
-		to:   to,
-		id:   id,
-		data: dup,
+// SendConnectOK send connect success response message
+func (conn *Conn) SendConnectOK(to, id string) {
+	var msg network.Msg
+	msg.To = to
+	msg.XType = network.Msg_connect_rep
+	msg.Payload = &network.Msg_Crep{
+		Crep: &network.ConnectResponse{
+			Id: id,
+			Ok: true,
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(global.WriteTimeout):
+	}
+}
+
+// SendData forward data
+func (conn *Conn) SendData(id, target string, data []byte) {
+	dup := func(data []byte) []byte {
+		ret := make([]byte, len(data))
+		copy(ret, data)
+		return ret
+	}
+	var msg network.Msg
+	msg.To = target
+	msg.XType = network.Msg_forward
+	msg.Payload = &network.Msg_XData{
+		XData: &network.Data{
+			Lid:  id,
+			Data: dup(data),
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(global.WriteTimeout):
 	}
 }

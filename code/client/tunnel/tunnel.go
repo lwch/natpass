@@ -2,61 +2,37 @@ package tunnel
 
 import (
 	"natpass/code/client/global"
+	"natpass/code/client/pool"
 	"net"
-	"sync"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
 
-type Super interface {
-	LinkClose(string, string) // tunnel name, link id
-	AddLink(*Link)
-	SendConnect(string, global.Tunnel)
-	SendDisconnect(string, string)
-	SendData(id, to string, data []byte)
-}
-
-// Tunnel tunnel
 type Tunnel struct {
-	sync.RWMutex
-	super Super
-	Name  string
-	cfg   global.Tunnel
-	links map[string]*Link
+	Name string
+	cfg  global.Tunnel
 }
 
-// New create tunnel
-func New(cfg global.Tunnel, super Super) *Tunnel {
+// New new tunnel
+func New(cfg global.Tunnel) *Tunnel {
 	return &Tunnel{
-		super: super,
-		Name:  cfg.Name,
-		cfg:   cfg,
-		links: make(map[string]*Link),
+		Name: cfg.Name,
+		cfg:  cfg,
 	}
 }
 
-func (tunnel *Tunnel) NewLink(id, target string, conn net.Conn) {
-	link := newLink(id, target, tunnel, conn)
-	tunnel.Lock()
-	tunnel.links[link.ID] = link
-	tunnel.Unlock()
-	go link.loop()
-	link.OnWork <- struct{}{}
-}
-
-// Handle tunnel handler
-func (tunnel *Tunnel) Handle() {
+// Handle handle tunnel
+func (tunnel *Tunnel) Handle(pool *pool.Pool) {
 	if tunnel.cfg.Type == "tcp" {
-		tunnel.handleTcp()
+		tunnel.handleTcp(pool)
 	} else {
 		// TODO
 		func() {}()
 	}
 }
 
-// handleTcp local listen to tcp tunnel
-func (tunnel *Tunnel) handleTcp() {
+func (tunnel *Tunnel) handleTcp(pool *pool.Pool) {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("close tcp tunnel: %s, err=%v", tunnel.cfg.Name, err)
@@ -82,34 +58,14 @@ func (tunnel *Tunnel) handleTcp() {
 			continue
 		}
 
-		link := newLink(id, tunnel.cfg.Target, tunnel, conn)
-		tunnel.super.SendConnect(link.ID, tunnel.cfg)
-
-		tunnel.super.AddLink(link)
-		tunnel.Lock()
-		tunnel.links[link.ID] = link
-		tunnel.Unlock()
-
-		go link.loop()
+		remote := pool.Get(id)
+		if remote == nil {
+			conn.Close()
+			logging.Error("no connection available")
+			continue
+		}
+		link := NewLink(tunnel, id, tunnel.cfg.Target, conn, remote)
+		remote.SendConnectReq(id, tunnel.cfg)
+		link.Forward()
 	}
-}
-
-// Close close link
-func (tunnel *Tunnel) Close(link *Link) {
-	link.Close()
-	tunnel.Lock()
-	delete(tunnel.links, link.ID)
-	tunnel.Unlock()
-	tunnel.super.LinkClose(tunnel.Name, link.ID)
-}
-
-// GetLinks get tunnel links
-func (tunnel *Tunnel) GetLinks() []*Link {
-	ret := make([]*Link, 0, len(tunnel.links))
-	tunnel.RLock()
-	for _, l := range tunnel.links {
-		ret = append(ret, l)
-	}
-	tunnel.RUnlock()
-	return ret
 }

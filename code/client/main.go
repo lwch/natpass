@@ -123,6 +123,6 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, req *network.Con
 	})
 	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
 	conn.SendConnectOK(from, req.GetId())
-	lk.OnWork <- struct{}{}
 	lk.Forward()
+	lk.OnWork <- struct{}{}
 }

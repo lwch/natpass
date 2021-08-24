@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"natpass/code/network"
 	"strings"
 	"sync"
@@ -57,7 +58,16 @@ func (c *client) run() {
 }
 
 func (c *client) writeMessage(msg *network.Msg) error {
-	return c.c.WriteMessage(msg, c.parent.cfg.WriteTimeout)
+	for i := 0; i < 10; i++ {
+		err := c.c.WriteMessage(msg, c.parent.cfg.WriteTimeout)
+		if err != nil {
+			if strings.Contains(err.Error(), "i/o timeout") {
+				continue
+			}
+			return err
+		}
+	}
+	return errors.New("too many retry")
 }
 
 func (c *client) addLink(id string) {

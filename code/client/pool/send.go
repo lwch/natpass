@@ -65,15 +65,31 @@ func (conn *Conn) SendConnectOK(to, id string) {
 	}
 }
 
-// SendData forward data
-func (conn *Conn) SendData(id, target string, data []byte) {
+// SendDisconnect send disconnect message
+func (conn *Conn) SendDisconnect(to, id string) {
+	var msg network.Msg
+	msg.To = to
+	msg.XType = network.Msg_disconnect
+	msg.Payload = &network.Msg_XDisconnect{
+		XDisconnect: &network.Disconnect{
+			Id: id,
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(global.WriteTimeout):
+	}
+}
+
+// SendData send forward data
+func (conn *Conn) SendData(to, id string, data []byte) {
 	dup := func(data []byte) []byte {
 		ret := make([]byte, len(data))
 		copy(ret, data)
 		return ret
 	}
 	var msg network.Msg
-	msg.To = target
+	msg.To = to
 	msg.XType = network.Msg_forward
 	msg.Payload = &network.Msg_XData{
 		XData: &network.Data{

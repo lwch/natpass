@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"fmt"
 	"natpass/code/network"
 	"natpass/code/server/global"
 	"net"
@@ -19,7 +18,6 @@ type Handler struct {
 	cfg     *global.Configure
 	clients map[string]*client    // client id => client
 	links   map[string][2]*client // link id => endpoints
-	conns   map[string]int        // client id => connection count
 	idx     int
 }
 
@@ -29,7 +27,6 @@ func New(cfg *global.Configure) *Handler {
 		cfg:     cfg,
 		clients: make(map[string]*client),
 		links:   make(map[string][2]*client),
-		conns:   make(map[string]int),
 		idx:     0,
 	}
 }
@@ -72,20 +69,23 @@ func (h *Handler) Handle(conn net.Conn) {
 	cli := newClient(h, id, trimID, c)
 	h.Lock()
 	h.clients[cli.id] = cli
-	h.conns[trimID] = h.conns[trimID] + 1
 	h.Unlock()
-
-	defer func() {
-		h.Lock()
-		if h.conns[trimID] > 0 {
-			h.conns[trimID] = h.conns[trimID] - 1
-		}
-		h.Unlock()
-	}()
 
 	defer h.closeAll(cli)
 
 	cli.run()
+}
+
+func (h *Handler) connsByTrimID(id string) []*client {
+	ret := make([]*client, 0, 10)
+	h.RLock()
+	for _, cli := range h.clients {
+		if cli.trimID == id {
+			ret = append(ret, cli)
+		}
+	}
+	h.RUnlock()
+	return ret
 }
 
 func (h *Handler) getClient(linkID, targetID string) *client {
@@ -100,19 +100,13 @@ func (h *Handler) getClient(linkID, targetID string) *client {
 		return pair[1]
 	}
 
-	h.RLock()
-	total := h.conns[targetID]
-	h.RUnlock()
-	for i := 0; i < total; i++ {
-		h.RLock()
-		cli := h.clients[fmt.Sprintf("%s-%d", targetID, h.idx%total)]
-		h.RUnlock()
-		h.idx++
-		if cli != nil {
-			return cli
-		}
+	conns := h.connsByTrimID(targetID)
+	if len(conns) == 0 {
+		return nil
 	}
-	return nil
+	conn := conns[h.idx%len(conns)]
+	h.idx++
+	return conn
 }
 
 // readHandshake read handshake message and compare secret encoded from md5

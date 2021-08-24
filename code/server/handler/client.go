@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"natpass/code/client/global"
 	"natpass/code/network"
 	"strings"
 	"sync"
@@ -44,7 +43,7 @@ func (c *client) run() {
 			c.parent.closeAll(c)
 			return
 		}
-		msg, err := c.c.ReadMessage(global.ReadTimeout)
+		msg, err := c.c.ReadMessage(c.parent.cfg.ReadTimeout)
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				continue
@@ -58,7 +57,7 @@ func (c *client) run() {
 }
 
 func (c *client) writeMessage(msg *network.Msg) error {
-	return c.c.WriteMessage(msg, global.WriteTimeout)
+	return c.c.WriteMessage(msg, c.parent.cfg.WriteTimeout)
 }
 
 func (c *client) addLink(id string) {
@@ -93,7 +92,7 @@ func (c *client) close(id string) {
 			Id: id,
 		},
 	}
-	c.c.WriteMessage(&msg, global.WriteTimeout)
+	c.c.WriteMessage(&msg, c.parent.cfg.WriteTimeout)
 	c.Lock()
 	delete(c.links, id)
 	c.Unlock()

@@ -26,7 +26,7 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(global.WriteTimeout):
+	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
 
@@ -44,7 +44,7 @@ func (conn *Conn) SendConnectError(to, id, info string) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(global.WriteTimeout):
+	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
 
@@ -61,7 +61,7 @@ func (conn *Conn) SendConnectOK(to, id string) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(global.WriteTimeout):
+	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
 
@@ -77,7 +77,7 @@ func (conn *Conn) SendDisconnect(to, id string) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(global.WriteTimeout):
+	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
 
@@ -99,7 +99,7 @@ func (conn *Conn) SendData(to, id string, data []byte) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(global.WriteTimeout):
+	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
 
@@ -110,6 +110,6 @@ func (conn *Conn) SendKeepalive() {
 	msg.XType = network.Msg_keepalive
 	select {
 	case conn.write <- &msg:
-	case <-time.After(global.WriteTimeout):
+	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }

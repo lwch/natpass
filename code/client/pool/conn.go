@@ -2,7 +2,6 @@ package pool
 
 import (
 	"context"
-	"natpass/code/client/global"
 	"natpass/code/network"
 	"strings"
 	"sync"
@@ -90,7 +89,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	defer conn.Close()
 	defer cancel()
 	for {
-		msg, err := conn.conn.ReadMessage(global.ReadTimeout)
+		msg, err := conn.conn.ReadMessage(conn.parent.cfg.ReadTimeout)
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				continue
@@ -117,7 +116,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 		}
 		select {
 		case ch <- msg:
-		case <-time.After(global.ReadTimeout):
+		case <-time.After(conn.parent.cfg.ReadTimeout):
 			logging.Error("write read channel for link %s timeouted", linkID)
 			if ch == conn.unknownRead {
 				continue
@@ -136,7 +135,7 @@ func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 			return
 		}
 		msg.From = conn.ID
-		err := conn.conn.WriteMessage(msg, global.WriteTimeout)
+		err := conn.conn.WriteMessage(msg, conn.parent.cfg.WriteTimeout)
 		if err == nil {
 			continue
 		}

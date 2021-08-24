@@ -36,6 +36,13 @@ func newConn(parent *Pool, conn *network.Conn) *Conn {
 	return ret
 }
 
+func (conn *Conn) hasLink(id string) bool {
+	conn.RLock()
+	defer conn.RUnlock()
+	_, ok := conn.read[id]
+	return ok
+}
+
 func (conn *Conn) addLink(id string) {
 	conn.Lock()
 	conn.read[id] = make(chan *network.Msg)

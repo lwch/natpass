@@ -45,6 +45,13 @@ func (p *Pool) getConns() []*Conn {
 // Get get connection
 func (p *Pool) Get(id ...string) *Conn {
 	conns := p.getConns()
+	if len(id) > 0 {
+		for _, conn := range conns {
+			if conn.hasLink(id[0]) {
+				return conn
+			}
+		}
+	}
 	if len(conns) >= p.count {
 		p.Lock()
 		conn := conns[p.idx%len(conns)]

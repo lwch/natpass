@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"hash/crc32"
 	"io"
 	"math"
 	"net"
@@ -15,7 +14,6 @@ import (
 )
 
 var errTooLong = errors.New("too long")
-var errChecksum = errors.New("invalid checksum")
 
 // Conn network connection
 type Conn struct {
@@ -45,14 +43,10 @@ func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, error) {
 		return nil, err
 	}
 	size := binary.BigEndian.Uint16(c.sizeRead[:])
-	enc := binary.BigEndian.Uint32(c.sizeRead[2:])
 	buf := make([]byte, size)
 	_, err = io.ReadFull(c.c, buf)
 	if err != nil {
 		return nil, err
-	}
-	if crc32.ChecksumIEEE(buf) != enc {
-		return nil, errChecksum
 	}
 	var msg Msg
 	err = proto.Unmarshal(buf, &msg)
@@ -73,11 +67,9 @@ func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
 	if len(data) > math.MaxUint16 {
 		return errTooLong
 	}
-	buf := make([]byte, len(data)+6)
+	buf := make([]byte, len(data)+2)
 	binary.BigEndian.PutUint16(buf, uint16(len(data)))
-	enc := crc32.ChecksumIEEE(data)
-	binary.BigEndian.PutUint32(buf[2:], enc)
-	copy(buf[6:], data)
+	copy(buf[2:], data)
 	c.c.SetWriteDeadline(time.Now().Add(timeout))
 	_, err = io.Copy(c.c, bytes.NewReader(buf))
 	return err

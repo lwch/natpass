@@ -142,6 +142,8 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 		linkID = msg.GetXDisconnect().GetId()
 	case network.Msg_forward:
 		linkID = msg.GetXData().GetLid()
+	default:
+		return
 	}
 	cli := h.getClient(linkID, to)
 	if cli == nil {

@@ -50,7 +50,9 @@ func (link *Link) remoteRead() {
 	ch := link.remote.ChanRead(link.id)
 	for {
 		msg := <-ch
-		logging.Info("remote read")
+		if msg == nil {
+			return
+		}
 		switch msg.GetXType() {
 		case network.Msg_forward:
 			_, err := io.Copy(link.local, bytes.NewReader(msg.GetXData().GetData()))

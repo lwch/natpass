@@ -3,8 +3,8 @@ server: 127.0.0.1:6154 # 服务器地址
 secret: 0123456789     # 预共享密钥，必须与server端相同，否则握手失败
 link:
   connections: 3    # 与server的连接数
-  read_timeout: 5s  # 读取数据包超时时间
-  write_timeout: 5s # 发送数据包超时时间
+  read_timeout: 1s  # 读取数据包超时时间
+  write_timeout: 1s # 发送数据包超时时间
 log:
   dir: ./logs # 路径
   size: 50M   # 单个文件大小

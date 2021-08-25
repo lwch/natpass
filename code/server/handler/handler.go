@@ -128,9 +128,6 @@ func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 
 // onMessage forward message
 func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) {
-	if msg.GetXType() == network.Msg_keepalive {
-		return
-	}
 	to := msg.GetTo()
 	var linkID string
 	switch msg.GetXType() {

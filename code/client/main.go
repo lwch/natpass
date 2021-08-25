@@ -12,6 +12,9 @@ import (
 	"strconv"
 	"time"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/lwch/daemon"
 	"github.com/lwch/logging"
 )
@@ -53,6 +56,10 @@ func main() {
 		daemon.Start(0, *pid, *user, "-conf", *conf)
 		return
 	}
+
+	go func() {
+		http.ListenAndServe(":9000", nil)
+	}()
 
 	cfg := global.LoadConf(*conf)
 

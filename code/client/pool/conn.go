@@ -2,7 +2,6 @@ package pool
 
 import (
 	"context"
-	"errors"
 	"natpass/code/network"
 	"strings"
 	"sync"
@@ -128,18 +127,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 }
 
 func loopWrite(conn *network.Conn, msg *network.Msg, timeout time.Duration) error {
-	var err error
-	for i := 0; i < 10; i++ {
-		err = conn.WriteMessage(msg, timeout)
-		if err == nil {
-			return nil
-		}
-		if strings.Contains(err.Error(), "i/o timeout") {
-			continue
-		}
-		return err
-	}
-	return errors.New("too many retry")
+	return conn.WriteMessage(msg, timeout)
 }
 
 func (conn *Conn) loopWrite(cancel context.CancelFunc) {

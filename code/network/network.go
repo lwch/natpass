@@ -3,7 +3,6 @@ package network
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/hex"
 	"errors"
 	"hash/crc32"
 	"io"
@@ -12,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lwch/logging"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -24,8 +22,7 @@ type Conn struct {
 	c         net.Conn
 	lockRead  sync.Mutex
 	lockWrite sync.Mutex
-	sizeRead  [10]byte
-	idx       uint32
+	sizeRead  [6]byte
 }
 
 // NewConn create connection
@@ -49,17 +46,12 @@ func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, error) {
 	}
 	size := binary.BigEndian.Uint16(c.sizeRead[:])
 	enc := binary.BigEndian.Uint32(c.sizeRead[2:])
-	idx := binary.BigEndian.Uint32(c.sizeRead[6:])
 	buf := make([]byte, size)
-	n, err := io.ReadFull(c.c, buf)
+	_, err = io.ReadFull(c.c, buf)
 	if err != nil {
 		return nil, err
 	}
 	if crc32.ChecksumIEEE(buf) != enc {
-		var msg Msg
-		proto.Unmarshal(buf, &msg)
-		logging.Info("idx=%d, sum=%d, enc=%d, type=%s, size=%d, buf_size=%d\n%s",
-			idx, crc32.ChecksumIEEE(buf), enc, msg.GetXType().String(), size, n, hex.Dump(buf))
 		return nil, errChecksum
 	}
 	var msg Msg
@@ -84,11 +76,9 @@ func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
 	buf := make([]byte, len(data)+len(c.sizeRead))
 	binary.BigEndian.PutUint16(buf, uint16(len(data)))
 	binary.BigEndian.PutUint32(buf[2:], crc32.ChecksumIEEE(data))
-	binary.BigEndian.PutUint32(buf[6:], c.idx)
 	copy(buf[len(c.sizeRead):], data)
 	c.c.SetWriteDeadline(time.Now().Add(timeout))
 	_, err = io.Copy(c.c, bytes.NewReader(buf))
-	c.idx++
 	return err
 }
 

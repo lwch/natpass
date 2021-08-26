@@ -82,7 +82,7 @@ func (link *Link) remoteRead() {
 func (link *Link) localRead() {
 	defer link.close()
 	<-link.OnWork
-	buf := make([]byte, 32*1024)
+	buf := make([]byte, 16*1024)
 	for {
 		n, err := link.local.Read(buf)
 		if err != nil {

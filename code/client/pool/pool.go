@@ -58,6 +58,7 @@ func (p *Pool) Get(id ...string) *Conn {
 		return conn
 	}
 
+	p.idx++
 	conn := p.connect(p.idx)
 	if conn == nil {
 		return nil
@@ -66,7 +67,6 @@ func (p *Pool) Get(id ...string) *Conn {
 
 	p.Lock()
 	p.conns[c.Idx] = c
-	p.idx++
 	p.Unlock()
 	return c
 }

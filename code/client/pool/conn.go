@@ -126,10 +126,6 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	}
 }
 
-func loopWrite(conn *network.Conn, msg *network.Msg, timeout time.Duration) error {
-	return conn.WriteMessage(msg, timeout)
-}
-
 func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 	defer conn.Close()
 	defer cancel()
@@ -140,7 +136,7 @@ func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 		}
 		msg.From = conn.parent.cfg.ID
 		msg.FromIdx = conn.Idx
-		err := loopWrite(conn.conn, msg, conn.parent.cfg.WriteTimeout)
+		err := conn.conn.WriteMessage(msg, conn.parent.cfg.WriteTimeout)
 		if err != nil {
 			logging.Error("write message error on %s-%d: %v",
 				conn.parent.cfg.ID, conn.Idx, err)

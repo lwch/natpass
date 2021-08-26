@@ -58,7 +58,7 @@ func (h *Handler) Handle(conn net.Conn) {
 	if err != nil {
 		return
 	}
-	logging.Info("%s connected", id)
+	logging.Info("%s-%d connected", id, idx)
 
 	clients := h.tryGetClients(id)
 	cli := clients.new(idx, c)

@@ -4,6 +4,8 @@ import (
 	"natpass/code/network"
 	"sync"
 	"time"
+
+	"github.com/lwch/logging"
 )
 
 type clients struct {
@@ -15,6 +17,7 @@ type clients struct {
 }
 
 func newClients(parent *Handler, id string) *clients {
+	logging.Info("new clients: %s", id)
 	return &clients{
 		parent: parent,
 		id:     id,
@@ -23,6 +26,7 @@ func newClients(parent *Handler, id string) *clients {
 }
 
 func (cs *clients) new(idx uint32, conn *network.Conn) *client {
+	logging.Info("new client: %s-%d", cs.id, idx)
 	cli := &client{
 		parent:  cs,
 		idx:     idx,

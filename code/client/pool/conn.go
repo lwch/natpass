@@ -12,7 +12,7 @@ import (
 
 type Conn struct {
 	sync.RWMutex
-	ID          string
+	Idx         uint32
 	parent      *Pool
 	conn        *network.Conn
 	read        map[string]chan *network.Msg // link id => channel
@@ -20,16 +20,16 @@ type Conn struct {
 	write       chan *network.Msg            // link id => channel
 }
 
-func newConn(parent *Pool, conn *network.Conn, id string) *Conn {
+func newConn(parent *Pool, conn *network.Conn, idx uint32) *Conn {
 	ret := &Conn{
-		ID:          id,
+		Idx:         idx,
 		parent:      parent,
 		conn:        conn,
 		read:        make(map[string]chan *network.Msg),
 		unknownRead: make(chan *network.Msg),
 		write:       make(chan *network.Msg),
 	}
-	logging.Info("new connection: %s", ret.ID)
+	logging.Info("new connection: %s-%d", ret.parent.cfg.ID, ret.Idx)
 	ctx, cancel := context.WithCancel(context.Background())
 	go ret.loopRead(cancel)
 	go ret.loopWrite(cancel)
@@ -81,8 +81,8 @@ func (conn *Conn) Close() {
 		close(conn.write)
 		conn.write = nil
 	}
-	conn.parent.onClose(conn.ID)
-	logging.Error("connection %s closed", conn.ID)
+	conn.parent.onClose(conn.Idx)
+	logging.Error("connection %s-%d closed", conn.parent.cfg.ID, conn.Idx)
 }
 
 func (conn *Conn) loopRead(cancel context.CancelFunc) {
@@ -138,10 +138,12 @@ func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 		if msg == nil {
 			return
 		}
-		msg.From = conn.ID
+		msg.From = conn.parent.cfg.ID
+		msg.FromIdx = conn.Idx
 		err := loopWrite(conn.conn, msg, conn.parent.cfg.WriteTimeout)
 		if err != nil {
-			logging.Error("write message error on %s: %v", conn.ID, err)
+			logging.Error("write message error on %s-%d: %v",
+				conn.parent.cfg.ID, conn.Idx, err)
 			return
 		}
 	}

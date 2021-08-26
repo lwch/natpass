@@ -2,7 +2,6 @@ package pool
 
 import (
 	"crypto/tls"
-	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"sync"
@@ -16,16 +15,16 @@ import (
 type Pool struct {
 	sync.RWMutex
 	cfg   *global.Configure
-	conns map[string]*Conn
+	conns map[uint32]*Conn
 	count int
-	idx   int
+	idx   uint32
 }
 
 // New create connection pool
 func New(cfg *global.Configure) *Pool {
 	return &Pool{
 		cfg:   cfg,
-		conns: make(map[string]*Conn, cfg.Links),
+		conns: make(map[uint32]*Conn, cfg.Links),
 		count: cfg.Links,
 		idx:   0,
 	}
@@ -53,27 +52,26 @@ func (p *Pool) Get(id ...string) *Conn {
 	}
 	if len(conns) >= p.count {
 		p.Lock()
-		conn := conns[p.idx%len(conns)]
+		conn := conns[int(p.idx)%len(conns)]
 		p.idx++
 		p.Unlock()
 		return conn
 	}
 
-	cid := fmt.Sprintf("%s-%d", p.cfg.ID, time.Now().UnixNano())
-	conn := p.connect(cid)
+	conn := p.connect(p.idx)
 	if conn == nil {
 		return nil
 	}
-	c := newConn(p, conn, cid)
+	c := newConn(p, conn, p.idx)
 
 	p.Lock()
-	p.conns[c.ID] = c
+	p.conns[c.Idx] = c
 	p.idx++
 	p.Unlock()
 	return c
 }
 
-func (p *Pool) connect(id string) *network.Conn {
+func (p *Pool) connect(idx uint32) *network.Conn {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("connect error: %v", err)
@@ -82,16 +80,17 @@ func (p *Pool) connect(id string) *network.Conn {
 	conn, err := tls.Dial("tcp", p.cfg.Server, nil)
 	runtime.Assert(err)
 	c := network.NewConn(conn)
-	err = p.writeHandshake(c, p.cfg, id)
+	err = p.writeHandshake(c, p.cfg, idx)
 	runtime.Assert(err)
 	logging.Info("%s connected", p.cfg.Server)
 	return c
 }
 
-func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure, id string) error {
+func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure, idx uint32) error {
 	var msg network.Msg
 	msg.XType = network.Msg_handshake
-	msg.From = id
+	msg.From = p.cfg.ID
+	msg.FromIdx = idx
 	msg.To = "server"
 	msg.Payload = &network.Msg_Hsp{
 		Hsp: &network.HandshakePayload{
@@ -101,9 +100,9 @@ func (p *Pool) writeHandshake(conn *network.Conn, cfg *global.Configure, id stri
 	return conn.WriteMessage(&msg, 5*time.Second)
 }
 
-func (p *Pool) onClose(id string) {
+func (p *Pool) onClose(idx uint32) {
 	p.Lock()
-	delete(p.conns, id)
+	delete(p.conns, idx)
 	p.Unlock()
 }
 

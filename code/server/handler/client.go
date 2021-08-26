@@ -11,23 +11,11 @@ import (
 
 type client struct {
 	sync.RWMutex
-	parent  *Handler
-	id      string
-	trimID  string
-	c       *network.Conn
-	links   map[string]struct{} // link id => struct{}
+	parent  *clients
+	idx     uint32
+	conn    *network.Conn
 	updated time.Time
-}
-
-func newClient(parent *Handler, id, trimID string, conn *network.Conn) *client {
-	return &client{
-		parent:  parent,
-		id:      id,
-		trimID:  trimID,
-		c:       conn,
-		links:   make(map[string]struct{}),
-		updated: time.Now(),
-	}
+	links   map[string]struct{} // link id => struct{}
 }
 
 func (c *client) run() {
@@ -39,25 +27,25 @@ func (c *client) run() {
 				links = append(links, id)
 			}
 			c.RUnlock()
-			logging.Info("%s is not keepalived, links: %v", c.id, links)
-			c.parent.closeAll(c)
+			logging.Info("%s-%d is not keepalived, links: %v", c.parent.id, c.idx, links)
+			c.parent.parent.closeClient(c)
 			return
 		}
-		msg, err := c.c.ReadMessage(c.parent.cfg.ReadTimeout)
+		msg, err := c.conn.ReadMessage(c.parent.parent.cfg.ReadTimeout)
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				continue
 			}
-			logging.Error("read message from %s: %v", c.id, err)
+			logging.Error("read message from %s-%d: %v", c.parent.id, c.idx, err)
 			return
 		}
 		c.updated = time.Now()
-		c.parent.onMessage(c, c.c, msg)
+		c.parent.parent.onMessage(c, c.conn, msg)
 	}
 }
 
 func (c *client) writeMessage(msg *network.Msg) error {
-	return c.c.WriteMessage(msg, c.parent.cfg.WriteTimeout)
+	return c.conn.WriteMessage(msg, c.parent.parent.cfg.WriteTimeout)
 }
 
 func (c *client) addLink(id string) {
@@ -85,14 +73,15 @@ func (c *client) getLinks() []string {
 func (c *client) close(id string) {
 	var msg network.Msg
 	msg.From = "server"
-	msg.To = c.id
+	msg.To = c.parent.id
+	msg.ToIdx = c.idx
 	msg.XType = network.Msg_disconnect
 	msg.Payload = &network.Msg_XDisconnect{
 		XDisconnect: &network.Disconnect{
 			Id: id,
 		},
 	}
-	c.c.WriteMessage(&msg, c.parent.cfg.WriteTimeout)
+	c.conn.WriteMessage(&msg, c.parent.parent.cfg.WriteTimeout)
 	c.Lock()
 	delete(c.links, id)
 	c.Unlock()

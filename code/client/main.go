@@ -89,7 +89,8 @@ func main() {
 					var linkID string
 					switch msg.GetXType() {
 					case network.Msg_connect_req:
-						connect(pl, conn, msg.GetFrom(), msg.GetTo(), msg.GetCreq())
+						connect(pl, conn, msg.GetFrom(), msg.GetTo(),
+							msg.GetFromIdx(), msg.GetToIdx(), msg.GetCreq())
 					case network.Msg_connect_rep:
 						linkID = msg.GetCrep().GetId()
 					case network.Msg_disconnect:
@@ -102,7 +103,7 @@ func main() {
 						continue
 					}
 				}
-				logging.Info("connection %s exited", conn.ID)
+				logging.Info("connection %s-%d exited", cfg.ID, conn.Idx)
 				time.Sleep(time.Second)
 			}
 		}()
@@ -111,14 +112,14 @@ func main() {
 	select {}
 }
 
-func connect(pool *pool.Pool, conn *pool.Conn, from, to string, req *network.ConnectRequest) {
+func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
 	}
 	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
 	if err != nil {
-		conn.SendConnectError(from, req.GetId(), err.Error())
+		conn.SendConnectError(from, fromIdx, req.GetId(), err.Error())
 		return
 	}
 	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
@@ -133,7 +134,7 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, req *network.Con
 		RemotePort: uint16(req.GetPort()),
 	})
 	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
-	conn.SendConnectOK(from, req.GetId())
+	conn.SendConnectOK(from, fromIdx, req.GetId())
 	lk.Forward()
 	lk.OnWork <- struct{}{}
 }

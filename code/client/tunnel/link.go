@@ -14,6 +14,7 @@ type Link struct {
 	parent          *Tunnel
 	id              string // link id
 	target          string // target id
+	targetIdx       uint32 // target idx
 	local           net.Conn
 	remote          *pool.Conn
 	OnWork          chan struct{}
@@ -53,6 +54,7 @@ func (link *Link) remoteRead() {
 		if msg == nil {
 			return
 		}
+		link.targetIdx = msg.GetFromIdx()
 		switch msg.GetXType() {
 		case network.Msg_forward:
 			_, err := io.Copy(link.local, bytes.NewReader(msg.GetXData().GetData()))
@@ -85,7 +87,7 @@ func (link *Link) localRead() {
 		n, err := link.local.Read(buf)
 		if err != nil {
 			if !link.closeFromRemote {
-				link.remote.SendDisconnect(link.target, link.id)
+				link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
 			}
 			// logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
 			return
@@ -94,6 +96,6 @@ func (link *Link) localRead() {
 			continue
 		}
 		logging.Debug("link %s on tunnel %s read from local %d bytes", link.id, link.parent.Name, n)
-		link.remote.SendData(link.target, link.id, buf[:n])
+		link.remote.SendData(link.target, link.targetIdx, link.id, buf[:n])
 	}
 }

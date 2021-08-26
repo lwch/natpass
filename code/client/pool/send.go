@@ -31,9 +31,10 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 }
 
 // SendConnectError send connect error response message
-func (conn *Conn) SendConnectError(to, id, info string) {
+func (conn *Conn) SendConnectError(to string, toIdx uint32, id, info string) {
 	var msg network.Msg
 	msg.To = to
+	msg.ToIdx = toIdx
 	msg.XType = network.Msg_connect_rep
 	msg.Payload = &network.Msg_Crep{
 		Crep: &network.ConnectResponse{
@@ -49,9 +50,10 @@ func (conn *Conn) SendConnectError(to, id, info string) {
 }
 
 // SendConnectOK send connect success response message
-func (conn *Conn) SendConnectOK(to, id string) {
+func (conn *Conn) SendConnectOK(to string, toIdx uint32, id string) {
 	var msg network.Msg
 	msg.To = to
+	msg.ToIdx = toIdx
 	msg.XType = network.Msg_connect_rep
 	msg.Payload = &network.Msg_Crep{
 		Crep: &network.ConnectResponse{
@@ -66,9 +68,10 @@ func (conn *Conn) SendConnectOK(to, id string) {
 }
 
 // SendDisconnect send disconnect message
-func (conn *Conn) SendDisconnect(to, id string) {
+func (conn *Conn) SendDisconnect(to string, toIdx uint32, id string) {
 	var msg network.Msg
 	msg.To = to
+	msg.ToIdx = toIdx
 	msg.XType = network.Msg_disconnect
 	msg.Payload = &network.Msg_XDisconnect{
 		XDisconnect: &network.Disconnect{
@@ -82,7 +85,7 @@ func (conn *Conn) SendDisconnect(to, id string) {
 }
 
 // SendData send forward data
-func (conn *Conn) SendData(to, id string, data []byte) {
+func (conn *Conn) SendData(to string, toIdx uint32, id string, data []byte) {
 	dup := func(data []byte) []byte {
 		ret := make([]byte, len(data))
 		copy(ret, data)
@@ -90,6 +93,7 @@ func (conn *Conn) SendData(to, id string, data []byte) {
 	}
 	var msg network.Msg
 	msg.To = to
+	msg.ToIdx = toIdx
 	msg.XType = network.Msg_forward
 	msg.Payload = &network.Msg_XData{
 		XData: &network.Data{

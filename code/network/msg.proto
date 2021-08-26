@@ -19,9 +19,11 @@ message msg {
         disconnect  = 4;
         forward     = 5;
     }
-    type  _type = 1;
-    string from = 2;
-    string   to = 3;
+    type      _type = 1;
+    string     from = 2;
+    uint32 from_idx = 3;
+    string       to = 4;
+    uint32   to_idx = 5;
     oneof payload {
         handshake_payload  hsp = 10;
         connect_request   creq = 11;

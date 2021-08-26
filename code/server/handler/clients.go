@@ -55,4 +55,7 @@ func (cs *clients) close(idx uint32) {
 	cs.Lock()
 	delete(cs.data, idx)
 	cs.Unlock()
+	if len(cs.data) == 0 {
+		cs.parent.removeClients(cs.id)
+	}
 }

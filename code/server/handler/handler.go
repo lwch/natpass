@@ -185,10 +185,10 @@ func (h *Handler) closeClient(cli *client) {
 		pair := h.links[t]
 		h.lockLinks.RUnlock()
 		if pair[0] != nil {
-			pair[0].close(t)
+			pair[0].closeLink(t)
 		}
 		if pair[1] != nil {
-			pair[1].close(t)
+			pair[1].closeLink(t)
 		}
 		h.lockLinks.Lock()
 		delete(h.links, t)
@@ -197,10 +197,13 @@ func (h *Handler) closeClient(cli *client) {
 	h.lockClients.RLock()
 	clients := h.clients[cli.parent.id]
 	h.lockClients.RUnlock()
-	clients.close(cli.idx)
-	if len(clients.data) == 0 {
-		h.lockClients.Lock()
-		delete(h.clients, clients.id)
-		h.lockClients.Unlock()
+	if clients != nil {
+		clients.close(cli.idx)
 	}
+}
+
+func (h *Handler) removeClients(id string) {
+	h.lockClients.Lock()
+	delete(h.clients, id)
+	h.lockClients.Unlock()
 }

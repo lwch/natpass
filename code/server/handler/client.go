@@ -19,6 +19,7 @@ type client struct {
 }
 
 func (c *client) run() {
+	defer c.parent.parent.closeClient(c)
 	for {
 		if time.Since(c.updated).Seconds() > 600 {
 			links := make([]string, 0, len(c.links))
@@ -28,7 +29,6 @@ func (c *client) run() {
 			}
 			c.RUnlock()
 			logging.Info("%s-%d is not keepalived, links: %v", c.parent.id, c.idx, links)
-			c.parent.parent.closeClient(c)
 			return
 		}
 		msg, err := c.conn.ReadMessage(c.parent.parent.cfg.ReadTimeout)
@@ -70,7 +70,7 @@ func (c *client) getLinks() []string {
 	return ret
 }
 
-func (c *client) close(id string) {
+func (c *client) closeLink(id string) {
 	var msg network.Msg
 	msg.From = "server"
 	msg.To = c.parent.id

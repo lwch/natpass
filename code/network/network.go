@@ -54,7 +54,10 @@ func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, error) {
 		return nil, err
 	}
 	if crc32.ChecksumIEEE(buf) != enc {
-		logging.Info("sum=%d, enc=%d\n%s", crc32.ChecksumIEEE(buf), enc, hex.Dump(buf))
+		var msg Msg
+		proto.Unmarshal(buf, &msg)
+		logging.Info("sum=%d, enc=%d, type=%s\n%s",
+			crc32.ChecksumIEEE(buf), enc, msg.GetXType().String(), hex.Dump(buf))
 		return nil, errChecksum
 	}
 	var msg Msg

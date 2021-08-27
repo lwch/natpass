@@ -18,7 +18,6 @@ type Handler struct {
 	clients     map[string]*clients // client id => client
 	lockLinks   sync.RWMutex
 	links       map[string][2]*client // link id => endpoints
-	idx         int
 }
 
 // New create handler
@@ -27,7 +26,6 @@ func New(cfg *global.Configure) *Handler {
 		cfg:     cfg,
 		clients: make(map[string]*clients),
 		links:   make(map[string][2]*client),
-		idx:     0,
 	}
 }
 

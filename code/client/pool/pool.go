@@ -5,6 +5,7 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/lwch/logging"
@@ -58,12 +59,12 @@ func (p *Pool) Get(id ...string) *Conn {
 		return conn
 	}
 
-	p.idx++
-	conn := p.connect(p.idx)
+	idx := atomic.AddUint32(&p.idx, 1)
+	conn := p.connect(idx)
 	if conn == nil {
 		return nil
 	}
-	c := newConn(p, conn, p.idx)
+	c := newConn(p, conn, idx)
 
 	p.Lock()
 	p.conns[c.Idx] = c

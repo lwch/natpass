@@ -89,7 +89,7 @@ func (link *Link) localRead() {
 			if !link.closeFromRemote {
 				link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
 			}
-			// logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
+			logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
 			return
 		}
 		if n == 0 {

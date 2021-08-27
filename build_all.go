@@ -74,7 +74,7 @@ func build(t target) {
 	runtime.Assert(err)
 	err = copyFile(path.Join("conf", "server.yaml"), path.Join(buildDir, "server.yaml"))
 	runtime.Assert(err)
-	err = copyFile("CHANGELOG.md", "CHANGELOG.md")
+	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
 	if t.os != "windows" && t.os != "android" && t.os != "ios" {
 		runtime.Assert(os.MkdirAll(path.Join(buildDir, "init.d"), 0755))

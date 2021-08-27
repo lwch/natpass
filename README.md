@@ -7,7 +7,7 @@
 [![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/lwch/natpass)
 [![QQ群711086098](https://img.shields.io/badge/QQ%E7%BE%A4-711086098-success)](https://jq.qq.com/?_wv=1027&k=6Fz2vkVE)
 
-内网穿透工具
+NAT内网穿透工具
 
 ## 实现原理
 
@@ -74,6 +74,18 @@ server端配置(10.0.1.1)：
 ## 编译
 
     ./build
+
+## 链接配置
+
+    link:
+      connections: 3    # 与server的连接数
+      read_timeout: 1s  # 读取数据包超时时间
+      write_timeout: 1s # 发送数据包超时时间
+
+1. 只有client端可配置connections，client与server总是保持connections个链接
+2. read_timeout和write_timeout为数据读写超时时间
+  - 建议在server端设置较长的超时时间
+  - 建议在client端设置较短的超时时间
 
 ## linux部署
 

@@ -12,16 +12,19 @@ message handshake_payload {
 
 message msg {
     enum type {
-        handshake   = 0;
-        keepalive   = 1;
-        connect_req = 2;
-        connect_rep = 3;
-        disconnect  = 4;
-        forward     = 5;
+        unknown     = 0;
+        handshake   = 1;
+        keepalive   = 2;
+        connect_req = 3;
+        connect_rep = 4;
+        disconnect  = 5;
+        forward     = 6;
     }
-    type  _type = 1;
-    string from = 2;
-    string   to = 3;
+    type      _type = 1;
+    string     from = 2;
+    uint32 from_idx = 3;
+    string       to = 4;
+    uint32   to_idx = 5;
     oneof payload {
         handshake_payload  hsp = 10;
         connect_request   creq = 11;

@@ -1,17 +1,22 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"fmt"
-	"natpass/code/client/client"
 	"natpass/code/client/global"
+	"natpass/code/client/pool"
+	"natpass/code/client/tunnel"
 	"natpass/code/network"
+	"net"
 	"os"
+	"strconv"
+	"time"
+
+	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/lwch/daemon"
 	"github.com/lwch/logging"
-	"github.com/lwch/runtime"
 )
 
 var (
@@ -52,16 +57,84 @@ func main() {
 		return
 	}
 
+	go func() {
+		http.ListenAndServe(":9000", nil)
+	}()
+
 	cfg := global.LoadConf(*conf)
 
 	logging.SetSizeRotate(cfg.LogDir, "np-cli", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
 	defer logging.Flush()
 
-	conn, err := tls.Dial("tcp", cfg.Server, nil)
-	runtime.Assert(err)
-	c := network.NewConn(conn)
-	defer c.Close()
+	pl := pool.New(cfg)
 
-	cli := client.New(cfg, c)
-	cli.Run()
+	for _, t := range cfg.Tunnels {
+		tn := tunnel.New(t)
+		go tn.Handle(pl)
+	}
+
+	for i := 0; i < cfg.Links-pl.Size(); i++ {
+		go func() {
+			for {
+				conn := pl.Get()
+				if conn == nil {
+					time.Sleep(time.Second)
+					continue
+				}
+				for {
+					msg := <-conn.ChanUnknown()
+					if msg == nil {
+						break
+					}
+					var linkID string
+					switch msg.GetXType() {
+					case network.Msg_connect_req:
+						connect(pl, conn, msg.GetFrom(), msg.GetTo(),
+							msg.GetFromIdx(), msg.GetToIdx(), msg.GetCreq())
+					case network.Msg_connect_rep:
+						linkID = msg.GetCrep().GetId()
+					case network.Msg_disconnect:
+						linkID = msg.GetXDisconnect().GetId()
+					case network.Msg_forward:
+						linkID = msg.GetXData().GetLid()
+					}
+					if len(linkID) > 0 {
+						logging.Error("link of %s not found, type=%s", linkID, msg.GetXType().String())
+						continue
+					}
+				}
+				logging.Info("connection %s-%d exited", cfg.ID, conn.Idx)
+				time.Sleep(time.Second)
+			}
+		}()
+	}
+
+	select {}
+}
+
+func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
+	dial := "tcp"
+	if req.GetXType() == network.ConnectRequest_udp {
+		dial = "udp"
+	}
+	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
+	if err != nil {
+		conn.SendConnectError(from, fromIdx, req.GetId(), err.Error())
+		return
+	}
+	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
+	port, _ := strconv.ParseUint(pt, 10, 16)
+	tn := tunnel.New(global.Tunnel{
+		Name:       req.GetName(),
+		Target:     from,
+		Type:       dial,
+		LocalAddr:  host,
+		LocalPort:  uint16(port),
+		RemoteAddr: req.GetAddr(),
+		RemotePort: uint16(req.GetPort()),
+	})
+	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
+	conn.SendConnectOK(from, fromIdx, req.GetId())
+	lk.Forward()
+	lk.OnWork <- struct{}{}
 }

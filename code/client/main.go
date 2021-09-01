@@ -135,6 +135,7 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx u
 		RemotePort: uint16(req.GetPort()),
 	})
 	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
+	lk.SetTargetIdx(fromIdx)
 	conn.SendConnectOK(from, fromIdx, req.GetId())
 	lk.Forward()
 	lk.OnWork <- struct{}{}

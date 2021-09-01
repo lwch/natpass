@@ -100,3 +100,7 @@ func (link *Link) localRead() {
 		link.remote.SendData(link.target, link.targetIdx, link.id, buf[:n])
 	}
 }
+
+func (link *Link) SetTargetIdx(idx uint32) {
+	link.targetIdx = idx
+}

@@ -128,6 +128,10 @@ func (conn *Conn) loopWrite(cancel context.CancelFunc) {
 		}
 		msg.From = conn.parent.cfg.ID
 		msg.FromIdx = conn.Idx
+		if msg.XType == network.Msg_forward {
+			logging.Info("forward %s from %s-%d to %s-%d", msg.GetXData().Lid,
+				msg.From, msg.FromIdx, msg.To, msg.ToIdx)
+		}
 		err := conn.conn.WriteMessage(msg, conn.parent.cfg.WriteTimeout)
 		if err != nil {
 			logging.Error("write message error on %s-%d: %v",

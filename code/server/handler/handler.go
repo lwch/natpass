@@ -99,10 +99,10 @@ func (h *Handler) getClient(linkID, to string, toIdx uint32) *client {
 	pair := h.links[linkID]
 	h.lockLinks.RUnlock()
 
-	if pair[0] != nil && pair[0].idx == toIdx {
+	if pair[0] != nil && pair[0].is(to, toIdx) {
 		return pair[0]
 	}
-	if pair[1] != nil && pair[1].idx == toIdx {
+	if pair[1] != nil && pair[1].is(to, toIdx) {
 		return pair[1]
 	}
 

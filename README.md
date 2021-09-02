@@ -112,10 +112,10 @@ server端配置(10.0.1.1)：
 
     # natpass10路复用，读写均为1s超时
     [ ID] Interval           Transfer     Bitrate         Retr
-    [  5]   0.00-60.00  sec  70.0 MBytes  9.79 Mbits/sec   28             sender
-    [  5]   0.00-60.01  sec  58.4 MBytes  8.16 Mbits/sec                  receiver
+    [  5]   0.00-60.00  sec  70.0 MBytes  9.79 Mbits/sec   18             sender
+    [  5]   0.00-60.30  sec  58.2 MBytes  8.10 Mbits/sec                  receiver
 
     # frp10路复用stcp，tls
     [ ID] Interval           Transfer     Bitrate         Retr
-    [  5]   0.00-60.00  sec  67.4 MBytes  9.43 Mbits/sec   21             sender
-    [  5]   0.00-60.29  sec  58.6 MBytes  8.15 Mbits/sec                  receiver
+    [  5]   0.00-60.00  sec  66.2 MBytes  9.26 Mbits/sec   31             sender
+    [  5]   0.00-60.10  sec  57.7 MBytes  8.05 Mbits/sec                  receiver

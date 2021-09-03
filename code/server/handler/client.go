@@ -86,3 +86,7 @@ func (c *client) closeLink(id string) {
 	delete(c.links, id)
 	c.Unlock()
 }
+
+func (c *client) is(id string, idx uint32) bool {
+	return c.parent.id == id && c.idx == idx
+}

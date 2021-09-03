@@ -3,6 +3,7 @@ package handler
 import (
 	"natpass/code/network"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/lwch/logging"
@@ -13,7 +14,7 @@ type clients struct {
 	parent *Handler
 	id     string
 	data   map[uint32]*client // idx => client
-	idx    int
+	idx    uint32
 }
 
 func newClients(parent *Handler, id string) *clients {
@@ -48,8 +49,8 @@ func (cs *clients) next() *client {
 	}
 	cs.RUnlock()
 	if len(list) > 0 {
-		cli := list[cs.idx%len(list)]
-		cs.idx++
+		idx := atomic.AddUint32(&cs.idx, 1)
+		cli := list[int(idx)%len(list)]
 		return cli
 	}
 	return nil

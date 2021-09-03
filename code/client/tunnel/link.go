@@ -23,7 +23,8 @@ type Link struct {
 
 func NewLink(parent *Tunnel, id, target string, local net.Conn, remote *pool.Conn) *Link {
 	remote.AddLink(id)
-	logging.Info("create link %s for tunnel %s", id, parent.Name)
+	logging.Info("create link %s for tunnel %s on connection %d",
+		id, parent.Name, remote.Idx)
 	return &Link{
 		parent: parent,
 		id:     id,
@@ -89,7 +90,7 @@ func (link *Link) localRead() {
 			if !link.closeFromRemote {
 				link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
 			}
-			// logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
+			logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
 			return
 		}
 		if n == 0 {
@@ -98,4 +99,8 @@ func (link *Link) localRead() {
 		logging.Debug("link %s on tunnel %s read from local %d bytes", link.id, link.parent.Name, n)
 		link.remote.SendData(link.target, link.targetIdx, link.id, buf[:n])
 	}
+}
+
+func (link *Link) SetTargetIdx(idx uint32) {
+	link.targetIdx = idx
 }

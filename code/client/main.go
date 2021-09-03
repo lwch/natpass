@@ -99,7 +99,8 @@ func main() {
 						linkID = msg.GetXData().GetLid()
 					}
 					if len(linkID) > 0 {
-						logging.Error("link of %s not found, type=%s", linkID, msg.GetXType().String())
+						logging.Error("link of %s on connection %d not found, type=%s",
+							linkID, conn.Idx, msg.GetXType().String())
 						continue
 					}
 				}
@@ -134,6 +135,7 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx u
 		RemotePort: uint16(req.GetPort()),
 	})
 	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
+	lk.SetTargetIdx(fromIdx)
 	conn.SendConnectOK(from, fromIdx, req.GetId())
 	lk.Forward()
 	lk.OnWork <- struct{}{}

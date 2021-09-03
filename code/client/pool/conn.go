@@ -114,15 +114,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 		if ch == nil {
 			ch = conn.unknownRead
 		}
-		select {
-		case ch <- msg:
-		case <-time.After(conn.parent.cfg.ReadTimeout):
-			logging.Error("write read channel for link %s timeouted", linkID)
-			if ch == conn.unknownRead {
-				continue
-			}
-			close(ch)
-		}
+		ch <- msg
 	}
 }
 

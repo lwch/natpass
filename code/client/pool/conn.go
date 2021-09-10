@@ -94,7 +94,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				timeout++
-				if timeout >= 10 {
+				if timeout >= 60 {
 					logging.Error("too many timeout times")
 					return
 				}

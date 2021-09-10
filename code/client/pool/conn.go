@@ -91,10 +91,10 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	for {
 		msg, err := conn.conn.ReadMessage(conn.parent.cfg.ReadTimeout)
 		if err != nil {
+			logging.Error("read message: %v", err)
 			if strings.Contains(err.Error(), "i/o timeout") {
 				continue
 			}
-			logging.Error("read message: %v", err)
 			return
 		}
 		var linkID string

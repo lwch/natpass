@@ -114,6 +114,8 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 			linkID = msg.GetXDisconnect().GetId()
 		case network.Msg_forward:
 			linkID = msg.GetXData().GetLid()
+		case network.Msg_keepalive:
+			continue
 		}
 		conn.RLock()
 		ch := conn.read[linkID]

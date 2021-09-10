@@ -62,6 +62,7 @@ func (h *Handler) Handle(conn net.Conn) {
 	cli := clients.new(idx, c)
 
 	defer h.closeClient(cli)
+	go cli.keepalive()
 
 	cli.run()
 }

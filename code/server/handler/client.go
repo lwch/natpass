@@ -90,3 +90,19 @@ func (c *client) closeLink(id string) {
 func (c *client) is(id string, idx uint32) bool {
 	return c.parent.id == id && c.idx == idx
 }
+
+func (c *client) keepalive() {
+	var msg network.Msg
+	msg.From = "server"
+	msg.To = c.parent.id
+	msg.ToIdx = c.idx
+	msg.XType = network.Msg_keepalive
+	for {
+		time.Sleep(10 * time.Second)
+		err := c.writeMessage(&msg)
+		if err != nil {
+			logging.Error("send keepalive: %v", err)
+			return
+		}
+	}
+}

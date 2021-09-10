@@ -3,7 +3,6 @@ package pool
 import (
 	"context"
 	"natpass/code/network"
-	"strings"
 	"sync"
 	"time"
 
@@ -91,10 +90,6 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	for {
 		msg, err := conn.conn.ReadMessage(conn.parent.cfg.ReadTimeout)
 		if err != nil {
-			logging.Error("read message: %v", err)
-			if strings.Contains(err.Error(), "i/o timeout") {
-				continue
-			}
 			return
 		}
 		var linkID string

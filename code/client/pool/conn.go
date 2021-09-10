@@ -3,6 +3,7 @@ package pool
 import (
 	"context"
 	"natpass/code/network"
+	"strings"
 	"sync"
 	"time"
 
@@ -87,11 +88,22 @@ func (conn *Conn) Close() {
 func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	defer conn.Close()
 	defer cancel()
+	var timeout int
 	for {
 		msg, err := conn.conn.ReadMessage(conn.parent.cfg.ReadTimeout)
 		if err != nil {
+			if strings.Contains(err.Error(), "i/o timeout") {
+				timeout++
+				if timeout >= 10 {
+					logging.Error("too many timeout times")
+					return
+				}
+				continue
+			}
+			logging.Error("read message: %v", err)
 			return
 		}
+		timeout = 0
 		var linkID string
 		switch msg.GetXType() {
 		case network.Msg_connect_req:

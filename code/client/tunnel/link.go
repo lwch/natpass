@@ -5,6 +5,7 @@ import (
 	"io"
 	"natpass/code/client/pool"
 	"natpass/code/network"
+	"natpass/code/utils"
 	"net"
 
 	"github.com/lwch/logging"
@@ -48,6 +49,7 @@ func (link *Link) Forward() {
 }
 
 func (link *Link) remoteRead() {
+	defer utils.Recover("remoteRead")
 	defer link.close()
 	ch := link.remote.ChanRead(link.id)
 	for {
@@ -81,6 +83,7 @@ func (link *Link) remoteRead() {
 }
 
 func (link *Link) localRead() {
+	defer utils.Recover("localRead")
 	defer link.close()
 	<-link.OnWork
 	buf := make([]byte, 16*1024)

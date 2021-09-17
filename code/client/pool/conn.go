@@ -3,6 +3,7 @@ package pool
 import (
 	"context"
 	"natpass/code/network"
+	"natpass/code/utils"
 	"strings"
 	"sync"
 	"time"
@@ -86,6 +87,7 @@ func (conn *Conn) Close() {
 }
 
 func (conn *Conn) loopRead(cancel context.CancelFunc) {
+	defer utils.Recover("loopRead")
 	defer conn.Close()
 	defer cancel()
 	var timeout int
@@ -128,6 +130,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 }
 
 func (conn *Conn) loopWrite(cancel context.CancelFunc) {
+	defer utils.Recover("loopWrite")
 	defer conn.Close()
 	defer cancel()
 	for {
@@ -158,6 +161,7 @@ func (conn *Conn) ChanUnknown() <-chan *network.Msg {
 }
 
 func (conn *Conn) keepalive(ctx context.Context) {
+	defer utils.Recover("keepalive")
 	for {
 		select {
 		case <-ctx.Done():

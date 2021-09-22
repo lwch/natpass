@@ -89,14 +89,12 @@ func main() {
 					var linkID string
 					switch msg.GetXType() {
 					case network.Msg_connect_req:
-						connect(pl, conn, msg.GetFrom(), msg.GetTo(),
+						connect(pl, conn, msg.GetLinkId(), msg.GetFrom(), msg.GetTo(),
 							msg.GetFromIdx(), msg.GetToIdx(), msg.GetCreq())
-					case network.Msg_connect_rep:
-						linkID = msg.GetCrep().GetId()
-					case network.Msg_disconnect:
-						linkID = msg.GetXDisconnect().GetId()
-					case network.Msg_forward:
-						linkID = msg.GetXData().GetLid()
+					case network.Msg_connect_rep,
+						network.Msg_disconnect,
+						network.Msg_forward:
+						linkID = msg.GetLinkId()
 					}
 					if len(linkID) > 0 {
 						logging.Error("link of %s on connection %d not found, type=%s",
@@ -113,14 +111,14 @@ func main() {
 	select {}
 }
 
-func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
+func connect(pool *pool.Pool, conn *pool.Conn, id, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
 	}
 	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
 	if err != nil {
-		conn.SendConnectError(from, fromIdx, req.GetId(), err.Error())
+		conn.SendConnectError(from, fromIdx, id, err.Error())
 		return
 	}
 	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
@@ -134,9 +132,9 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx u
 		RemoteAddr: req.GetAddr(),
 		RemotePort: uint16(req.GetPort()),
 	})
-	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
+	lk := tunnel.NewLink(tn, id, from, link, conn)
 	lk.SetTargetIdx(fromIdx)
-	conn.SendConnectOK(from, fromIdx, req.GetId())
+	conn.SendConnectOK(from, fromIdx, id)
 	lk.Forward()
 	lk.OnWork <- struct{}{}
 }

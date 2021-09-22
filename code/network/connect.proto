@@ -8,19 +8,13 @@ message connect_request {
         tcp = 0;
         udp = 1;
     }
-    string   id = 1;
-    string name = 2;
-    type  _type = 3;
-    string addr = 4;
-    uint32 port = 5;
+    string name = 1;
+    type  _type = 2;
+    string addr = 3;
+    uint32 port = 4;
 }
 
 message connect_response {
-    string   id = 1;
-    bool     ok = 2;
-    string  msg = 3;
-}
-
-message disconnect {
-    string id = 1;
+    bool     ok = 1;
+    string  msg = 2;
 }

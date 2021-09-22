@@ -120,20 +120,15 @@ func (h *Handler) getClient(linkID, to string, toIdx uint32) *client {
 func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) {
 	to := msg.GetTo()
 	toIdx := msg.GetToIdx()
-	var linkID string
 	switch msg.GetXType() {
 	case network.Msg_connect_req:
-		linkID = msg.GetCreq().GetId()
 	case network.Msg_connect_rep:
-		linkID = msg.GetCrep().GetId()
 	case network.Msg_disconnect:
-		linkID = msg.GetXDisconnect().GetId()
 	case network.Msg_forward:
-		linkID = msg.GetXData().GetLid()
 	default:
 		return
 	}
-	cli := h.getClient(linkID, to, toIdx)
+	cli := h.getClient(msg.GetLinkId(), to, toIdx)
 	if cli == nil {
 		logging.Error("client %s-%d not found", to, toIdx)
 		return
@@ -146,7 +141,7 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
 	case network.Msg_connect_req:
-		id := msg.GetCreq().GetId()
+		id := msg.GetLinkId()
 		var pair [2]*client
 		if from != nil {
 			from.addLink(id)
@@ -165,17 +160,17 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 		rep := msg.GetCrep()
 		if rep.GetOk() {
 			logging.Info("link %s from %s-%d to %s-%d connect successed",
-				rep.GetId(), from.parent.id, from.idx, to.parent.id, to.idx)
+				msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx)
 		} else {
 			logging.Info("link %s from %s-%d to %s-%d connect failed, %s",
-				rep.GetId(), from.parent.id, from.idx, to.parent.id, to.idx, rep.GetMsg())
+				msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx, rep.GetMsg())
 		}
 	case network.Msg_forward:
 		data := msg.GetXData()
 		logging.Debug("link %s forward %d bytes from %s-%d to %s-%d",
-			data.GetLid(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
+			msg.GetLinkId(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
 	case network.Msg_disconnect:
-		id := msg.GetXDisconnect().GetId()
+		id := msg.GetLinkId()
 		if from != nil {
 			from.removeLink(id)
 		}
@@ -185,9 +180,8 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 		h.lockLinks.Lock()
 		delete(h.links, id)
 		h.lockLinks.Unlock()
-		disconnect := msg.GetXDisconnect()
 		logging.Info("link %s disconnect from %s-%d to %s-%d",
-			disconnect.GetId(), from.parent.id, from.idx, to.parent.id, to.idx)
+			msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx)
 	}
 	msg.From = from.parent.id
 	msg.FromIdx = from.idx

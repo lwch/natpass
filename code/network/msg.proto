@@ -25,11 +25,11 @@ message msg {
     uint32 from_idx = 3;
     string       to = 4;
     uint32   to_idx = 5;
+    string  link_id = 6;
     oneof payload {
         handshake_payload  hsp = 10;
         connect_request   creq = 11;
         connect_response  crep = 12;
-        disconnect _disconnect = 13;
-        data             _data = 14;
+        data             _data = 13;
     }
 }

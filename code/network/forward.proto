@@ -4,6 +4,5 @@ package network;
 option go_package="./;network";
 
 message data {
-    string lid = 1;
-    bytes data = 2;
+    bytes data = 1;
 }

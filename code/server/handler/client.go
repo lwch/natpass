@@ -76,11 +76,7 @@ func (c *client) closeLink(id string) {
 	msg.To = c.parent.id
 	msg.ToIdx = c.idx
 	msg.XType = network.Msg_disconnect
-	msg.Payload = &network.Msg_XDisconnect{
-		XDisconnect: &network.Disconnect{
-			Id: id,
-		},
-	}
+	msg.LinkId = id
 	c.conn.WriteMessage(&msg, c.parent.parent.cfg.WriteTimeout)
 	c.Lock()
 	delete(c.links, id)

@@ -113,25 +113,20 @@ func main() {
 		os.Exit(0)
 	}
 
-	var args []string
-	if *act == "install" {
-		if len(*conf) == 0 {
-			fmt.Println("missing -conf param")
-			os.Exit(1)
-		}
-		dir, err := filepath.Abs(*conf)
-		runtime.Assert(err)
-		args = append(args, "-conf", dir)
-	} else {
-		args = append(args, "-conf", *conf)
+	if len(*conf) == 0 {
+		fmt.Println("missing -conf param")
+		os.Exit(1)
 	}
+
+	dir, err := filepath.Abs(*conf)
+	runtime.Assert(err)
 
 	appCfg := &service.Config{
 		Name:        "natpass",
 		DisplayName: "natpass",
 		Description: "nat forward service",
 		UserName:    *user,
-		Arguments:   args,
+		Arguments:   []string{"-conf", dir},
 	}
 
 	cfg := global.LoadConf(*conf)

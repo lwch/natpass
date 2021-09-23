@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	rt "runtime"
 
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
@@ -78,13 +79,18 @@ func main() {
 	dir, err := filepath.Abs(*conf)
 	runtime.Assert(err)
 
+	var depends []string
+	if rt.GOOS != "windows" {
+		depends = append(depends, "After=network.target")
+	}
+
 	appCfg := &service.Config{
 		Name:         "np-svr",
 		DisplayName:  "np-svr",
 		Description:  "nat forward service",
 		UserName:     *user,
 		Arguments:    []string{"-conf", dir},
-		Dependencies: []string{"After=network.target"},
+		Dependencies: depends,
 	}
 
 	cfg := global.LoadConf(*conf)

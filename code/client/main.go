@@ -10,6 +10,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	rt "runtime"
 	"strconv"
 	"time"
 
@@ -121,13 +122,18 @@ func main() {
 	dir, err := filepath.Abs(*conf)
 	runtime.Assert(err)
 
+	var depends []string
+	if rt.GOOS != "windows" {
+		depends = append(depends, "After=network.target")
+	}
+
 	appCfg := &service.Config{
 		Name:         "np-cli",
 		DisplayName:  "np-cli",
 		Description:  "nat forward service",
 		UserName:     *user,
 		Arguments:    []string{"-conf", dir},
-		Dependencies: []string{"After=network.target"},
+		Dependencies: depends,
 	}
 
 	cfg := global.LoadConf(*conf)

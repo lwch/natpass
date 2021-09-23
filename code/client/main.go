@@ -105,7 +105,7 @@ func main() {
 	user := flag.String("user", "", "service user")
 	conf := flag.String("conf", "", "configure file path")
 	version := flag.Bool("version", false, "show version info")
-	act := flag.String("action", "", "install,uninstall")
+	act := flag.String("action", "", "install or uninstall")
 	flag.Parse()
 
 	if *version {

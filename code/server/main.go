@@ -8,8 +8,9 @@ import (
 	"natpass/code/server/handler"
 	"net"
 	"os"
+	"path/filepath"
 
-	"github.com/lwch/daemon"
+	"github.com/kardianos/service"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
@@ -29,12 +30,39 @@ func showVersion() {
 	os.Exit(0)
 }
 
+type app struct {
+	cfg *global.Configure
+}
+
+func (a *app) Start(s service.Service) error {
+	go a.run()
+	return nil
+}
+
+func (a *app) run() {
+	logging.SetSizeRotate(a.cfg.LogDir, "np-svr", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
+	defer logging.Flush()
+
+	cert, err := tls.LoadX509KeyPair(a.cfg.TLSCrt, a.cfg.TLSKey)
+	runtime.Assert(err)
+	l, err := tls.Listen("tcp", fmt.Sprintf(":%d", a.cfg.Listen), &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	})
+	runtime.Assert(err)
+	logging.Info("listen on %d", a.cfg.Listen)
+
+	run(a.cfg, l)
+}
+
+func (a *app) Stop(s service.Service) error {
+	return nil
+}
+
 func main() {
-	bak := flag.Bool("d", false, "backend running")
-	pid := flag.String("pid", "", "pid file dir")
-	user := flag.String("u", "", "daemon user")
+	user := flag.String("user", "", "daemon user")
 	conf := flag.String("conf", "", "configure file path")
-	version := flag.Bool("v", false, "show version info")
+	version := flag.Bool("version", false, "show version info")
+	act := flag.String("action", "", "install or uninstall")
 	flag.Parse()
 
 	if *version {
@@ -47,25 +75,32 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *bak {
-		daemon.Start(0, *pid, *user, "-conf", *conf)
-		return
+	dir, err := filepath.Abs(*conf)
+	runtime.Assert(err)
+
+	appCfg := &service.Config{
+		Name:         "np-svr",
+		DisplayName:  "np-svr",
+		Description:  "nat forward service",
+		UserName:     *user,
+		Arguments:    []string{"-conf", dir},
+		Dependencies: []string{"After=network.target"},
 	}
 
 	cfg := global.LoadConf(*conf)
 
-	logging.SetSizeRotate(cfg.LogDir, "np-svr", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
-	defer logging.Flush()
-
-	cert, err := tls.LoadX509KeyPair(cfg.TLSCrt, cfg.TLSKey)
+	app := &app{cfg: cfg}
+	sv, err := service.New(app, appCfg)
 	runtime.Assert(err)
-	l, err := tls.Listen("tcp", fmt.Sprintf(":%d", cfg.Listen), &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	})
-	runtime.Assert(err)
-	logging.Info("listen on %d", cfg.Listen)
 
-	run(cfg, l)
+	switch *act {
+	case "install":
+		runtime.Assert(sv.Install())
+	case "uninstall":
+		runtime.Assert(sv.Uninstall())
+	default:
+		runtime.Assert(sv.Run())
+	}
 }
 
 func run(cfg *global.Configure, l net.Listener) {

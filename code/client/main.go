@@ -9,14 +9,15 @@ import (
 	"natpass/code/network"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
-	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/lwch/daemon"
+	"github.com/kardianos/service"
 	"github.com/lwch/logging"
+	"github.com/lwch/runtime"
 )
 
 var (
@@ -34,46 +35,31 @@ func showVersion() {
 	os.Exit(0)
 }
 
-func main() {
-	bak := flag.Bool("d", false, "backend running")
-	pid := flag.String("pid", "", "pid file dir")
-	user := flag.String("u", "", "daemon user")
-	conf := flag.String("conf", "", "configure file path")
-	version := flag.Bool("v", false, "show version info")
-	flag.Parse()
+type app struct {
+	cfg *global.Configure
+}
 
-	if *version {
-		showVersion()
-		os.Exit(0)
-	}
+func (a *app) Start(s service.Service) error {
+	go a.run()
+	return nil
+}
 
-	if len(*conf) == 0 {
-		fmt.Println("missing -conf param")
-		os.Exit(1)
-	}
+func (a *app) run() {
+	// go func() {
+	// 	http.ListenAndServe(":9000", nil)
+	// }()
 
-	if *bak {
-		daemon.Start(0, *pid, *user, "-conf", *conf)
-		return
-	}
-
-	go func() {
-		http.ListenAndServe(":9000", nil)
-	}()
-
-	cfg := global.LoadConf(*conf)
-
-	logging.SetSizeRotate(cfg.LogDir, "np-cli", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
+	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
 	defer logging.Flush()
 
-	pl := pool.New(cfg)
+	pl := pool.New(a.cfg)
 
-	for _, t := range cfg.Tunnels {
+	for _, t := range a.cfg.Tunnels {
 		tn := tunnel.New(t)
 		go tn.Handle(pl)
 	}
 
-	for i := 0; i < cfg.Links-pl.Size(); i++ {
+	for i := 0; i < a.cfg.Links-pl.Size(); i++ {
 		go func() {
 			for {
 				conn := pl.Get()
@@ -102,13 +88,66 @@ func main() {
 						continue
 					}
 				}
-				logging.Info("connection %s-%d exited", cfg.ID, conn.Idx)
+				logging.Info("connection %s-%d exited", a.cfg.ID, conn.Idx)
 				time.Sleep(time.Second)
 			}
 		}()
 	}
 
 	select {}
+}
+
+func (a *app) Stop(s service.Service) error {
+	return nil
+}
+
+func main() {
+	user := flag.String("user", "", "service user")
+	conf := flag.String("conf", "", "configure file path")
+	version := flag.Bool("version", false, "show version info")
+	act := flag.String("action", "", "install,uninstall")
+	flag.Parse()
+
+	if *version {
+		showVersion()
+		os.Exit(0)
+	}
+
+	var args []string
+	if *act == "install" {
+		if len(*conf) == 0 {
+			fmt.Println("missing -conf param")
+			os.Exit(1)
+		}
+		dir, err := filepath.Abs(*conf)
+		runtime.Assert(err)
+		args = append(args, "-conf", dir)
+	} else {
+		args = append(args, "-conf", *conf)
+	}
+
+	appCfg := &service.Config{
+		Name:        "natpass",
+		DisplayName: "natpass",
+		Description: "nat forward service",
+		UserName:    *user,
+		Arguments:   args,
+	}
+
+	cfg := global.LoadConf(*conf)
+
+	app := &app{cfg: cfg}
+	sv, err := service.New(app, appCfg)
+	runtime.Assert(err)
+
+	switch *act {
+	case "install":
+		runtime.Assert(sv.Install())
+	case "uninstall":
+		runtime.Assert(sv.Uninstall())
+	default:
+		runtime.Assert(sv.Run())
+	}
 }
 
 func connect(pool *pool.Pool, conn *pool.Conn, id, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {

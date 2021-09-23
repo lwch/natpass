@@ -91,21 +91,24 @@ server端配置(10.0.1.1)：
 
 1. [下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. 修改配置文件
-3. 注册服务
+3. 注册服务（windows系统需要管理员权限）
 
-        sudo ./np-svr -conf <配置文件路径> -action install
+        sudo ./np-svr -conf <配置文件路径> -action install [-user <用户名>]
         或
-        sudo ./np-cli -conf <配置文件路径> -action install
-4. 设置开机启动项
+        sudo ./np-cli -conf <配置文件路径> -action install [-user <用户名>]
+4. linux系统
 
         sudo systemctl enable np-svr
+        sudo systemctl start np-svr
         或
         sudo systemctl enable np-cli
-5. 启动对应服务
+        sudo systemctl start np-cli
 
-        sudo /etc/init.d/np-svr start
-        或
-        sudo /etc/init.d/np-cli start
+5. windows系统
+
+        打开服务管理面板：service.msc
+        找到np-svr或np-cli服务
+        右键启动即可
 
 ## iperf3压测对比
 

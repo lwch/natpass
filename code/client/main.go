@@ -122,11 +122,12 @@ func main() {
 	runtime.Assert(err)
 
 	appCfg := &service.Config{
-		Name:        "natpass",
-		DisplayName: "natpass",
-		Description: "nat forward service",
-		UserName:    *user,
-		Arguments:   []string{"-conf", dir},
+		Name:         "np-cli",
+		DisplayName:  "np-cli",
+		Description:  "nat forward service",
+		UserName:     *user,
+		Arguments:    []string{"-conf", dir},
+		Dependencies: []string{"After=network.target"},
 	}
 
 	cfg := global.LoadConf(*conf)

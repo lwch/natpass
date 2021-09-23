@@ -76,13 +76,6 @@ func build(t target) {
 	runtime.Assert(err)
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
-	if t.os != "windows" && t.os != "android" && t.os != "ios" {
-		runtime.Assert(os.MkdirAll(path.Join(buildDir, "init.d"), 0755))
-		err = copyFile(path.Join("init.d", "np-cli"), path.Join(buildDir, "init.d", "np-cli"))
-		runtime.Assert(err)
-		err = copyFile(path.Join("init.d", "np-svr"), path.Join(buildDir, "init.d", "np-svr"))
-		runtime.Assert(err)
-	}
 
 	ldflags := "-X 'main._GIT_HASH=" + gitHash() + "' " +
 		"-X 'main._GIT_REVERSION=" + gitReversion() + "' " +

@@ -55,5 +55,6 @@ func shellCreate(conn *pool.Conn, msg *network.Msg) {
 		logging.Error("create shell failed: %v", err)
 		return
 	}
+	conn.AddLink(msg.GetLinkId())
 	sh.Forward(conn, msg.GetFromIdx())
 }

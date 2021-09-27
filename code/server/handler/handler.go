@@ -195,10 +195,13 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 				msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx, rep.GetMsg())
 		}
 	// forward data
-	case network.Msg_forward,
-		network.Msg_shell_data:
+	case network.Msg_forward:
 		data := msg.GetXData()
 		logging.Debug("link %s forward %d bytes from %s-%d to %s-%d",
+			msg.GetLinkId(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
+	case network.Msg_shell_data:
+		data := msg.GetSdata()
+		logging.Debug("shell %s forward %d bytes from %s-%d to %s-%d",
 			msg.GetLinkId(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
 	// shell
 	case network.Msg_shell_resize:

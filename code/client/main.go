@@ -85,6 +85,7 @@ func (a *app) run() {
 					case network.Msg_connect_req:
 						connect(pl, conn, msg.GetLinkId(), msg.GetFrom(), msg.GetTo(),
 							msg.GetFromIdx(), msg.GetToIdx(), msg.GetCreq())
+					case network.Msg_shell_create:
 					case network.Msg_connect_rep,
 						network.Msg_disconnect,
 						network.Msg_forward:

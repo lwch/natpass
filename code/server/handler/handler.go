@@ -128,6 +128,7 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 	case network.Msg_shell_create:
 	case network.Msg_shell_resize:
 	case network.Msg_shell_data:
+	case network.Msg_shell_close:
 	default:
 		return
 	}
@@ -140,26 +141,50 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 	cli.writeMessage(msg)
 }
 
+func (h *Handler) addLink(name, id string, from, to *client) {
+	var pair [2]*client
+	if from != nil {
+		from.addLink(id)
+		pair[0] = from
+	}
+	if to != nil {
+		to.addLink(id)
+		pair[1] = to
+	}
+	h.lockLinks.Lock()
+	h.links[id] = pair
+	h.lockLinks.Unlock()
+	logging.Info("add link %s name %s from %s-%d to %s-%d",
+		id, name, from.parent.id, from.idx, to.parent.id, to.idx)
+}
+
+func (h *Handler) removeLink(id string, from, to *client) {
+	if from != nil {
+		from.removeLink(id)
+	}
+	if to != nil {
+		to.removeLink(id)
+	}
+	h.lockLinks.Lock()
+	delete(h.links, id)
+	h.lockLinks.Unlock()
+	logging.Info("remove link %s from %s-%d to %s-%d",
+		id, from.parent.id, from.idx, to.parent.id, to.idx)
+}
+
 // msgHook hook from on message
 func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
-	case network.Msg_connect_req,
-		network.Msg_shell_create:
-		id := msg.GetLinkId()
-		var pair [2]*client
-		if from != nil {
-			from.addLink(id)
-			pair[0] = from
-		}
-		if to != nil {
-			to.addLink(id)
-			pair[1] = to
-		}
-		h.lockLinks.Lock()
-		h.links[id] = pair
-		h.lockLinks.Unlock()
-		logging.Info("link %s name %s request from %s-%d to %s-%d",
-			id, msg.GetCreq().GetName(), from.parent.id, from.idx, to.parent.id, to.idx)
+	// create link
+	case network.Msg_connect_req:
+		h.addLink(msg.GetCreq().GetName(), msg.GetLinkId(), from, to)
+	case network.Msg_shell_create:
+		h.addLink(msg.GetScreate().GetName(), msg.GetLinkId(), from, to)
+	// remove link
+	case network.Msg_disconnect,
+		network.Msg_shell_close:
+		h.removeLink(msg.GetLinkId(), from, to)
+	// connect response
 	case network.Msg_connect_rep:
 		rep := msg.GetCrep()
 		if rep.GetOk() {
@@ -169,25 +194,13 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 			logging.Info("link %s from %s-%d to %s-%d connect failed, %s",
 				msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx, rep.GetMsg())
 		}
+	// forward data
 	case network.Msg_forward,
 		network.Msg_shell_data:
 		data := msg.GetXData()
 		logging.Debug("link %s forward %d bytes from %s-%d to %s-%d",
 			msg.GetLinkId(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
-	case network.Msg_disconnect,
-		network.Msg_shell_close:
-		id := msg.GetLinkId()
-		if from != nil {
-			from.removeLink(id)
-		}
-		if to != nil {
-			to.removeLink(id)
-		}
-		h.lockLinks.Lock()
-		delete(h.links, id)
-		h.lockLinks.Unlock()
-		logging.Info("link %s disconnect from %s-%d to %s-%d",
-			msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx)
+	// shell
 	case network.Msg_shell_resize:
 		data := msg.GetSresize()
 		logging.Info("shell %s from %s-%d to %s-%d resize to (%d,%d)",

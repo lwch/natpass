@@ -115,14 +115,15 @@ func (conn *Conn) SendKeepalive() {
 }
 
 // SendShellCreate send shell create message
-func (conn *Conn) SendShellCreate(to, id, exec string) {
+func (conn *Conn) SendShellCreate(id string, cfg global.Tunnel) {
 	var msg network.Msg
-	msg.To = to
+	msg.To = cfg.Target
 	msg.XType = network.Msg_shell_create
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Screate{
 		Screate: &network.ShellCreate{
-			Exec: exec,
+			Name: cfg.Name,
+			Exec: cfg.Exec,
 		},
 	}
 	select {

@@ -19,6 +19,6 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	conn := pool.Get(id)
-	conn.SendShellCreate(shell.cfg.Target, id, shell.cfg.Exec)
+	conn.SendShellCreate(shell.cfg.Target, shell.cfg)
 	fmt.Fprint(w, id)
 }

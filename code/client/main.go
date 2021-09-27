@@ -86,7 +86,10 @@ func (a *app) run() {
 						shellCreate(conn, msg)
 					case network.Msg_connect_rep,
 						network.Msg_disconnect,
-						network.Msg_forward:
+						network.Msg_forward,
+						network.Msg_shell_close,
+						network.Msg_shell_resize,
+						network.Msg_shell_data:
 						linkID = msg.GetLinkId()
 					}
 					if len(linkID) > 0 {

@@ -39,4 +39,4 @@ jobs:
       run: go build -v code/server/main.go
 
     - name: Build Client
-      run: go build -v code/client/main.go
+      run: go build -v code/client/main.go code/client/connect.go

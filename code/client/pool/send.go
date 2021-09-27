@@ -131,3 +131,26 @@ func (conn *Conn) SendShellCreate(id string, cfg global.Tunnel) {
 	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
+
+// SendData send shell data
+func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte) {
+	dup := func(data []byte) []byte {
+		ret := make([]byte, len(data))
+		copy(ret, data)
+		return ret
+	}
+	var msg network.Msg
+	msg.To = to
+	msg.ToIdx = toIdx
+	msg.XType = network.Msg_shell_data
+	msg.LinkId = id
+	msg.Payload = &network.Msg_Sdata{
+		Sdata: &network.ShellData{
+			Data: dup(data),
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}

@@ -8,11 +8,9 @@ import (
 	"natpass/code/client/shell"
 	"natpass/code/client/tunnel"
 	"natpass/code/network"
-	"net"
 	"os"
 	"path/filepath"
 	rt "runtime"
-	"strconv"
 	"time"
 
 	_ "net/http/pprof"
@@ -83,9 +81,9 @@ func (a *app) run() {
 					var linkID string
 					switch msg.GetXType() {
 					case network.Msg_connect_req:
-						connect(pl, conn, msg.GetLinkId(), msg.GetFrom(), msg.GetTo(),
-							msg.GetFromIdx(), msg.GetToIdx(), msg.GetCreq())
+						connect(conn, msg)
 					case network.Msg_shell_create:
+						shellCreate(conn, msg)
 					case network.Msg_connect_rep,
 						network.Msg_disconnect,
 						network.Msg_forward:
@@ -158,32 +156,4 @@ func main() {
 	default:
 		runtime.Assert(sv.Run())
 	}
-}
-
-func connect(pool *pool.Pool, conn *pool.Conn, id, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
-	dial := "tcp"
-	if req.GetXType() == network.ConnectRequest_udp {
-		dial = "udp"
-	}
-	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
-	if err != nil {
-		conn.SendConnectError(from, fromIdx, id, err.Error())
-		return
-	}
-	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
-	port, _ := strconv.ParseUint(pt, 10, 16)
-	tn := tunnel.New(global.Tunnel{
-		Name:       req.GetName(),
-		Target:     from,
-		Type:       dial,
-		LocalAddr:  host,
-		LocalPort:  uint16(port),
-		RemoteAddr: req.GetAddr(),
-		RemotePort: uint16(req.GetPort()),
-	})
-	lk := tunnel.NewLink(tn, id, from, link, conn)
-	lk.SetTargetIdx(fromIdx)
-	conn.SendConnectOK(from, fromIdx, id)
-	lk.Forward()
-	lk.OnWork <- struct{}{}
 }

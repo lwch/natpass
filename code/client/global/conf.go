@@ -19,6 +19,7 @@ type Tunnel struct {
 	LocalPort  uint16 `yaml:"local_port"`
 	RemoteAddr string `yaml:"remote_addr"`
 	RemotePort uint16 `yaml:"remote_port"`
+	Exec       string `yaml:"exec"`
 }
 
 // Configure client configure
@@ -58,7 +59,9 @@ func LoadConf(dir string) *Configure {
 	defer f.Close()
 	runtime.Assert(yaml.NewDecoder(f).Decode(&cfg))
 	for i, t := range cfg.Tunnel {
-		if t.Type != "tcp" {
+		switch t.Type {
+		case "tcp", "shell":
+		default:
 			t.Type = "udp"
 		}
 		cfg.Tunnel[i] = t

@@ -113,3 +113,20 @@ func (conn *Conn) SendKeepalive() {
 	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
+
+// SendShellCreate send shell create message
+func (conn *Conn) SendShellCreate(to, id, exec string) {
+	var msg network.Msg
+	msg.To = to
+	msg.XType = network.Msg_shell_create
+	msg.LinkId = id
+	msg.Payload = &network.Msg_Screate{
+		Screate: &network.ShellCreate{
+			Exec: exec,
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}

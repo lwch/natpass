@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package network;
+option go_package="./;network";
+
+message shell_create {
+    string exec = 1;
+}
+
+message shell_resize {
+    uint32 rows = 1;
+    uint32 cols = 2;
+}
+
+message shell_data {
+    bytes data = 1;
+}

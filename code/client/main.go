@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
+	"natpass/code/client/shell"
 	"natpass/code/client/tunnel"
 	"natpass/code/network"
 	"net"
@@ -56,8 +57,14 @@ func (a *app) run() {
 	pl := pool.New(a.cfg)
 
 	for _, t := range a.cfg.Tunnels {
-		tn := tunnel.New(t)
-		go tn.Handle(pl)
+		switch t.Type {
+		case "tcp", "udp":
+			tn := tunnel.New(t)
+			go tn.Handle(pl)
+		case "shell":
+			sh := shell.New(t)
+			go sh.Handle(pl)
+		}
 	}
 
 	for i := 0; i < a.cfg.Links-pl.Size(); i++ {

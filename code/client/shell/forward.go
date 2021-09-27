@@ -26,7 +26,12 @@ func (shell *Shell) remoteRead(remote *pool.Conn) {
 		case network.Msg_shell_resize:
 			// TODO
 		case network.Msg_shell_data:
-			// TODO
+			_, err := shell.stdin.Write(msg.GetSdata().GetData())
+			if err != nil {
+				// TODO: close
+				logging.Error("write data on shell %s link %s failed, err=%v", shell.Name, shell.id, err)
+				return
+			}
 		case network.Msg_shell_close:
 			// TODO
 		}

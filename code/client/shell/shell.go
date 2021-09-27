@@ -50,7 +50,8 @@ func (shell *Shell) Handle(pl *pool.Pool) {
 		}
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/ws", pf(shell.WS))
+	mux.HandleFunc("/new", pf(shell.New))
+	mux.HandleFunc("/ws/", pf(shell.WS))
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", shell.cfg.LocalAddr, shell.cfg.LocalPort),
 		Handler: mux,

@@ -15,9 +15,9 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 	var msg network.Msg
 	msg.To = cfg.Target
 	msg.XType = network.Msg_connect_req
+	msg.LinkId = id
 	msg.Payload = &network.Msg_Creq{
 		Creq: &network.ConnectRequest{
-			Id:    id,
 			Name:  cfg.Name,
 			XType: tp,
 			Addr:  cfg.RemoteAddr,
@@ -36,9 +36,9 @@ func (conn *Conn) SendConnectError(to string, toIdx uint32, id, info string) {
 	msg.To = to
 	msg.ToIdx = toIdx
 	msg.XType = network.Msg_connect_rep
+	msg.LinkId = id
 	msg.Payload = &network.Msg_Crep{
 		Crep: &network.ConnectResponse{
-			Id:  id,
 			Ok:  false,
 			Msg: info,
 		},
@@ -55,9 +55,9 @@ func (conn *Conn) SendConnectOK(to string, toIdx uint32, id string) {
 	msg.To = to
 	msg.ToIdx = toIdx
 	msg.XType = network.Msg_connect_rep
+	msg.LinkId = id
 	msg.Payload = &network.Msg_Crep{
 		Crep: &network.ConnectResponse{
-			Id: id,
 			Ok: true,
 		},
 	}
@@ -73,11 +73,7 @@ func (conn *Conn) SendDisconnect(to string, toIdx uint32, id string) {
 	msg.To = to
 	msg.ToIdx = toIdx
 	msg.XType = network.Msg_disconnect
-	msg.Payload = &network.Msg_XDisconnect{
-		XDisconnect: &network.Disconnect{
-			Id: id,
-		},
-	}
+	msg.LinkId = id
 	select {
 	case conn.write <- &msg:
 	case <-time.After(conn.parent.cfg.WriteTimeout):
@@ -95,9 +91,9 @@ func (conn *Conn) SendData(to string, toIdx uint32, id string, data []byte) {
 	msg.To = to
 	msg.ToIdx = toIdx
 	msg.XType = network.Msg_forward
+	msg.LinkId = id
 	msg.Payload = &network.Msg_XData{
 		XData: &network.Data{
-			Lid:  id,
 			Data: dup(data),
 		},
 	}

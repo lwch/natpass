@@ -106,19 +106,10 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 			return
 		}
 		timeout = 0
-		var linkID string
-		switch msg.GetXType() {
-		case network.Msg_connect_req:
-			linkID = msg.GetCreq().GetId()
-		case network.Msg_connect_rep:
-			linkID = msg.GetCrep().GetId()
-		case network.Msg_disconnect:
-			linkID = msg.GetXDisconnect().GetId()
-		case network.Msg_forward:
-			linkID = msg.GetXData().GetLid()
-		case network.Msg_keepalive:
+		if msg.GetXType() == network.Msg_keepalive {
 			continue
 		}
+		linkID := msg.GetLinkId()
 		conn.RLock()
 		ch := conn.read[linkID]
 		conn.RUnlock()

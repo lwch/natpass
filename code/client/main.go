@@ -9,14 +9,16 @@ import (
 	"natpass/code/network"
 	"net"
 	"os"
+	"path/filepath"
+	rt "runtime"
 	"strconv"
 	"time"
 
-	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/lwch/daemon"
+	"github.com/kardianos/service"
 	"github.com/lwch/logging"
+	"github.com/lwch/runtime"
 )
 
 var (
@@ -34,46 +36,31 @@ func showVersion() {
 	os.Exit(0)
 }
 
-func main() {
-	bak := flag.Bool("d", false, "backend running")
-	pid := flag.String("pid", "", "pid file dir")
-	user := flag.String("u", "", "daemon user")
-	conf := flag.String("conf", "", "configure file path")
-	version := flag.Bool("v", false, "show version info")
-	flag.Parse()
+type app struct {
+	cfg *global.Configure
+}
 
-	if *version {
-		showVersion()
-		os.Exit(0)
-	}
+func (a *app) Start(s service.Service) error {
+	go a.run()
+	return nil
+}
 
-	if len(*conf) == 0 {
-		fmt.Println("missing -conf param")
-		os.Exit(1)
-	}
+func (a *app) run() {
+	// go func() {
+	// 	http.ListenAndServe(":9000", nil)
+	// }()
 
-	if *bak {
-		daemon.Start(0, *pid, *user, "-conf", *conf)
-		return
-	}
-
-	go func() {
-		http.ListenAndServe(":9000", nil)
-	}()
-
-	cfg := global.LoadConf(*conf)
-
-	logging.SetSizeRotate(cfg.LogDir, "np-cli", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
+	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
 	defer logging.Flush()
 
-	pl := pool.New(cfg)
+	pl := pool.New(a.cfg)
 
-	for _, t := range cfg.Tunnels {
+	for _, t := range a.cfg.Tunnels {
 		tn := tunnel.New(t)
 		go tn.Handle(pl)
 	}
 
-	for i := 0; i < cfg.Links-pl.Size(); i++ {
+	for i := 0; i < a.cfg.Links-pl.Size(); i++ {
 		go func() {
 			for {
 				conn := pl.Get()
@@ -89,14 +76,12 @@ func main() {
 					var linkID string
 					switch msg.GetXType() {
 					case network.Msg_connect_req:
-						connect(pl, conn, msg.GetFrom(), msg.GetTo(),
+						connect(pl, conn, msg.GetLinkId(), msg.GetFrom(), msg.GetTo(),
 							msg.GetFromIdx(), msg.GetToIdx(), msg.GetCreq())
-					case network.Msg_connect_rep:
-						linkID = msg.GetCrep().GetId()
-					case network.Msg_disconnect:
-						linkID = msg.GetXDisconnect().GetId()
-					case network.Msg_forward:
-						linkID = msg.GetXData().GetLid()
+					case network.Msg_connect_rep,
+						network.Msg_disconnect,
+						network.Msg_forward:
+						linkID = msg.GetLinkId()
 					}
 					if len(linkID) > 0 {
 						logging.Error("link of %s on connection %d not found, type=%s",
@@ -104,7 +89,7 @@ func main() {
 						continue
 					}
 				}
-				logging.Info("connection %s-%d exited", cfg.ID, conn.Idx)
+				logging.Info("connection %s-%d exited", a.cfg.ID, conn.Idx)
 				time.Sleep(time.Second)
 			}
 		}()
@@ -113,14 +98,68 @@ func main() {
 	select {}
 }
 
-func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
+func (a *app) Stop(s service.Service) error {
+	return nil
+}
+
+func main() {
+	user := flag.String("user", "", "service user")
+	conf := flag.String("conf", "", "configure file path")
+	version := flag.Bool("version", false, "show version info")
+	act := flag.String("action", "", "install or uninstall")
+	flag.Parse()
+
+	if *version {
+		showVersion()
+		os.Exit(0)
+	}
+
+	if len(*conf) == 0 {
+		fmt.Println("missing -conf param")
+		os.Exit(1)
+	}
+
+	dir, err := filepath.Abs(*conf)
+	runtime.Assert(err)
+
+	var depends []string
+	if rt.GOOS != "windows" {
+		depends = append(depends, "After=network.target")
+	}
+
+	appCfg := &service.Config{
+		Name:         "np-cli",
+		DisplayName:  "np-cli",
+		Description:  "nat forward service",
+		UserName:     *user,
+		Arguments:    []string{"-conf", dir},
+		Dependencies: depends,
+	}
+
+	cfg := global.LoadConf(*conf)
+
+	app := &app{cfg: cfg}
+	sv, err := service.New(app, appCfg)
+	runtime.Assert(err)
+
+	switch *act {
+	case "install":
+		runtime.Assert(sv.Install())
+	case "uninstall":
+		runtime.Assert(sv.Uninstall())
+	default:
+		runtime.Assert(sv.Run())
+	}
+}
+
+func connect(pool *pool.Pool, conn *pool.Conn, id, from, to string, fromIdx, toIdx uint32, req *network.ConnectRequest) {
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
 	}
 	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
 	if err != nil {
-		conn.SendConnectError(from, fromIdx, req.GetId(), err.Error())
+		conn.SendConnectError(from, fromIdx, id, err.Error())
 		return
 	}
 	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
@@ -134,9 +173,9 @@ func connect(pool *pool.Pool, conn *pool.Conn, from, to string, fromIdx, toIdx u
 		RemoteAddr: req.GetAddr(),
 		RemotePort: uint16(req.GetPort()),
 	})
-	lk := tunnel.NewLink(tn, req.GetId(), from, link, conn)
+	lk := tunnel.NewLink(tn, id, from, link, conn)
 	lk.SetTargetIdx(fromIdx)
-	conn.SendConnectOK(from, fromIdx, req.GetId())
+	conn.SendConnectOK(from, fromIdx, id)
 	lk.Forward()
 	lk.OnWork <- struct{}{}
 }

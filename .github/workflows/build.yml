@@ -15,12 +15,12 @@ jobs:
         os:
           - ubuntu-18.04
           - ubuntu-20.04
-          # - windows-2016 # tar command error
+          - windows-2016 # tar command error
           - windows-2019
+          - windows-2022
           - macos-10.15
           - macos-11
         go:
-          - '1.11'
           - '1.12'
           - '1.13'
           - '1.14'

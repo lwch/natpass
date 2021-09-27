@@ -87,24 +87,28 @@ server端配置(10.0.1.1)：
   - 建议在server端设置较长的超时时间
   - 建议在client端设置较短的超时时间
 
-## linux部署
+## 部署
 
-1. 将init.d/np-cli和init.d/np-svr拷贝至/etc/init.d目录
-2. 创建/opt/natpass和对应目录
+1. [下载](https://github.com/lwch/natpass/releases)并解压到任意目录
+2. 修改配置文件
+3. 注册服务（windows系统需要管理员权限）
 
-        sudo mkdir -p /opt/natpass/bin /opt/natpass/conf
-3. 将编译出的二进制文件拷贝至/opt/natpass/bin目录
-4. 将配置文件拷贝至/opt/natpass/conf目录，并修改对应参数
-5. 设置开机启动项
+        sudo ./np-svr -conf <配置文件路径> -action install [-user <用户名>]
+        或
+        sudo ./np-cli -conf <配置文件路径> -action install [-user <用户名>]
+4. linux系统
 
         sudo systemctl enable np-svr
+        sudo systemctl start np-svr
         或
         sudo systemctl enable np-cli
-6. 启动对应服务
+        sudo systemctl start np-cli
 
-        sudo /etc/init.d/np-svr start
-        或
-        sudo /etc/init.d/np-cli start
+5. windows系统
+
+        打开服务管理面板：service.msc
+        找到np-svr或np-cli服务
+        右键启动即可
 
 ## iperf3压测对比
 

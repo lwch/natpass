@@ -126,6 +126,7 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 	case network.Msg_disconnect:
 	case network.Msg_forward:
 	case network.Msg_shell_create:
+	case network.Msg_shell_created:
 	case network.Msg_shell_resize:
 	case network.Msg_shell_data:
 	case network.Msg_shell_close:
@@ -172,6 +173,17 @@ func (h *Handler) removeLink(id string, from, to *client) {
 		id, from.parent.id, from.idx, to.parent.id, to.idx)
 }
 
+func (h *Handler) responseLink(id string, ok bool, msg string, from, to *client) {
+	if ok {
+		logging.Info("link %s from %s-%d to %s-%d connect successed",
+			id, from.parent.id, from.idx, to.parent.id, to.idx)
+	} else {
+		logging.Info("link %s from %s-%d to %s-%d connect failed, %s",
+			id, from.parent.id, from.idx, to.parent.id, to.idx, msg)
+		// TODO: remove link?
+	}
+}
+
 // msgHook hook from on message
 func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
@@ -184,16 +196,13 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	case network.Msg_disconnect,
 		network.Msg_shell_close:
 		h.removeLink(msg.GetLinkId(), from, to)
-	// connect response
+	// response link
 	case network.Msg_connect_rep:
 		rep := msg.GetCrep()
-		if rep.GetOk() {
-			logging.Info("link %s from %s-%d to %s-%d connect successed",
-				msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx)
-		} else {
-			logging.Info("link %s from %s-%d to %s-%d connect failed, %s",
-				msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx, rep.GetMsg())
-		}
+		h.responseLink(msg.GetLinkId(), rep.GetOk(), rep.GetMsg(), from, to)
+	case network.Msg_shell_created:
+		rep := msg.GetScreated()
+		h.responseLink(msg.GetLinkId(), rep.GetOk(), rep.GetMsg(), from, to)
 	// forward data
 	case network.Msg_forward:
 		data := msg.GetXData()

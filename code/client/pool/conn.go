@@ -47,6 +47,7 @@ func (conn *Conn) hasLink(id string) bool {
 
 // AddLink attach read message
 func (conn *Conn) AddLink(id string) {
+	logging.Info("add link %s from %d", id, conn.Idx)
 	conn.Lock()
 	if _, ok := conn.read[id]; !ok {
 		conn.read[id] = make(chan *network.Msg)

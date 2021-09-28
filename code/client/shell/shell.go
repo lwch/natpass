@@ -5,21 +5,25 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
 	"net/http"
+	"sync"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
 
 type Shell struct {
-	Name string
-	cfg  global.Tunnel
+	sync.RWMutex
+	Name  string
+	cfg   global.Tunnel
+	links map[string]*Link
 }
 
 // New new shell
 func New(cfg global.Tunnel) *Shell {
 	return &Shell{
-		Name: cfg.Name,
-		cfg:  cfg,
+		Name:  cfg.Name,
+		cfg:   cfg,
+		links: make(map[string]*Link),
 	}
 }
 

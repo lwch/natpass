@@ -21,6 +21,10 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 	conn := pool.Get(id)
 	conn.SendShellCreate(id, shell.cfg)
 	conn.AddLink(id)
+	lk := NewLink(shell, id, shell.cfg.Target, conn)
+	shell.Lock()
+	shell.links[id] = lk
+	shell.Unlock()
 	logging.Info("new shell: name=%s, id=%s", shell.Name, id)
 	fmt.Fprint(w, id)
 }

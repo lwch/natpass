@@ -24,6 +24,7 @@ func (link *Link) remoteRead() {
 		link.targetIdx = msg.GetFromIdx()
 		switch msg.GetXType() {
 		case network.Msg_shell_created:
+			logging.Info("shell created")
 			if msg.GetCrep().GetOk() {
 				link.OnWork <- struct{}{}
 				continue

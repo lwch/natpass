@@ -1,22 +1,21 @@
 package shell
 
 import (
-	"natpass/code/client/pool"
 	"natpass/code/network"
 	"natpass/code/utils"
 
 	"github.com/lwch/logging"
 )
 
-func (shell *Shell) Forward(remote *pool.Conn, toIdx uint32) {
-	go shell.remoteRead(remote)
-	go shell.localRead(remote, toIdx)
+func (link *Link) Forward() {
+	go link.remoteRead()
+	go link.localRead()
 }
 
-func (shell *Shell) remoteRead(remote *pool.Conn) {
+func (link *Link) remoteRead() {
 	defer utils.Recover("remoteRead")
-	defer shell.Close()
-	ch := remote.ChanRead(shell.id)
+	defer link.Close()
+	ch := link.remote.ChanRead(link.id)
 	for {
 		msg := <-ch
 		if msg == nil {
@@ -26,10 +25,11 @@ func (shell *Shell) remoteRead(remote *pool.Conn) {
 		case network.Msg_shell_resize:
 			// TODO
 		case network.Msg_shell_data:
-			_, err := shell.stdin.Write(msg.GetSdata().GetData())
+			_, err := link.stdin.Write(msg.GetSdata().GetData())
 			if err != nil {
 				// TODO: close
-				logging.Error("write data on shell %s link %s failed, err=%v", shell.Name, shell.id, err)
+				logging.Error("write data on shell %s link %s failed, err=%v",
+					link.parent.Name, link.id, err)
 				return
 			}
 		case network.Msg_shell_close:
@@ -38,23 +38,25 @@ func (shell *Shell) remoteRead(remote *pool.Conn) {
 	}
 }
 
-func (shell *Shell) localRead(remote *pool.Conn, toIdx uint32) {
+func (link *Link) localRead() {
 	defer utils.Recover("localRead")
-	defer shell.Close()
+	defer link.Close()
 	buf := make([]byte, 16*1024)
 	for {
-		n, err := shell.stdout.Read(buf)
+		n, err := link.stdout.Read(buf)
 		if err != nil {
 			// if !link.closeFromRemote {
 			// 	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
 			// }
-			logging.Error("read data on shell %s link %s failed, err=%v", shell.Name, shell.id, err)
+			logging.Error("read data on shell %s link %s failed, err=%v",
+				link.parent.Name, link.id, err)
 			return
 		}
 		if n == 0 {
 			continue
 		}
-		logging.Debug("link %s on shell %s read from local %d bytes", shell.id, shell.Name, n)
-		remote.SendShellData(shell.cfg.Target, toIdx, shell.id, buf[:n])
+		logging.Debug("link %s on shell %s read from local %d bytes",
+			link.id, link.parent.Name, n)
+		link.remote.SendShellData(link.target, link.targetIdx, link.id, buf[:n])
 	}
 }

@@ -2,23 +2,17 @@ package shell
 
 import (
 	"fmt"
-	"io"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
 	"net/http"
-	"os"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
 
 type Shell struct {
-	Name   string
-	id     string
-	cfg    global.Tunnel
-	pid    int
-	stdin  io.WriteCloser
-	stdout io.ReadCloser
+	Name string
+	cfg  global.Tunnel
 }
 
 // New new shell
@@ -26,14 +20,6 @@ func New(cfg global.Tunnel) *Shell {
 	return &Shell{
 		Name: cfg.Name,
 		cfg:  cfg,
-	}
-}
-
-func (shell *Shell) Close() {
-	shell.onClose()
-	p, err := os.FindProcess(shell.pid)
-	if err == nil {
-		p.Kill()
 	}
 }
 

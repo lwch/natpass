@@ -52,6 +52,7 @@ func (shell *Shell) localForward(id string, local *websocket.Conn, remote *pool.
 			return
 		}
 		remote.SendShellData(shell.cfg.Target, remote.Idx, id, data)
+		logging.Info("send: %d", remote.Idx)
 		logging.Debug("local read %d bytes: name=%s, id=%s", len(data), shell.Name, id)
 	}
 }

@@ -50,11 +50,12 @@ func shellCreate(conn *pool.Conn, msg *network.Msg) {
 		Type:   "shell",
 		Exec:   create.GetExec(),
 	})
-	err := sh.Exec(msg.GetLinkId())
+	lk := shell.NewLink(sh, msg.GetLinkId(), msg.GetFrom(), conn)
+	lk.SetTargetIdx(msg.GetFromIdx())
+	err := lk.Exec()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
 		return
 	}
-	conn.AddLink(msg.GetLinkId())
-	sh.Forward(conn, msg.GetFromIdx())
+	lk.Forward()
 }

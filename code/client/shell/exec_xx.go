@@ -9,11 +9,10 @@ import (
 	"github.com/creack/pty"
 )
 
-func (shell *Shell) Exec(id string) error {
-	shell.id = id
+func (link *Link) Exec() error {
 	var cmd *exec.Cmd
-	if len(shell.cfg.Exec) > 0 {
-		cmd = exec.Command(shell.cfg.Exec)
+	if len(link.parent.cfg.Exec) > 0 {
+		cmd = exec.Command(link.parent.cfg.Exec)
 	}
 	if cmd == nil {
 		dir, err := exec.LookPath("bash")
@@ -34,14 +33,14 @@ func (shell *Shell) Exec(id string) error {
 	if err != nil {
 		return err
 	}
-	shell.stdin = f
-	shell.stdout = f
-	shell.pid = cmd.Process.Pid
+	link.stdin = f
+	link.stdout = f
+	link.pid = cmd.Process.Pid
 	return nil
 }
 
-func (shell *Shell) onClose() {
-	if shell.stdin != nil {
-		shell.stdin.Close()
+func (link *Link) onClose() {
+	if link.stdin != nil {
+		link.stdin.Close()
 	}
 }

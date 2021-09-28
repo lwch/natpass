@@ -22,6 +22,7 @@ type Link struct {
 	closeFromRemote bool
 }
 
+// NewLink create link
 func NewLink(parent *Tunnel, id, target string, local net.Conn, remote *pool.Conn) *Link {
 	remote.AddLink(id)
 	logging.Info("create link %s for tunnel %s on connection %d",
@@ -104,6 +105,7 @@ func (link *Link) localRead() {
 	}
 }
 
+// SetTargetIdx set link remote index
 func (link *Link) SetTargetIdx(idx uint32) {
 	link.targetIdx = idx
 }

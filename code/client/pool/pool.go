@@ -2,7 +2,6 @@ package pool
 
 import (
 	"crypto/tls"
-	"math/rand"
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"sync"
@@ -28,7 +27,7 @@ func New(cfg *global.Configure) *Pool {
 		cfg:   cfg,
 		conns: make(map[uint32]*Conn, cfg.Links),
 		count: cfg.Links,
-		idx:   rand.Uint32(), // random initialize for fast restart
+		idx:   0,
 	}
 }
 

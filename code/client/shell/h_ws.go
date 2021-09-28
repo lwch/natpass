@@ -47,7 +47,6 @@ func (shell *Shell) localForward(id string, local *websocket.Conn) {
 	link := shell.links[id]
 	shell.RUnlock()
 	defer link.Close()
-	<-link.onWork
 	for {
 		_, data, err := local.ReadMessage()
 		if err != nil {
@@ -74,14 +73,6 @@ func (shell *Shell) remoteForward(id string, local *websocket.Conn) {
 		}
 		link.SetTargetIdx(msg.GetFromIdx())
 		switch msg.GetXType() {
-		case network.Msg_shell_created:
-			if msg.GetScreated().GetOk() {
-				link.onWork <- struct{}{}
-				continue
-			}
-			logging.Error("create shell %s on tunnel %s failed, err=%s",
-				link.id, link.parent.Name, msg.GetScreated().GetMsg())
-			return
 		case network.Msg_shell_data:
 			err := local.WriteMessage(websocket.TextMessage, msg.GetSdata().GetData())
 			if err != nil {

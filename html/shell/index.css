@@ -1,0 +1,7 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+.xterm .xterm-viewport {
+    width: 100% !important;
+}

@@ -16,6 +16,7 @@ func (conn *Conn) SendShellCreate(id string, cfg global.Tunnel) {
 		Screate: &network.ShellCreate{
 			Name: cfg.Name,
 			Exec: cfg.Exec,
+			Env:  cfg.Env,
 		},
 	}
 	select {

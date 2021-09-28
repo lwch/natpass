@@ -4,8 +4,9 @@ package network;
 option go_package="./;network";
 
 message shell_create {
-    string name = 1;
-    string exec = 2;
+    string         name = 1;
+    string         exec = 2;
+    repeated string env = 3;
 }
 
 message shell_created {

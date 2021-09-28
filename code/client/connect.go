@@ -50,6 +50,7 @@ func shellCreate(conn *pool.Conn, msg *network.Msg) {
 		Target: msg.GetFrom(),
 		Type:   "shell",
 		Exec:   create.GetExec(),
+		Env:    create.GetEnv(),
 	})
 	lk := shell.NewLink(sh, msg.GetLinkId(), msg.GetFrom(), conn)
 	lk.SetTargetIdx(msg.GetFromIdx())

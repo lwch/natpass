@@ -30,7 +30,7 @@ func (link *Link) Exec() error {
 	if cmd == nil {
 		return errors.New("no shell command supported")
 	}
-	cmd.Env = os.Environ()
+	cmd.Env = append(os.Environ(), link.parent.cfg.Env...)
 	f, err := pty.Start(cmd)
 	if err != nil {
 		return err

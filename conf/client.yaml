@@ -25,3 +25,5 @@ tunnel:                     # 远端tunnel列表可为空
     #exec: /bin/bash        # 运行命令
                             # windows默认powershell或cmd
                             # 其他系统bash或sh
+    env:                    # 环境变量设置
+      - TERM=xterm

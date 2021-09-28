@@ -22,7 +22,6 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 	}
 	conn := pool.Get(id)
 	conn.SendShellCreate(id, shell.cfg)
-	conn.AddLink(id)
 	link := NewLink(shell, id, shell.cfg.Target, conn)
 	shell.Lock()
 	shell.links[id] = link

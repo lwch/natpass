@@ -121,7 +121,10 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 		if ch == nil {
 			ch = conn.unknownRead
 		}
-		ch <- msg
+		select {
+		case ch <- msg:
+		case <-time.After(conn.WriteTimeout):
+		}
 	}
 }
 

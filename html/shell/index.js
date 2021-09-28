@@ -16,6 +16,8 @@ var page = {
             page.terminal.loadAddon(fit);
             fit.fit();
             page.resize();
+        }).fail(function(xhr) {
+            page.terminal.writeln('连接失败：'+xhr.responseText);
         });
     },
     resize: function() {

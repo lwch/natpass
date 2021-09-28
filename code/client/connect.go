@@ -61,5 +61,4 @@ func shellCreate(conn *pool.Conn, msg *network.Msg) {
 	}
 	conn.SendShellCreatedOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
-	lk.OnWork <- struct{}{}
 }

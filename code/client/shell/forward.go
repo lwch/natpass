@@ -23,15 +23,6 @@ func (link *Link) remoteRead() {
 		}
 		link.targetIdx = msg.GetFromIdx()
 		switch msg.GetXType() {
-		case network.Msg_shell_created:
-			logging.Info("shell created")
-			if msg.GetCrep().GetOk() {
-				link.OnWork <- struct{}{}
-				continue
-			}
-			logging.Error("create shell %s on tunnel %s failed, err=%s",
-				link.id, link.parent.Name, msg.GetCrep().GetMsg())
-			return
 		case network.Msg_shell_resize:
 			// TODO
 		case network.Msg_shell_data:
@@ -51,7 +42,6 @@ func (link *Link) remoteRead() {
 func (link *Link) localRead() {
 	defer utils.Recover("localRead")
 	defer link.Close()
-	<-link.OnWork
 	buf := make([]byte, 16*1024)
 	for {
 		n, err := link.stdout.Read(buf)

@@ -8,6 +8,11 @@ message shell_create {
     string exec = 2;
 }
 
+message shell_created {
+    bool   ok = 1;
+    string msg = 2;
+}
+
 message shell_resize {
     uint32 rows = 1;
     uint32 cols = 2;

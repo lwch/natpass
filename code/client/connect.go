@@ -21,6 +21,7 @@ func connect(conn *pool.Conn, msg *network.Msg) {
 	}
 	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
 	if err != nil {
+		logging.Error("connect to %s:%d failed, err=%v", req.GetAddr(), req.GetPort(), err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
 		return
 	}
@@ -55,7 +56,10 @@ func shellCreate(conn *pool.Conn, msg *network.Msg) {
 	err := lk.Exec()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
+		conn.SendShellCreatedError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
 		return
 	}
+	conn.SendShellCreatedOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
+	lk.OnWork <- struct{}{}
 }

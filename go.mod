@@ -3,9 +3,9 @@ module natpass
 go 1.16
 
 require (
-	github.com/creack/pty v1.1.15 // indirect
+	github.com/creack/pty v1.1.15
 	github.com/dustin/go-humanize v1.0.0
-	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/kardianos/service v1.2.0
 	github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d

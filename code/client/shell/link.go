@@ -14,6 +14,7 @@ type Link struct {
 	target    string // target id
 	targetIdx uint32 // target idx
 	remote    *pool.Conn
+	OnWork    chan struct{}
 	// in remote
 	pid    int
 	stdin  io.WriteCloser
@@ -30,6 +31,7 @@ func NewLink(parent *Shell, id, target string, remote *pool.Conn) *Link {
 		id:     id,
 		target: target,
 		remote: remote,
+		OnWork: make(chan struct{}),
 	}
 }
 

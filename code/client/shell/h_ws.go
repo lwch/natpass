@@ -19,6 +19,7 @@ func (shell *Shell) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) 
 	id := strings.TrimPrefix(r.URL.Path, "/ws/")
 
 	conn := pool.Get(id)
+	logging.Info("ws: %d", conn.Idx)
 	local, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		logging.Error("upgrade websocket failed: %s, err=%v", shell.Name, err)
@@ -44,6 +45,7 @@ func (shell *Shell) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) 
 func (shell *Shell) localForward(id string, local *websocket.Conn, remote *pool.Conn) {
 	defer utils.Recover("localForward")
 	defer local.Close()
+	logging.Info("localForward: %d", remote.Idx)
 	for {
 		_, data, err := local.ReadMessage()
 		if err != nil {

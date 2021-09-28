@@ -3,11 +3,14 @@ package shell
 import (
 	"io"
 	"natpass/code/client/pool"
+	"natpass/code/network"
+	"natpass/code/utils"
 	"os"
 
 	"github.com/lwch/logging"
 )
 
+// Link shell link
 type Link struct {
 	parent    *Shell
 	id        string // link id
@@ -47,4 +50,69 @@ func (link *Link) Close() {
 	if err == nil {
 		p.Kill()
 	}
+	link.remote.SendShellClose(link.target, link.targetIdx, link.id)
+}
+
+// Forward forward data
+func (link *Link) Forward() {
+	go link.remoteRead()
+	go link.localRead()
+}
+
+func (link *Link) remoteRead() {
+	defer utils.Recover("remoteRead")
+	defer link.Close()
+	ch := link.remote.ChanRead(link.id)
+	for {
+		msg := <-ch
+		if msg == nil {
+			return
+		}
+		link.targetIdx = msg.GetFromIdx()
+		switch msg.GetXType() {
+		case network.Msg_shell_resize:
+			size := msg.GetSresize()
+			link.resize(size.GetRows(), size.GetCols())
+		case network.Msg_shell_data:
+			_, err := link.stdin.Write(msg.GetSdata().GetData())
+			if err != nil {
+				logging.Error("write data on shell %s link %s failed, err=%v",
+					link.parent.Name, link.id, err)
+				return
+			}
+		case network.Msg_shell_close:
+			logging.Info("shell %s link %s closed by remote", link.parent.Name, link.id)
+			return
+		}
+	}
+}
+
+func (link *Link) localRead() {
+	defer utils.Recover("localRead")
+	defer link.Close()
+	buf := make([]byte, 16*1024)
+	for {
+		n, err := link.stdout.Read(buf)
+		if err != nil {
+			logging.Error("read data on shell %s link %s failed, err=%v",
+				link.parent.Name, link.id, err)
+			return
+		}
+		if n == 0 {
+			continue
+		}
+		logging.Debug("link %s on shell %s read from local %d bytes",
+			link.id, link.parent.Name, n)
+		link.remote.SendShellData(link.target, link.targetIdx, link.id, buf[:n])
+	}
+}
+
+// SendData send data
+func (link *Link) SendData(data []byte) {
+	link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+}
+
+// SendResize send resize message
+func (link *Link) SendResize(rows, cols uint32) {
+	link.remote.SendShellResize(link.target, link.targetIdx, link.id, rows, cols)
 }

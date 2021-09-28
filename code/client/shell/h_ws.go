@@ -18,7 +18,6 @@ var upgrader = websocket.Upgrader{}
 func (shell *Shell) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/ws/")
 
-	conn := pool.Get(id)
 	local, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		logging.Error("upgrade websocket failed: %s, err=%v", shell.Name, err)
@@ -32,40 +31,42 @@ func (shell *Shell) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) 
 
 	go func() {
 		defer wg.Done()
-		shell.localForward(id, local, conn)
+		shell.localForward(id, local)
 	}()
 	go func() {
 		defer wg.Done()
-		shell.remoteForward(id, conn.ChanRead(id), local)
+		shell.remoteForward(id, local)
 	}()
 	wg.Wait()
 }
 
-func (shell *Shell) localForward(id string, local *websocket.Conn, remote *pool.Conn) {
+func (shell *Shell) localForward(id string, local *websocket.Conn) {
 	defer utils.Recover("localForward")
 	defer local.Close()
 	shell.RLock()
 	link := shell.links[id]
 	shell.RUnlock()
+	defer link.Close()
 	<-link.onWork
 	for {
 		_, data, err := local.ReadMessage()
 		if err != nil {
-			// TODO: close
 			logging.Error("read local data for %s failed: %v", shell.Name, err)
 			return
 		}
-		remote.SendShellData(link.target, link.targetIdx, id, data)
+		link.SendData(data)
 		logging.Debug("local read %d bytes: name=%s, id=%s", len(data), shell.Name, id)
 	}
 }
 
-func (shell *Shell) remoteForward(id string, ch <-chan *network.Msg, local *websocket.Conn) {
+func (shell *Shell) remoteForward(id string, local *websocket.Conn) {
 	defer utils.Recover("remoteForward")
 	defer local.Close()
 	shell.RLock()
 	link := shell.links[id]
 	shell.RUnlock()
+	ch := link.remote.ChanRead(id)
+	defer link.Close()
 	for {
 		msg := <-ch
 		if msg == nil {
@@ -74,7 +75,7 @@ func (shell *Shell) remoteForward(id string, ch <-chan *network.Msg, local *webs
 		link.SetTargetIdx(msg.GetFromIdx())
 		switch msg.GetXType() {
 		case network.Msg_shell_created:
-			if msg.GetCrep().GetOk() {
+			if msg.GetScreated().GetOk() {
 				link.onWork <- struct{}{}
 				continue
 			}
@@ -89,7 +90,10 @@ func (shell *Shell) remoteForward(id string, ch <-chan *network.Msg, local *webs
 			}
 			logging.Debug("remote read %d bytes: name=%s, id=%s",
 				len(msg.GetSdata().GetData()), shell.Name, id)
-			// TODO: other
+		case network.Msg_shell_close:
+			logging.Info("shell %s on tunnel %s closed by remote",
+				link.id, link.parent.Name)
+			return
 		}
 	}
 }

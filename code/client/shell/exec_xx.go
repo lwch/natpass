@@ -4,6 +4,7 @@ package shell
 
 import (
 	"errors"
+	"os"
 	"os/exec"
 
 	"github.com/creack/pty"
@@ -42,5 +43,14 @@ func (link *Link) Exec() error {
 func (link *Link) onClose() {
 	if link.stdin != nil {
 		link.stdin.Close()
+	}
+}
+
+func (link *Link) resize(rows, cols uint32) {
+	if link.stdin != nil {
+		pty.Setsize(link.stdin.(*os.File), &pty.Winsize{
+			Rows: uint16(rows),
+			Cols: uint16(cols),
+		})
 	}
 }

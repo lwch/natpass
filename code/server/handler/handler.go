@@ -11,13 +11,35 @@ import (
 	"github.com/lwch/logging"
 )
 
+type link struct {
+	id        string
+	t         network.MsgType
+	endPoints [2]*client
+}
+
+func (link *link) close() {
+	close := func(cli *client) {
+		if cli == nil {
+			return
+		}
+		switch link.t {
+		case network.Msg_connect_req:
+			cli.closeLink(link.id)
+		case network.Msg_shell_create:
+			cli.closeShell(link.id)
+		}
+	}
+	close(link.endPoints[0])
+	close(link.endPoints[1])
+}
+
 // Handler handler
 type Handler struct {
 	cfg         *global.Configure
 	lockClients sync.RWMutex
 	clients     map[string]*clients // client id => client
 	lockLinks   sync.RWMutex
-	links       map[string][2]*client // link id => endpoints
+	links       map[string]link // link id => endpoints
 }
 
 // New create handler
@@ -25,7 +47,7 @@ func New(cfg *global.Configure) *Handler {
 	return &Handler{
 		cfg:     cfg,
 		clients: make(map[string]*clients),
-		links:   make(map[string][2]*client),
+		links:   make(map[string]link),
 	}
 }
 
@@ -97,14 +119,14 @@ func (h *Handler) readHandshake(c *network.Conn) (string, uint32, error) {
 
 func (h *Handler) getClient(linkID, to string, toIdx uint32) *client {
 	h.lockLinks.RLock()
-	pair := h.links[linkID]
+	link := h.links[linkID]
 	h.lockLinks.RUnlock()
 
-	if pair[0] != nil && pair[0].is(to, toIdx) {
-		return pair[0]
+	if link.endPoints[0] != nil && link.endPoints[0].is(to, toIdx) {
+		return link.endPoints[0]
 	}
-	if pair[1] != nil && pair[1].is(to, toIdx) {
-		return pair[1]
+	if link.endPoints[1] != nil && link.endPoints[1].is(to, toIdx) {
+		return link.endPoints[1]
 	}
 
 	h.lockClients.RLock()
@@ -142,18 +164,20 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 	cli.writeMessage(msg)
 }
 
-func (h *Handler) addLink(name, id string, from, to *client) {
-	var pair [2]*client
+func (h *Handler) addLink(name, id string, t network.MsgType, from, to *client) {
+	var link link
+	link.id = id
+	link.t = t
 	if from != nil {
 		from.addLink(id)
-		pair[0] = from
+		link.endPoints[0] = from
 	}
 	if to != nil {
 		to.addLink(id)
-		pair[1] = to
+		link.endPoints[1] = to
 	}
 	h.lockLinks.Lock()
-	h.links[id] = pair
+	h.links[id] = link
 	h.lockLinks.Unlock()
 	logging.Info("add link %s name %s from %s-%d to %s-%d",
 		id, name, from.parent.id, from.idx, to.parent.id, to.idx)
@@ -189,9 +213,9 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
 	// create link
 	case network.Msg_connect_req:
-		h.addLink(msg.GetCreq().GetName(), msg.GetLinkId(), from, to)
+		h.addLink(msg.GetCreq().GetName(), msg.GetLinkId(), msg.GetXType(), from, to)
 	case network.Msg_shell_create:
-		h.addLink(msg.GetScreate().GetName(), msg.GetLinkId(), from, to)
+		h.addLink(msg.GetScreate().GetName(), msg.GetLinkId(), msg.GetXType(), from, to)
 	// remove link
 	case network.Msg_disconnect,
 		network.Msg_shell_close:
@@ -229,14 +253,9 @@ func (h *Handler) closeClient(cli *client) {
 	links := cli.getLinks()
 	for _, t := range links {
 		h.lockLinks.RLock()
-		pair := h.links[t]
+		link := h.links[t]
 		h.lockLinks.RUnlock()
-		if pair[0] != nil {
-			pair[0].closeLink(t)
-		}
-		if pair[1] != nil {
-			pair[1].closeLink(t)
-		}
+		link.close()
 		h.lockLinks.Lock()
 		delete(h.links, t)
 		h.lockLinks.Unlock()

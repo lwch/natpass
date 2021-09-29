@@ -10,6 +10,7 @@ import (
 	"github.com/creack/pty"
 )
 
+// Exec execute shell command
 func (link *Link) Exec() error {
 	var cmd *exec.Cmd
 	if len(link.parent.cfg.Exec) > 0 {

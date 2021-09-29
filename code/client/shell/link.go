@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/lwch/logging"
+	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 // Link shell link
@@ -99,9 +100,20 @@ func (link *Link) localRead() {
 		if n == 0 {
 			continue
 		}
+		var data []byte
+		switch {
+		case isUtf8(buf[:n]):
+			data = buf[:n]
+		case isGBK(buf[:n]):
+			data, err = simplifiedchinese.GBK.NewDecoder().Bytes(buf[:n])
+			if err != nil {
+				logging.Error("transform gbk to utf8 failed: %v", err)
+				continue
+			}
+		}
 		logging.Debug("link %s on shell %s read from local %d bytes",
 			link.id, link.parent.Name, n)
-		link.remote.SendShellData(link.target, link.targetIdx, link.id, buf[:n])
+		link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
 	}
 }
 

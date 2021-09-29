@@ -137,6 +137,14 @@ shell隧道用于创建一个网页端的命令行操作页面
     - windows系统：优先查找powershell命令，若没有则查找cmd命令，否则报错
 7. `env`: 进程启动时的环境变量设置
 
+linux命令行效果
+
+![linux-shell](docs/shell_linux.png)
+
+windows命令行效果
+
+![windows-shell](docs/shell_win.png)
+
 ## 部署
 
 1. [下载](https://github.com/lwch/natpass/releases)并解压到任意目录

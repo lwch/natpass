@@ -35,6 +35,7 @@ func (link *Link) Exec() error {
 	if err != nil {
 		return err
 	}
+	go cmd.Wait() // defunct process
 	link.stdin = f
 	link.stdout = f
 	link.pid = cmd.Process.Pid

@@ -40,6 +40,5 @@ jobs:
 
       - name: Build Client
         run: |
-          go run contrib/bindata/main.go -pkg shell -o code/client/shell/assets.go \
-            -prefix html/shell "$@" html/shell/...
+          go run contrib/bindata/main.go -pkg shell -o code/client/shell/assets.go -prefix html/shell "$@" html/shell/...
           go build -v code/client/main.go code/client/connect.go

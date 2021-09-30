@@ -60,10 +60,22 @@ var targets = []target{
 func main() {
 	os.RemoveAll(releaseDir)
 	runtime.Assert(os.MkdirAll(releaseDir, 0755))
+	bindata()
 	for _, target := range targets {
 		logging.Info("build target %s/%s...", target.os, target.arch)
 		build(target)
 	}
+}
+
+func bindata() {
+	cmd := exec.Command("go", "run", "contrib/bindata/main.go",
+		"-pkg", "shell",
+		"-o", "code/client/shell/assets.go",
+		"-prefix", "html/shell",
+		"html/shell/...")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	runtime.Assert(cmd.Run())
 }
 
 func build(t target) {

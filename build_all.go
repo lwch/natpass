@@ -109,7 +109,8 @@ func build(t target) {
 	logging.Info("build client...")
 	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-cli"+t.ext),
 		"-ldflags", ldflags,
-		path.Join("code", "client", "main.go"))
+		path.Join("code", "client", "main.go"),
+		path.Join("code", "client", "connect.go"))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(os.Environ(),

@@ -19,7 +19,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
-const version = "0.2.0"
+const version = "0.3.0"
 const buildDir = "tmp"
 const releaseDir = "release"
 

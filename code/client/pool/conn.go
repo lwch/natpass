@@ -13,22 +13,26 @@ import (
 
 type Conn struct {
 	sync.RWMutex
-	Idx         uint32
-	parent      *Pool
-	conn        *network.Conn
-	read        map[string]chan *network.Msg // link id => channel
-	unknownRead chan *network.Msg            // read message without link
-	write       chan *network.Msg            // link id => channel
+	Idx          uint32
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+	parent       *Pool
+	conn         *network.Conn
+	read         map[string]chan *network.Msg // link id => channel
+	unknownRead  chan *network.Msg            // read message without link
+	write        chan *network.Msg            // link id => channel
 }
 
 func newConn(parent *Pool, conn *network.Conn, idx uint32) *Conn {
 	ret := &Conn{
-		Idx:         idx,
-		parent:      parent,
-		conn:        conn,
-		read:        make(map[string]chan *network.Msg),
-		unknownRead: make(chan *network.Msg),
-		write:       make(chan *network.Msg),
+		Idx:          idx,
+		ReadTimeout:  parent.cfg.ReadTimeout,
+		WriteTimeout: parent.cfg.WriteTimeout,
+		parent:       parent,
+		conn:         conn,
+		read:         make(map[string]chan *network.Msg),
+		unknownRead:  make(chan *network.Msg),
+		write:        make(chan *network.Msg),
 	}
 	logging.Info("new connection: %s-%d", ret.parent.cfg.ID, ret.Idx)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -47,6 +51,7 @@ func (conn *Conn) hasLink(id string) bool {
 
 // AddLink attach read message
 func (conn *Conn) AddLink(id string) {
+	logging.Info("add link %s from %d", id, conn.Idx)
 	conn.Lock()
 	if _, ok := conn.read[id]; !ok {
 		conn.read[id] = make(chan *network.Msg)
@@ -116,7 +121,10 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 		if ch == nil {
 			ch = conn.unknownRead
 		}
-		ch <- msg
+		select {
+		case ch <- msg:
+		case <-time.After(conn.WriteTimeout):
+		}
 	}
 }
 
@@ -145,6 +153,14 @@ func (conn *Conn) ChanRead(id string) <-chan *network.Msg {
 	conn.RLock()
 	defer conn.RUnlock()
 	return conn.read[id]
+}
+
+// Reset reset message next read
+func (conn *Conn) Reset(id string, msg *network.Msg) {
+	conn.RLock()
+	ch := conn.read[id]
+	conn.RUnlock()
+	ch <- msg
 }
 
 func (conn *Conn) ChanUnknown() <-chan *network.Msg {

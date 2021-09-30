@@ -83,6 +83,19 @@ func (c *client) closeLink(id string) {
 	c.Unlock()
 }
 
+func (c *client) closeShell(id string) {
+	var msg network.Msg
+	msg.From = "server"
+	msg.To = c.parent.id
+	msg.ToIdx = c.idx
+	msg.XType = network.Msg_shell_close
+	msg.LinkId = id
+	c.conn.WriteMessage(&msg, c.parent.parent.cfg.WriteTimeout)
+	c.Lock()
+	delete(c.links, id)
+	c.Unlock()
+}
+
 func (c *client) is(id string, idx uint32) bool {
 	return c.parent.id == id && c.idx == idx
 }

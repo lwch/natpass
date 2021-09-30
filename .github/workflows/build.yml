@@ -28,15 +28,17 @@ jobs:
           - '1.16'
           - '1.17'
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: ${{ matrix.go }}
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
 
-    - name: Build Server
-      run: go build -v code/server/main.go
+      - name: Build Server
+        run: go build -v code/server/main.go
 
-    - name: Build Client
-      run: go build -v code/client/main.go
+      - name: Build Client
+        run: |
+          go run contrib/bindata/main.go -pkg shell -o code/client/shell/assets.go -prefix html/shell html/shell/...
+          go build -v code/client/main.go code/client/connect.go

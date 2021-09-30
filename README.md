@@ -71,10 +71,6 @@ server端配置(10.0.1.1)：
 11. 172.168.1.100上的np-cli接收到connect_response消息后根据是否成功来决定是否需要断开rdp客户端链接
 12. 链路打通，两端各自发送data消息到对应链路
 
-## 编译
-
-    ./build
-
 ## 链接配置
 
     link:
@@ -86,6 +82,66 @@ server端配置(10.0.1.1)：
 2. read_timeout和write_timeout为数据读写超时时间
   - 建议在server端设置较长的超时时间
   - 建议在client端设置较短的超时时间
+
+## 隧道配置
+
+所有隧道均为正向隧道，由连接发起方进行配置
+
+### tcp隧道
+
+tcp隧道用于反向代理远程的任意服务，如rdp、ssh、http等
+
+    - name: rdp               # 链路名称
+      target: that            # 目标客户端ID
+      type: tcp               # 连接类型tcp或udp
+      local_addr: 0.0.0.0     # 本地监听地址
+      local_port: 3389        # 本地监听端口号
+      remote_addr: 127.0.0.1  # 目标客户端连接地址
+      remote_port: 3389       # 目标客户端连接端口号
+
+1. `name`: 该隧道名称，必须全局唯一
+2. `target`: 对端客户端ID
+3. `type`: tcp
+4. `local_addr`: 本地监听地址，如只允许局域网访问可绑定在局域网IP地址上
+5. `local_port`: 本地监听端口号
+6. `remote_addr`: 目标客户端连接地址，该地址为127.0.0.1时表示连接本机服务，也可连接局域网或广域网上的其他地址
+7. `remote_port`: 目标客户端连接端口号
+
+### shell隧道
+
+shell隧道用于创建一个网页端的命令行操作页面
+
+    - name: shell             # 链路名称
+      target: that            # 目标客户端ID
+      type: shell             # web shell
+      local_addr: 0.0.0.0     # 本地监听地址
+      local_port: 8080        # 本地监听端口号
+      #exec: /bin/bash        # 运行命令
+                              # windows默认powershell或cmd
+                              # 其他系统bash或sh
+      env:                    # 环境变量设置
+        - TERM=xterm
+
+1. `name`: 该隧道名称，必须全局唯一
+2. `target`: 对端客户端ID
+3. `type`: shell
+4. `local_addr`: 本地监听地址，如只允许局域网访问可绑定在局域网IP地址上
+5. `local_port`: 本地监听端口号
+6. `exec`: 连接建立成功后的启动命令
+    - 指定该参数：直接使用设定的命令运行
+    - linux系统：优先查找bash命令，若没有则查找sh命令，否则报错
+    - windows系统：优先查找powershell命令，若没有则查找cmd命令，否则报错
+7. `env`: 进程启动时的环境变量设置
+
+连接成功后即可使用浏览器访问`local_port`所对应的端口来创建shell隧道
+
+linux命令行效果
+
+![linux-shell](docs/shell_linux.png)
+
+windows命令行效果
+
+![windows-shell](docs/shell_win.png)
 
 ## 部署
 
@@ -123,3 +179,11 @@ server端配置(10.0.1.1)：
     [ ID] Interval           Transfer     Bitrate         Retr
     [  5]   0.00-60.00  sec  66.2 MBytes  9.26 Mbits/sec   31             sender
     [  5]   0.00-60.10  sec  57.7 MBytes  8.05 Mbits/sec                  receiver
+
+## TODO
+
+1. 支持include的yaml配置文件
+2. 通用的connect、connect_response、disconnect消息
+3. 所有隧道的portal页面
+4. web远程桌面
+5. 流量监控统计页面，server还是client?

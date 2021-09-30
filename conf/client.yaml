@@ -17,3 +17,13 @@ tunnel:                     # 远端tunnel列表可为空
     local_port: 3389        # 本地监听端口号
     remote_addr: 127.0.0.1  # 目标客户端连接地址
     remote_port: 3389       # 目标客户端连接端口号
+  - name: shell             # 链路名称
+    target: that            # 目标客户端ID
+    type: shell             # web shell
+    local_addr: 0.0.0.0     # 本地监听地址
+    local_port: 8080        # 本地监听端口号
+    #exec: /bin/bash        # 运行命令
+                            # windows默认powershell或cmd
+                            # 其他系统bash或sh
+    env:                    # 环境变量设置
+      - TERM=xterm

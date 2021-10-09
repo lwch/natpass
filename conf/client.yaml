@@ -1,6 +1,5 @@
 id: this               # 客户端ID
 server: 127.0.0.1:6154 # 服务器地址
-#include conf.d/connection.yaml
-#include conf.d/log.yaml
+#include conf.d/*.yaml
 tunnel: # tunnel列表
   #include tunnel.d/*.yaml

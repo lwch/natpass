@@ -42,6 +42,11 @@ var targets = []target{
 	{"linux", "amd64", "", ".tar.gz"},
 	{"linux", "arm", "", ".tar.gz"},
 	{"linux", "arm64", "", ".tar.gz"},
+	// mips
+	{"linux", "mips", "", ".tar.gz"},
+	{"linux", "mips64", "", ".tar.gz"},
+	{"linux", "mips64le", "", ".tar.gz"},
+	{"linux", "mipsle", "", ".tar.gz"},
 	// netbsd
 	{"netbsd", "386", "", ".tar.gz"},
 	{"netbsd", "amd64", "", ".tar.gz"},

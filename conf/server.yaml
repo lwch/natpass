@@ -1,12 +1,4 @@
-listen: 6154       # 监听端口号
-secret: 0123456789 # 预共享密钥
-link:
-  read_timeout: 5s  # 读取数据包超时时间
-  write_timeout: 5s # 发送数据包超时时间
-log:
-  dir: ./logs # 路径
-  size: 50M   # 单个文件大小
-  rotate: 7   # 保留数量
+listen: 6154 # 监听端口号
 tls:
   key: /dir/to/tls/key/file # tls密钥
   crt: /dir/to/tls/crt/file # tls证书

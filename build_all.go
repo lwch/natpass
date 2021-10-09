@@ -88,9 +88,16 @@ func build(t target) {
 	os.RemoveAll(buildDir)
 	runtime.Assert(os.MkdirAll(buildDir, 0755))
 
-	err := copyFile(path.Join("conf", "client.yaml"), path.Join(buildDir, "client.yaml"))
-	runtime.Assert(err)
-	err = copyFile(path.Join("conf", "server.yaml"), path.Join(buildDir, "server.yaml"))
+	err := filepath.Walk("conf", func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		path = strings.TrimPrefix(path, "conf")
+		if info.IsDir() {
+			return os.MkdirAll(filepath.Join(buildDir, path), 0755)
+		}
+		return copyFile("conf"+path, filepath.Join(buildDir, path))
+	})
 	runtime.Assert(err)
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)

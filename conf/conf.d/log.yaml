@@ -1,0 +1,4 @@
+log:
+  dir: ./logs # 路径
+  size: 50M   # 单个文件大小
+  rotate: 7   # 保留数量

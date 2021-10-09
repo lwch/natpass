@@ -3,11 +3,10 @@ package global
 import (
 	"crypto/md5"
 	"natpass/code/utils"
-	"os"
 	"time"
 
 	"github.com/lwch/runtime"
-	"gopkg.in/yaml.v2"
+	"github.com/lwch/yaml"
 )
 
 // Tunnel tunnel config
@@ -55,10 +54,7 @@ func LoadConf(dir string) *Configure {
 		} `yaml:"log"`
 		Tunnel []Tunnel `yaml:"tunnel"`
 	}
-	f, err := os.Open(dir)
-	runtime.Assert(err)
-	defer f.Close()
-	runtime.Assert(yaml.NewDecoder(f).Decode(&cfg))
+	runtime.Assert(yaml.Decode(dir, &cfg))
 	for i, t := range cfg.Tunnel {
 		switch t.Type {
 		case "tcp", "shell":

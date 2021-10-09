@@ -30,6 +30,7 @@ type target struct {
 	packExt string
 }
 
+// go tool dist list
 var targets = []target{
 	// freebsd
 	{"freebsd", "386", "", ".tar.gz"},

@@ -9,6 +9,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
+// Tunnel tunnel object
 type Tunnel struct {
 	Name string
 	cfg  global.Tunnel

@@ -11,6 +11,7 @@ import (
 	"github.com/lwch/logging"
 )
 
+// Link link object
 type Link struct {
 	parent          *Tunnel
 	id              string // link id

@@ -21,7 +21,7 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	conn := pool.Get(id)
-	conn.SendShellCreate(id, shell.cfg)
+	conn.SendConnectReq(id, shell.cfg)
 	link := NewLink(shell, id, shell.cfg.Target, conn)
 	shell.Lock()
 	shell.links[id] = link
@@ -37,15 +37,15 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 			http.Error(w, "timeout", http.StatusBadGateway)
 			return
 		}
-		if msg.GetXType() != network.Msg_shell_created {
+		if msg.GetXType() != network.Msg_connect_rep {
 			conn.Reset(id, msg)
 			time.Sleep(conn.ReadTimeout / 10)
 			continue
 		}
-		rep := msg.GetScreated()
+		rep := msg.GetCrep()
 		if !rep.GetOk() {
 			logging.Error("create shell %s on tunnel %s failed, err=%s",
-				link.id, link.parent.Name, msg.GetScreated().GetMsg())
+				link.id, link.parent.Name, rep.GetMsg())
 			http.Error(w, rep.GetMsg(), http.StatusBadGateway)
 			return
 		}

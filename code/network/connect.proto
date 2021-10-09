@@ -3,15 +3,28 @@ syntax = "proto3";
 package network;
 option go_package="./;network";
 
+message connect_addr {
+    string addr = 1;
+    uint32 port = 2;
+}
+
+message connect_shell {
+    string         exec = 1;
+    repeated string env = 2;
+}
+
 message connect_request {
     enum type {
-        tcp = 0;
-        udp = 1;
+        tcp   = 0;
+        udp   = 1;
+        shell = 2;
     }
     string name = 1;
     type  _type = 2;
-    string addr = 3;
-    uint32 port = 4;
+    oneof payload {
+        connect_addr   caddr = 10;
+        connect_shell cshell = 11;
+    }
 }
 
 message connect_response {

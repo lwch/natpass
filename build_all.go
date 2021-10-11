@@ -44,6 +44,7 @@ var targets = []target{
 	{"windows", "386", ".exe", ".zip"},
 	{"windows", "amd64", ".exe", ".zip"},
 	{"windows", "arm", ".exe", ".zip"},
+	{"windows", "arm64", ".exe", ".zip"},
 }
 
 func main() {

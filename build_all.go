@@ -32,31 +32,14 @@ type target struct {
 
 // go tool dist list
 var targets = []target{
-	// freebsd
-	{"freebsd", "386", "", ".tar.gz"},
-	{"freebsd", "amd64", "", ".tar.gz"},
-	{"freebsd", "arm", "", ".tar.gz"},
-	{"freebsd", "arm64", "", ".tar.gz"},
+	// darwin
+	{"darwin", "amd64", "", ".tar.gz"},
+	{"darwin", "arm64", "", ".tar.gz"},
 	// linux
 	{"linux", "386", "", ".tar.gz"},
 	{"linux", "amd64", "", ".tar.gz"},
 	{"linux", "arm", "", ".tar.gz"},
 	{"linux", "arm64", "", ".tar.gz"},
-	// mips
-	{"linux", "mips", "", ".tar.gz"},
-	{"linux", "mips64", "", ".tar.gz"},
-	{"linux", "mips64le", "", ".tar.gz"},
-	{"linux", "mipsle", "", ".tar.gz"},
-	// netbsd
-	{"netbsd", "386", "", ".tar.gz"},
-	{"netbsd", "amd64", "", ".tar.gz"},
-	{"netbsd", "arm", "", ".tar.gz"},
-	{"netbsd", "arm64", "", ".tar.gz"},
-	// openbsd
-	{"openbsd", "386", "", ".tar.gz"},
-	{"openbsd", "amd64", "", ".tar.gz"},
-	{"openbsd", "arm", "", ".tar.gz"},
-	{"openbsd", "arm64", "", ".tar.gz"},
 	// windows
 	{"windows", "386", ".exe", ".zip"},
 	{"windows", "amd64", ".exe", ".zip"},

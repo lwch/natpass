@@ -1,0 +1,7 @@
+- name: rdp               # 链路名称
+  target: that            # 目标客户端ID
+  type: tcp               # 连接类型tcp或udp
+  local_addr: 0.0.0.0     # 本地监听地址
+  local_port: 3389        # 本地监听端口号
+  remote_addr: 127.0.0.1  # 目标客户端连接地址
+  remote_port: 3389       # 目标客户端连接端口号

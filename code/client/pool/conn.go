@@ -11,6 +11,7 @@ import (
 	"github.com/lwch/logging"
 )
 
+// Conn pool connection
 type Conn struct {
 	sync.RWMutex
 	Idx          uint32
@@ -163,6 +164,7 @@ func (conn *Conn) Reset(id string, msg *network.Msg) {
 	ch <- msg
 }
 
+// ChanUnknown get channel of unknown link id
 func (conn *Conn) ChanUnknown() <-chan *network.Msg {
 	return conn.unknownRead
 }

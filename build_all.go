@@ -19,7 +19,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
-const version = "0.3.0"
+const version = "0.4.0"
 const buildDir = "tmp"
 const releaseDir = "release"
 
@@ -30,6 +30,7 @@ type target struct {
 	packExt string
 }
 
+// go tool dist list
 var targets = []target{
 	// freebsd
 	{"freebsd", "386", "", ".tar.gz"},
@@ -41,6 +42,11 @@ var targets = []target{
 	{"linux", "amd64", "", ".tar.gz"},
 	{"linux", "arm", "", ".tar.gz"},
 	{"linux", "arm64", "", ".tar.gz"},
+	// mips
+	{"linux", "mips", "", ".tar.gz"},
+	{"linux", "mips64", "", ".tar.gz"},
+	{"linux", "mips64le", "", ".tar.gz"},
+	{"linux", "mipsle", "", ".tar.gz"},
 	// netbsd
 	{"netbsd", "386", "", ".tar.gz"},
 	{"netbsd", "amd64", "", ".tar.gz"},
@@ -82,9 +88,16 @@ func build(t target) {
 	os.RemoveAll(buildDir)
 	runtime.Assert(os.MkdirAll(buildDir, 0755))
 
-	err := copyFile(path.Join("conf", "client.yaml"), path.Join(buildDir, "client.yaml"))
-	runtime.Assert(err)
-	err = copyFile(path.Join("conf", "server.yaml"), path.Join(buildDir, "server.yaml"))
+	err := filepath.Walk("conf", func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		path = strings.TrimPrefix(path, "conf")
+		if info.IsDir() {
+			return os.MkdirAll(filepath.Join(buildDir, path), 0755)
+		}
+		return copyFile("conf"+path, filepath.Join(buildDir, path))
+	})
 	runtime.Assert(err)
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)

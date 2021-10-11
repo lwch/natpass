@@ -81,15 +81,13 @@ func (a *app) run() {
 					var linkID string
 					switch msg.GetXType() {
 					case network.Msg_connect_req:
-						connect(conn, msg)
-					case network.Msg_shell_create:
-						shellCreate(conn, msg)
-					case network.Msg_connect_rep,
-						network.Msg_disconnect,
-						network.Msg_forward,
-						network.Msg_shell_close,
-						network.Msg_shell_resize,
-						network.Msg_shell_data:
+						switch msg.GetCreq().GetXType() {
+						case network.ConnectRequest_tcp, network.ConnectRequest_udp:
+							connect(conn, msg)
+						case network.ConnectRequest_shell:
+							shellCreate(conn, msg)
+						}
+					default:
 						linkID = msg.GetLinkId()
 					}
 					if len(linkID) > 0 {

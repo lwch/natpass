@@ -13,7 +13,7 @@ import (
 
 type link struct {
 	id        string
-	t         network.MsgType
+	t         network.ConnectRequestType
 	endPoints [2]*client
 }
 
@@ -22,12 +22,7 @@ func (link *link) close() {
 		if cli == nil {
 			return
 		}
-		switch link.t {
-		case network.Msg_connect_req:
-			cli.closeLink(link.id)
-		case network.Msg_shell_create:
-			cli.closeShell(link.id)
-		}
+		cli.closeLink(link.id)
 	}
 	close(link.endPoints[0])
 	close(link.endPoints[1])
@@ -147,11 +142,8 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 	case network.Msg_connect_rep:
 	case network.Msg_disconnect:
 	case network.Msg_forward:
-	case network.Msg_shell_create:
-	case network.Msg_shell_created:
 	case network.Msg_shell_resize:
 	case network.Msg_shell_data:
-	case network.Msg_shell_close:
 	default:
 		return
 	}
@@ -164,7 +156,7 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 	cli.writeMessage(msg)
 }
 
-func (h *Handler) addLink(name, id string, t network.MsgType, from, to *client) {
+func (h *Handler) addLink(name, id string, t network.ConnectRequestType, from, to *client) {
 	var link link
 	link.id = id
 	link.t = t
@@ -213,19 +205,13 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	switch msg.GetXType() {
 	// create link
 	case network.Msg_connect_req:
-		h.addLink(msg.GetCreq().GetName(), msg.GetLinkId(), msg.GetXType(), from, to)
-	case network.Msg_shell_create:
-		h.addLink(msg.GetScreate().GetName(), msg.GetLinkId(), msg.GetXType(), from, to)
+		h.addLink(msg.GetCreq().GetName(), msg.GetLinkId(), msg.GetCreq().GetXType(), from, to)
 	// remove link
-	case network.Msg_disconnect,
-		network.Msg_shell_close:
+	case network.Msg_disconnect:
 		h.removeLink(msg.GetLinkId(), from, to)
 	// response link
 	case network.Msg_connect_rep:
 		rep := msg.GetCrep()
-		h.responseLink(msg.GetLinkId(), rep.GetOk(), rep.GetMsg(), from, to)
-	case network.Msg_shell_created:
-		rep := msg.GetScreated()
 		h.responseLink(msg.GetLinkId(), rep.GetOk(), rep.GetMsg(), from, to)
 	// forward data
 	case network.Msg_forward:

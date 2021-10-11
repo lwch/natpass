@@ -3,11 +3,10 @@ package global
 import (
 	"crypto/md5"
 	"natpass/code/utils"
-	"os"
 	"time"
 
 	"github.com/lwch/runtime"
-	"gopkg.in/yaml.v2"
+	"github.com/lwch/yaml"
 )
 
 // Configure server configure
@@ -42,10 +41,7 @@ func LoadConf(dir string) *Configure {
 			Crt string `yaml:"crt"`
 		} `yaml:"tls"`
 	}
-	f, err := os.Open(dir)
-	runtime.Assert(err)
-	defer f.Close()
-	runtime.Assert(yaml.NewDecoder(f).Decode(&cfg))
+	runtime.Assert(yaml.Decode(dir, &cfg))
 	return &Configure{
 		Listen:       cfg.Listen,
 		Enc:          md5.Sum([]byte(cfg.Secret)),

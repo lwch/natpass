@@ -49,7 +49,7 @@ func (link *Link) Close() {
 	if err == nil {
 		p.Kill()
 	}
-	link.remote.SendShellClose(link.target, link.targetIdx, link.id)
+	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
 }
 
 // Forward forward data
@@ -79,7 +79,7 @@ func (link *Link) remoteRead() {
 					link.parent.Name, link.id, err)
 				return
 			}
-		case network.Msg_shell_close:
+		case network.Msg_disconnect:
 			logging.Info("shell %s link %s closed by remote", link.parent.Name, link.id)
 			return
 		}

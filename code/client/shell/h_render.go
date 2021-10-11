@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Render render asset file
 func (shell *Shell) Render(w http.ResponseWriter, r *http.Request) {
 	dir := strings.TrimPrefix(r.URL.Path, "/")
 	data, err := Asset(dir)

@@ -107,6 +107,7 @@ func (p *Pool) onClose(idx uint32) {
 	p.Unlock()
 }
 
+// Size get pool size
 func (p *Pool) Size() int {
 	return len(p.conns)
 }

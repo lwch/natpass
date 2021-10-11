@@ -19,9 +19,10 @@ func connect(conn *pool.Conn, msg *network.Msg) {
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
 	}
-	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", req.GetAddr(), req.GetPort()))
+	addr := req.GetCaddr()
+	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", addr.GetAddr(), addr.GetPort()))
 	if err != nil {
-		logging.Error("connect to %s:%d failed, err=%v", req.GetAddr(), req.GetPort(), err)
+		logging.Error("connect to %s:%d failed, err=%v", addr.GetAddr(), addr.GetPort(), err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
 		return
 	}
@@ -33,8 +34,8 @@ func connect(conn *pool.Conn, msg *network.Msg) {
 		Type:       dial,
 		LocalAddr:  host,
 		LocalPort:  uint16(port),
-		RemoteAddr: req.GetAddr(),
-		RemotePort: uint16(req.GetPort()),
+		RemoteAddr: addr.GetAddr(),
+		RemotePort: uint16(addr.GetPort()),
 	})
 	lk := tunnel.NewLink(tn, msg.GetLinkId(), msg.GetFrom(), link, conn)
 	lk.SetTargetIdx(msg.GetFromIdx())
@@ -44,22 +45,22 @@ func connect(conn *pool.Conn, msg *network.Msg) {
 }
 
 func shellCreate(conn *pool.Conn, msg *network.Msg) {
-	create := msg.GetScreate()
+	create := msg.GetCreq()
 	sh := shell.New(global.Tunnel{
 		Name:   create.GetName(),
 		Target: msg.GetFrom(),
 		Type:   "shell",
-		Exec:   create.GetExec(),
-		Env:    create.GetEnv(),
+		Exec:   create.GetCshell().GetExec(),
+		Env:    create.GetCshell().GetEnv(),
 	})
 	lk := shell.NewLink(sh, msg.GetLinkId(), msg.GetFrom(), conn)
 	lk.SetTargetIdx(msg.GetFromIdx())
 	err := lk.Exec()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
-		conn.SendShellCreatedError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
+		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
 		return
 	}
-	conn.SendShellCreatedOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
+	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
 }

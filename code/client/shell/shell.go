@@ -11,6 +11,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
+// Shell shell handler
 type Shell struct {
 	sync.RWMutex
 	Name  string

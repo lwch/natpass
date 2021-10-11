@@ -184,7 +184,7 @@ windows命令行效果
 
 1. ~~支持include的yaml配置文件~~
 2. ~~通用的connect、connect_response、disconnect消息~~
-3. 所有隧道的portal页面
+3. 所有隧道的ingress页面
 4. 文件传输
 5. web远程桌面
 6. 流量监控统计页面，server还是client?

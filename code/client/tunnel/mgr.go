@@ -2,11 +2,20 @@ package tunnel
 
 import "sync"
 
+type Link interface {
+	GetID() string
+	// GetBytes tx, rx
+	GetBytes() (uint64, uint64)
+	// GetPackets tx, rx
+	GetPackets() (uint64, uint64)
+}
+
 // Tunnel tunnel interface
 type Tunnel interface {
 	GetName() string
 	GetTypeName() string
 	GetTarget() string
+	GetLinks() []Link
 }
 
 // Mgr tunnel manager

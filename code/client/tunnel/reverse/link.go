@@ -42,6 +42,24 @@ func (link *Link) close() {
 	logging.Info("close link %s on tunnel %s", link.id, link.parent.Name)
 	link.local.Close()
 	link.remote.RemoveLink(link.id)
+	link.parent.remove(link.id)
+}
+
+// GetID get link id
+func (link *Link) GetID() string {
+	return link.id
+}
+
+// GetBytes get send and recv bytes
+func (link *Link) GetBytes() (uint64, uint64) {
+	// TODO
+	return 0, 0
+}
+
+// GetPackets get send and recv packets
+func (link *Link) GetPackets() (uint64, uint64) {
+	// TODO
+	return 0, 0
 }
 
 // Forward forward data

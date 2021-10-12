@@ -37,6 +37,23 @@ func NewLink(parent *Shell, id, target string, remote *pool.Conn) *Link {
 	}
 }
 
+// GetID get link id
+func (link *Link) GetID() string {
+	return link.id
+}
+
+// GetBytes get send and recv bytes
+func (link *Link) GetBytes() (uint64, uint64) {
+	// TODO
+	return 0, 0
+}
+
+// GetPackets get send and recv packets
+func (link *Link) GetPackets() (uint64, uint64) {
+	// TODO
+	return 0, 0
+}
+
 // SetTargetIdx set link remote index
 func (link *Link) SetTargetIdx(idx uint32) {
 	link.targetIdx = idx
@@ -50,6 +67,7 @@ func (link *Link) Close() {
 		p.Kill()
 	}
 	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
+	link.parent.remove(link.id)
 }
 
 // Forward forward data

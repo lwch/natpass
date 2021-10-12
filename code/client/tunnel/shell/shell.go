@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
+	"natpass/code/client/tunnel"
 	"net/http"
 	"sync"
 
@@ -43,6 +44,17 @@ func (shell *Shell) GetTarget() string {
 	return shell.cfg.Target
 }
 
+// GetLinks get tunnel links
+func (shell *Shell) GetLinks() []tunnel.Link {
+	ret := make([]tunnel.Link, 0, len(shell.links))
+	shell.RLock()
+	for _, link := range shell.links {
+		ret = append(ret, link)
+	}
+	shell.RUnlock()
+	return ret
+}
+
 // Handle handle shell
 func (shell *Shell) Handle(pl *pool.Pool) {
 	defer func() {
@@ -65,4 +77,10 @@ func (shell *Shell) Handle(pl *pool.Pool) {
 		Handler: mux,
 	}
 	runtime.Assert(svr.ListenAndServe())
+}
+
+func (shell *Shell) remove(id string) {
+	shell.Lock()
+	delete(shell.links, id)
+	shell.Unlock()
 }

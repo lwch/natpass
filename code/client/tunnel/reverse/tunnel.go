@@ -1,4 +1,4 @@
-package tunnel
+package reverse
 
 import (
 	"natpass/code/client/global"
@@ -21,6 +21,21 @@ func New(cfg global.Tunnel) *Tunnel {
 		Name: cfg.Name,
 		cfg:  cfg,
 	}
+}
+
+// GetName get reverse tunnel name
+func (tunnel *Tunnel) GetName() string {
+	return tunnel.Name
+}
+
+// GetTypeName get reverse tunnel type name
+func (tunnel *Tunnel) GetTypeName() string {
+	return "reverse"
+}
+
+// GetTarget get target of this tunnel
+func (tunnel *Tunnel) GetTarget() string {
+	return tunnel.cfg.Target
 }
 
 // Handle handle tunnel

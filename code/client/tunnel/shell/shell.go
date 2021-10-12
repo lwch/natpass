@@ -28,6 +28,21 @@ func New(cfg global.Tunnel) *Shell {
 	}
 }
 
+// GetName get shell tunnel name
+func (shell *Shell) GetName() string {
+	return shell.Name
+}
+
+// GetTypeName get reverse tunnel type name
+func (shell *Shell) GetTypeName() string {
+	return "shell"
+}
+
+// GetTarget get target of this tunnel
+func (shell *Shell) GetTarget() string {
+	return shell.cfg.Target
+}
+
 // Handle handle shell
 func (shell *Shell) Handle(pl *pool.Pool) {
 	defer func() {

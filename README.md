@@ -7,7 +7,7 @@
 [![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/lwch/natpass)
 [![QQ群711086098](https://img.shields.io/badge/QQ%E7%BE%A4-711086098-success)](https://jq.qq.com/?_wv=1027&k=6Fz2vkVE)
 
-NAT内网穿透工具，支持tcp隧道、shell隧道，[实现原理](docs/desc.md)
+新一代NAT内网穿透工具，支持tcp隧道、shell隧道，[实现原理](docs/desc.md)
 
 1. [如何部署](docs/startup.md)
 2. [隧道配置](docs/tunnel.md)

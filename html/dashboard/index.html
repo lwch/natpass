@@ -1,16 +1,26 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>shell - [{{.Name}}]</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/xterm.js/xterm.css" />
-        <script src="/jquery/jquery-3.6.0.min.js"></script>
-        <link rel="stylesheet" href="/index.css" />
-        <script src="/index.js"></script>
-    </head>
-    <body>
-        <div id="terminal"></div>
-    </body>
-</html>
+{{define "all"}}
+{{template "header" .}}
+{{template "aside" .}}
+<script>aside.active_dashboard();</script>
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">总览</h1>
+                </div>
+            </div>
+            <!-- row -->
+        </div>
+        <!-- container -->
+    </div>
+    <!-- header -->
+    <section class="content">
+        <div class="container-fluid">
+        </div>
+        <!-- container -->
+    </section>
+    <!-- body -->
+</div>
+{{template "footer"}}
+{{end}}

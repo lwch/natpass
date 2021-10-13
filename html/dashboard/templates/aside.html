@@ -1,0 +1,30 @@
+{{define "aside"}}
+<script src="/js/aside.js"></script>
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="/index.html" class="brand-link">
+        <span class="brand-text font-weight-light">NatPass v{{.Version}}</span>
+    </a>
+    <!-- logo -->
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a id="dashboard" href="/index.html" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>总览</p>
+                    </a>
+                </li>
+                <!-- 总览 -->
+                <li class="nav-item">
+                    <a id="terminal" href="/terminal.html" class="nav-link">
+                        <i class="nav-icon fas fa-laptop-code"></i>
+                        <p>终端</p>
+                    </a>
+                </li>
+                <!-- 终端 -->
+            </ul>
+        </nav>
+    </div>
+    <!-- content -->
+</aside>
+{{end}}

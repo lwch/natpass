@@ -108,7 +108,7 @@ func (a *app) run() {
 	}
 
 	if a.cfg.DashboardEnabled {
-		db := dashboard.New()
+		db := dashboard.New(_VERSION)
 		runtime.Assert(db.ListenAndServe(a.cfg.DashboardListen, a.cfg.DashboardPort))
 	} else {
 		select {}

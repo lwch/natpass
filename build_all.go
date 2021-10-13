@@ -60,7 +60,7 @@ func main() {
 func bindata() {
 	cmd := exec.Command("go", "run", "contrib/bindata/main.go",
 		"-pkg", "shell",
-		"-o", "code/client/shell/assets.go",
+		"-o", "code/client/tunnel/shell/assets.go",
 		"-prefix", "html/shell",
 		"html/shell/...")
 	cmd.Stdout = os.Stdout

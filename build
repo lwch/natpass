@@ -11,5 +11,7 @@ LDFLAGS="-X 'main._GIT_HASH=$HASH'
 
 go run contrib/bindata/main.go -pkg shell -o code/client/tunnel/shell/assets.go \
    -prefix html/shell "$@" html/shell/...
+go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go \
+   -prefix html/dashboard "$@" html/dashboard/...
 CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
 CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go

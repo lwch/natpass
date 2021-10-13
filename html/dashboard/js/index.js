@@ -1,10 +1,15 @@
 var page = {
     init: function() {
+        page.render();
+        setInterval(page.render, 5000);
+    },
+    render: function() {
         page.render_cards();
         page.render_tunnels();
     },
     render_cards: function() {
         $.get('/api/info', function(ret) {
+            $('#cards').empty();
             page.add_card('隧道总数', ret.tunnels);
             page.add_card('物理连接数', ret.physical_links);
             page.add_card('虚拟连接数', ret.virtual_links);
@@ -13,6 +18,7 @@ var page = {
     },
     render_tunnels: function() {
         $.get('/api/tunnels', function(ret) {
+            $('#tunnels tbody').empty();
             $.each(ret, function(_, tunnel) {
                 var send_bytes = 0;
                 var send_packet = 0;
@@ -33,6 +39,7 @@ var page = {
                 var str = `
                 <tr>
                     <td>${tunnel.name}</td>
+                    <td>${tunnel.remote}</td>
                     <td>${tunnel.type}</td>
                     <td>${tunnel.links?tunnel.links.length:0}</td>
                     <td>${humanize.bytes(recv_bytes)}/${humanize.bytes(send_bytes)}</td>

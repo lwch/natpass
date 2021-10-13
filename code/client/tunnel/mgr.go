@@ -13,6 +13,7 @@ type Link interface {
 // Tunnel tunnel interface
 type Tunnel interface {
 	GetName() string
+	GetRemote() string
 	GetPort() uint16
 	GetTypeName() string
 	GetTarget() string

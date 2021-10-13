@@ -54,6 +54,11 @@ func (t *Tunnel) GetLinks() []tunnel.Link {
 	return ret
 }
 
+// GetRemote get remote target name
+func (t *Tunnel) GetRemote() string {
+	return t.cfg.Target
+}
+
 // GetPort get listen port
 func (t *Tunnel) GetPort() uint16 {
 	return t.cfg.LocalPort

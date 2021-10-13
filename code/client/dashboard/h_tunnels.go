@@ -15,15 +15,17 @@ func (db *Dashboard) Tunnels(w http.ResponseWriter, r *http.Request) {
 		RecvPacket uint64 `json:"recv_packet"`
 	}
 	type item struct {
-		Name  string `json:"name"`
-		Port  uint16 `json:"port"`
-		Type  string `json:"type"`
-		Links []link `json:"links"`
+		Name   string `json:"name"`
+		Remote string `json:"remote"`
+		Port   uint16 `json:"port"`
+		Type   string `json:"type"`
+		Links  []link `json:"links"`
 	}
 	var ret []item
 	db.mgr.Range(func(t tunnel.Tunnel) {
 		var it item
 		it.Name = t.GetName()
+		it.Remote = t.GetRemote()
 		it.Port = t.GetPort()
 		it.Type = t.GetTypeName()
 		for _, l := range t.GetLinks() {

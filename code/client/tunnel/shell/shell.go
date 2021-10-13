@@ -55,6 +55,11 @@ func (shell *Shell) GetLinks() []tunnel.Link {
 	return ret
 }
 
+// GetRemote get remote target name
+func (shell *Shell) GetRemote() string {
+	return shell.cfg.Target
+}
+
 // GetPort get listen port
 func (shell *Shell) GetPort() uint16 {
 	return shell.cfg.LocalPort

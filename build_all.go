@@ -66,6 +66,15 @@ func bindata() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	runtime.Assert(cmd.Run())
+
+	cmd = exec.Command("go", "run", "contrib/bindata/main.go",
+		"-pkg", "dashboard",
+		"-o", "code/client/dashboard/assets.go",
+		"-prefix", "html/dashboard",
+		"html/dashboard/...")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	runtime.Assert(cmd.Run())
 }
 
 func build(t target) {

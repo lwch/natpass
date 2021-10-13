@@ -55,6 +55,11 @@ func (shell *Shell) GetLinks() []tunnel.Link {
 	return ret
 }
 
+// GetPort get listen port
+func (shell *Shell) GetPort() uint16 {
+	return shell.cfg.LocalPort
+}
+
 // Handle handle shell
 func (shell *Shell) Handle(pl *pool.Pool) {
 	defer func() {

@@ -22,8 +22,9 @@ type Tunnel struct {
 // New new tunnel
 func New(cfg global.Tunnel) *Tunnel {
 	return &Tunnel{
-		Name: cfg.Name,
-		cfg:  cfg,
+		Name:  cfg.Name,
+		cfg:   cfg,
+		links: make(map[string]*Link),
 	}
 }
 
@@ -51,6 +52,11 @@ func (t *Tunnel) GetLinks() []tunnel.Link {
 	}
 	t.RUnlock()
 	return ret
+}
+
+// GetPort get listen port
+func (t *Tunnel) GetPort() uint16 {
+	return t.cfg.LocalPort
 }
 
 // Handle handle tunnel

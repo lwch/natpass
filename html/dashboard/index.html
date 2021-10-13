@@ -1,5 +1,7 @@
 {{define "all"}}
 {{template "header" .}}
+<link rel="stylesheet" href="/css/index.css" />
+<script src="/js/index.js"></script>
 {{template "aside" .}}
 <script>aside.active_dashboard();</script>
 <div class="content-wrapper">
@@ -17,6 +19,31 @@
     <!-- header -->
     <section class="content">
         <div class="container-fluid">
+            <div id="cards" class="row"></div>
+            <!-- 统计数据 -->
+            <div class="row"><div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">隧道列表</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <table id="tunnels" class="table table-hover">
+                            <thead><tr>
+                                <th>名称</th>
+                                <th style="width:80px">类型</th>
+                                <th style="width:120px">虚拟连接数</th>
+                                <th style="width:200px">接收/发送（字节数）</th>
+                                <th style="width:200px">接收/发送（数据包）</th>
+                                <th style="width:200px">操作</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <!-- body -->
+                </div>
+                <!-- card -->
+            </div></div>
+            <!-- 隧道列表 -->
         </div>
         <!-- container -->
     </section>

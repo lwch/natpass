@@ -12,15 +12,19 @@
 1. [如何部署](docs/startup.md)
 2. [隧道配置](docs/tunnel.md)
 
-## shell隧道
+## 效果图
+
+dashboard页面
+
+![dashboard](docs/imgs/dashboard.png)
 
 linux命令行效果
 
-![linux-shell](docs/shell_linux.png)
+![linux-shell](docs/imgs/shell_linux.png)
 
 windows命令行效果
 
-![windows-shell](docs/shell_win.png)
+![windows-shell](docs/imgs/shell_win.png)
 
 ## iperf3压测对比
 

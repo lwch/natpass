@@ -1,9 +1,16 @@
 var page = {
     init: function() {
-        page.load();
+        page.load(function() {
+            var name = arg('name');
+            if (name != null) {
+                $('#terms').find(`option:contains(${name})`).prop('selected', true);
+                page.connect();
+            }
+        });
         $('#connect').click(page.connect);
     },
-    load: function() {
+    load: function(cb) {
+        if (!cb) cb = function(){};
         $.get('/api/tunnels', function(ret) {
             $('#terms').empty();
             $.each(ret, function(_, tunnel) {
@@ -12,6 +19,7 @@ var page = {
                 }
                 $('#terms').append($(`<option value="${tunnel.port}">${tunnel.name}</option>`));
             });
+            cb();
         });
     },
     connect: function() {

@@ -1,3 +1,7 @@
+function arg(key) {
+    var url = new URL(location.href);
+    return decodeURIComponent(url.searchParams.get(key));
+}
 var humanize = {
     bytes: function(n) {
         return humanize.humanate_bytes(n, 1024, ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'])

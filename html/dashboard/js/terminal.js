@@ -2,7 +2,7 @@ var page = {
     init: function() {
         page.load(function() {
             var name = arg('name');
-            if (name != null) {
+            if (name != 'null') {
                 $('#terms').find(`option:contains(${name})`).prop('selected', true);
                 page.connect();
             }

@@ -146,7 +146,9 @@ func (link *Link) localRead() {
 
 // SendData send data
 func (link *Link) SendData(data []byte) {
-	link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+	send := link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+	link.sendBytes += send
+	link.sendPacket++
 }
 
 // SendResize send resize message

@@ -38,7 +38,7 @@ var page = {
                     <a href="https://${location.hostname}:${tunnel.port}" target="_blank">https</a>`;
                     break;
                 case 'shell':
-                    op = `<a href="http://${location.host}/terminal.html?name=${tunnel.name}">连接</a>`;
+                    op = `<a href="http://${location.host}/terminal.html?name=${tunnel.name}" target="_blank">连接</a>`;
                     break;
                 }
                 var str = `

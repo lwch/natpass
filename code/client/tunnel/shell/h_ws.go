@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
+	"google.golang.org/protobuf/proto"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -71,6 +72,9 @@ func (shell *Shell) remoteForward(id string, local *websocket.Conn) {
 		if msg == nil {
 			return
 		}
+		data, _ := proto.Marshal(msg)
+		link.recvBytes += uint64(len(data))
+		link.recvPacket++
 		link.SetTargetIdx(msg.GetFromIdx())
 		switch msg.GetXType() {
 		case network.Msg_shell_data:

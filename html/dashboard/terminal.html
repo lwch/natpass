@@ -1,7 +1,6 @@
 {{define "all"}}
 {{template "header" .}}
-<link rel="stylesheet" href="/css/index.css" />
-<script src="/js/index.js"></script>
+<script src="/js/terminal.js"></script>
 {{template "aside" .}}
 <script>aside.active_terminal();</script>
 <div class="content-wrapper">
@@ -19,6 +18,20 @@
     <!-- header -->
     <section class="content">
         <div class="container-fluid">
+            <div class="row"><div class="col-12">
+                <div class="input-group mb-3">
+                    <select id="terms" class="form-select"></select>
+                    <div class="input-group-append">
+                        <button id="connect" class="btn btn-primary" type="button">连接</button>
+                    </div>
+                </div>
+            </div></div>
+            <!-- header -->
+            <div class="row"><div class="col-12">
+                <ul class="nav nav-tabs" id="tabs"></ul>
+                <div class="tab-content" id="tab-content"></div>
+            </div></div>
+            <!-- body -->
         </div>
         <!-- container -->
     </section>

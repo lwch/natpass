@@ -31,10 +31,15 @@ var page = {
                     recv_packet += link.recv_packet;
                 });
                 var op = '';
-                if (tunnel.type == 'reverse') {
+                switch (tunnel.type) {
+                case 'reverse':
                     op = `
                     <a href="http://${location.hostname}:${tunnel.port}" target="_blank">http</a>
-                    <a href="https://${location.hostname}:${tunnel.port}" target="_blank">https</a>`
+                    <a href="https://${location.hostname}:${tunnel.port}" target="_blank">https</a>`;
+                    break;
+                case 'shell':
+                    op = `<a href="http://${location.host}/terminal.html?name=${tunnel.name}">连接</a>`;
+                    break;
                 }
                 var str = `
                 <tr>

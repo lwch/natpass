@@ -19,7 +19,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
-const version = "0.4.0"
+const version = "0.5.0"
 const buildDir = "tmp"
 const releaseDir = "release"
 
@@ -32,35 +32,19 @@ type target struct {
 
 // go tool dist list
 var targets = []target{
-	// freebsd
-	{"freebsd", "386", "", ".tar.gz"},
-	{"freebsd", "amd64", "", ".tar.gz"},
-	{"freebsd", "arm", "", ".tar.gz"},
-	{"freebsd", "arm64", "", ".tar.gz"},
+	// darwin
+	{"darwin", "amd64", "", ".tar.gz"},
+	{"darwin", "arm64", "", ".tar.gz"},
 	// linux
 	{"linux", "386", "", ".tar.gz"},
 	{"linux", "amd64", "", ".tar.gz"},
 	{"linux", "arm", "", ".tar.gz"},
 	{"linux", "arm64", "", ".tar.gz"},
-	// mips
-	{"linux", "mips", "", ".tar.gz"},
-	{"linux", "mips64", "", ".tar.gz"},
-	{"linux", "mips64le", "", ".tar.gz"},
-	{"linux", "mipsle", "", ".tar.gz"},
-	// netbsd
-	{"netbsd", "386", "", ".tar.gz"},
-	{"netbsd", "amd64", "", ".tar.gz"},
-	{"netbsd", "arm", "", ".tar.gz"},
-	{"netbsd", "arm64", "", ".tar.gz"},
-	// openbsd
-	{"openbsd", "386", "", ".tar.gz"},
-	{"openbsd", "amd64", "", ".tar.gz"},
-	{"openbsd", "arm", "", ".tar.gz"},
-	{"openbsd", "arm64", "", ".tar.gz"},
 	// windows
 	{"windows", "386", ".exe", ".zip"},
 	{"windows", "amd64", ".exe", ".zip"},
 	{"windows", "arm", ".exe", ".zip"},
+	{"windows", "arm64", ".exe", ".zip"},
 }
 
 func main() {
@@ -76,9 +60,18 @@ func main() {
 func bindata() {
 	cmd := exec.Command("go", "run", "contrib/bindata/main.go",
 		"-pkg", "shell",
-		"-o", "code/client/shell/assets.go",
+		"-o", "code/client/tunnel/shell/assets.go",
 		"-prefix", "html/shell",
 		"html/shell/...")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	runtime.Assert(cmd.Run())
+
+	cmd = exec.Command("go", "run", "contrib/bindata/main.go",
+		"-pkg", "dashboard",
+		"-o", "code/client/dashboard/assets.go",
+		"-prefix", "html/dashboard",
+		"html/dashboard/...")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	runtime.Assert(cmd.Run())

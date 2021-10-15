@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
+	"natpass/code/client/tunnel"
 	"net/http"
 	"sync"
 
@@ -28,6 +29,42 @@ func New(cfg global.Tunnel) *Shell {
 	}
 }
 
+// GetName get shell tunnel name
+func (shell *Shell) GetName() string {
+	return shell.Name
+}
+
+// GetTypeName get reverse tunnel type name
+func (shell *Shell) GetTypeName() string {
+	return "shell"
+}
+
+// GetTarget get target of this tunnel
+func (shell *Shell) GetTarget() string {
+	return shell.cfg.Target
+}
+
+// GetLinks get tunnel links
+func (shell *Shell) GetLinks() []tunnel.Link {
+	ret := make([]tunnel.Link, 0, len(shell.links))
+	shell.RLock()
+	for _, link := range shell.links {
+		ret = append(ret, link)
+	}
+	shell.RUnlock()
+	return ret
+}
+
+// GetRemote get remote target name
+func (shell *Shell) GetRemote() string {
+	return shell.cfg.Target
+}
+
+// GetPort get listen port
+func (shell *Shell) GetPort() uint16 {
+	return shell.cfg.LocalPort
+}
+
 // Handle handle shell
 func (shell *Shell) Handle(pl *pool.Pool) {
 	defer func() {
@@ -50,4 +87,10 @@ func (shell *Shell) Handle(pl *pool.Pool) {
 		Handler: mux,
 	}
 	runtime.Assert(svr.ListenAndServe())
+}
+
+func (shell *Shell) remove(id string) {
+	shell.Lock()
+	delete(shell.links, id)
+	shell.Unlock()
 }

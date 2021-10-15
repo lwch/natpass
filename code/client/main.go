@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"natpass/code/client/dashboard"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/shell"
 	"natpass/code/client/tunnel"
+	"natpass/code/client/tunnel/reverse"
+	"natpass/code/client/tunnel/shell"
 	"natpass/code/network"
 	"os"
 	"path/filepath"
@@ -53,14 +55,17 @@ func (a *app) run() {
 	defer logging.Flush()
 
 	pl := pool.New(a.cfg)
+	mgr := tunnel.New()
 
 	for _, t := range a.cfg.Tunnels {
 		switch t.Type {
 		case "tcp", "udp":
-			tn := tunnel.New(t)
+			tn := reverse.New(t)
+			mgr.Add(tn)
 			go tn.Handle(pl)
 		case "shell":
 			sh := shell.New(t)
+			mgr.Add(sh)
 			go sh.Handle(pl)
 		}
 	}
@@ -83,9 +88,9 @@ func (a *app) run() {
 					case network.Msg_connect_req:
 						switch msg.GetCreq().GetXType() {
 						case network.ConnectRequest_tcp, network.ConnectRequest_udp:
-							connect(conn, msg)
+							connect(mgr, conn, msg)
 						case network.ConnectRequest_shell:
-							shellCreate(conn, msg)
+							shellCreate(mgr, conn, msg)
 						}
 					default:
 						linkID = msg.GetLinkId()
@@ -102,7 +107,12 @@ func (a *app) run() {
 		}()
 	}
 
-	select {}
+	if a.cfg.DashboardEnabled {
+		db := dashboard.New(a.cfg, pl, mgr, _VERSION)
+		runtime.Assert(db.ListenAndServe(a.cfg.DashboardListen, a.cfg.DashboardPort))
+	} else {
+		select {}
+	}
 }
 
 func (a *app) Stop(s service.Service) error {

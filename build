@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.4.0"
+VERSION="0.5.0"
 HASH=`git log -n1 --pretty=format:%h`
 REVERSION=`git log --oneline|wc -l|tr -d ' '`
 BUILD_TIME=`date +'%Y-%m-%d %H:%M:%S'`
@@ -9,7 +9,9 @@ LDFLAGS="-X 'main._GIT_HASH=$HASH'
 -X 'main._BUILD_TIME=$BUILD_TIME'
 -X 'main._VERSION=$VERSION'"
 
-go run contrib/bindata/main.go -pkg shell -o code/client/shell/assets.go \
+go run contrib/bindata/main.go -pkg shell -o code/client/tunnel/shell/assets.go \
    -prefix html/shell "$@" html/shell/...
+go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go \
+   -prefix html/dashboard "$@" html/dashboard/...
 CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
 CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go

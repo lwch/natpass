@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/shell"
 	"natpass/code/client/tunnel"
+	"natpass/code/client/tunnel/reverse"
+	"natpass/code/client/tunnel/shell"
 	"natpass/code/network"
 	"net"
 	"strconv"
@@ -13,7 +14,7 @@ import (
 	"github.com/lwch/logging"
 )
 
-func connect(conn *pool.Conn, msg *network.Msg) {
+func connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	req := msg.GetCreq()
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
@@ -28,7 +29,7 @@ func connect(conn *pool.Conn, msg *network.Msg) {
 	}
 	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
 	port, _ := strconv.ParseUint(pt, 10, 16)
-	tn := tunnel.New(global.Tunnel{
+	tn := reverse.New(global.Tunnel{
 		Name:       req.GetName(),
 		Target:     msg.GetFrom(),
 		Type:       dial,
@@ -37,14 +38,15 @@ func connect(conn *pool.Conn, msg *network.Msg) {
 		RemoteAddr: addr.GetAddr(),
 		RemotePort: uint16(addr.GetPort()),
 	})
-	lk := tunnel.NewLink(tn, msg.GetLinkId(), msg.GetFrom(), link, conn)
+	mgr.Add(tn)
+	lk := reverse.NewLink(tn, msg.GetLinkId(), msg.GetFrom(), link, conn)
 	lk.SetTargetIdx(msg.GetFromIdx())
 	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
 	lk.OnWork <- struct{}{}
 }
 
-func shellCreate(conn *pool.Conn, msg *network.Msg) {
+func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	sh := shell.New(global.Tunnel{
 		Name:   create.GetName(),
@@ -53,6 +55,7 @@ func shellCreate(conn *pool.Conn, msg *network.Msg) {
 		Exec:   create.GetCshell().GetExec(),
 		Env:    create.GetCshell().GetEnv(),
 	})
+	mgr.Add(sh)
 	lk := shell.NewLink(sh, msg.GetLinkId(), msg.GetFrom(), conn)
 	lk.SetTargetIdx(msg.GetFromIdx())
 	err := lk.Exec()

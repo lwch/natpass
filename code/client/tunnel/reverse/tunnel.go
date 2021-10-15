@@ -1,9 +1,11 @@
-package tunnel
+package reverse
 
 import (
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
+	"natpass/code/client/tunnel"
 	"net"
+	"sync"
 
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
@@ -11,16 +13,55 @@ import (
 
 // Tunnel tunnel object
 type Tunnel struct {
-	Name string
-	cfg  global.Tunnel
+	sync.RWMutex
+	Name  string
+	cfg   global.Tunnel
+	links map[string]*Link
 }
 
 // New new tunnel
 func New(cfg global.Tunnel) *Tunnel {
 	return &Tunnel{
-		Name: cfg.Name,
-		cfg:  cfg,
+		Name:  cfg.Name,
+		cfg:   cfg,
+		links: make(map[string]*Link),
 	}
+}
+
+// GetName get reverse tunnel name
+func (tunnel *Tunnel) GetName() string {
+	return tunnel.Name
+}
+
+// GetTypeName get reverse tunnel type name
+func (tunnel *Tunnel) GetTypeName() string {
+	return "reverse"
+}
+
+// GetTarget get target of this tunnel
+func (tunnel *Tunnel) GetTarget() string {
+	return tunnel.cfg.Target
+}
+
+// GetLinks get tunnel links
+func (t *Tunnel) GetLinks() []tunnel.Link {
+	ret := make([]tunnel.Link, 0, len(t.links))
+	t.RLock()
+	for _, link := range t.links {
+		ret = append(ret, link)
+	}
+	t.RUnlock()
+	return ret
+}
+
+// GetRemote get remote target name
+func (t *Tunnel) GetRemote() string {
+	return t.cfg.Target
+}
+
+// GetPort get listen port
+func (t *Tunnel) GetPort() uint16 {
+	return t.cfg.LocalPort
 }
 
 // Handle handle tunnel
@@ -66,7 +107,16 @@ func (tunnel *Tunnel) handleTcp(pool *pool.Pool) {
 			continue
 		}
 		link := NewLink(tunnel, id, tunnel.cfg.Target, conn, remote)
+		tunnel.Lock()
+		tunnel.links[id] = link
+		tunnel.Unlock()
 		remote.SendConnectReq(id, tunnel.cfg)
 		link.Forward()
 	}
+}
+
+func (tunnel *Tunnel) remove(id string) {
+	tunnel.Lock()
+	delete(tunnel.links, id)
+	tunnel.Unlock()
 }

@@ -3,7 +3,7 @@
 基于tls链接，protobuf进行数据传输，下面举例在办公网络穿透到家庭网络，
 并通过rdp进行连接家庭网络下的某台windows设备
 
-![rdp](example.jpg)
+![rdp](imgs/example.jpg)
 
 server端配置(10.0.1.1)：
 

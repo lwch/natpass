@@ -1,4 +1,4 @@
-package tunnel
+package reverse
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"net"
 
 	"github.com/lwch/logging"
+	"google.golang.org/protobuf/proto"
 )
 
 // Link link object
@@ -21,6 +22,11 @@ type Link struct {
 	remote          *pool.Conn
 	OnWork          chan struct{}
 	closeFromRemote bool
+	// runtime
+	recvBytes  uint64
+	sendBytes  uint64
+	recvPacket uint64
+	sendPacket uint64
 }
 
 // NewLink create link
@@ -42,6 +48,22 @@ func (link *Link) close() {
 	logging.Info("close link %s on tunnel %s", link.id, link.parent.Name)
 	link.local.Close()
 	link.remote.RemoveLink(link.id)
+	link.parent.remove(link.id)
+}
+
+// GetID get link id
+func (link *Link) GetID() string {
+	return link.id
+}
+
+// GetBytes get send and recv bytes
+func (link *Link) GetBytes() (uint64, uint64) {
+	return link.recvBytes, link.sendBytes
+}
+
+// GetPackets get send and recv packets
+func (link *Link) GetPackets() (uint64, uint64) {
+	return link.recvPacket, link.sendPacket
 }
 
 // Forward forward data
@@ -59,6 +81,9 @@ func (link *Link) remoteRead() {
 		if msg == nil {
 			return
 		}
+		data, _ := proto.Marshal(msg)
+		link.recvBytes += uint64(len(data))
+		link.recvPacket++
 		link.targetIdx = msg.GetFromIdx()
 		switch msg.GetXType() {
 		case network.Msg_forward:
@@ -93,7 +118,9 @@ func (link *Link) localRead() {
 		n, err := link.local.Read(buf)
 		if err != nil {
 			if !link.closeFromRemote {
-				link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
+				n := link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
+				link.sendBytes += n
+				link.sendPacket++
 			}
 			logging.Error("read data on tunnel %s link %s failed, err=%v", link.parent.Name, link.id, err)
 			return
@@ -102,7 +129,9 @@ func (link *Link) localRead() {
 			continue
 		}
 		logging.Debug("link %s on tunnel %s read from local %d bytes", link.id, link.parent.Name, n)
-		link.remote.SendData(link.target, link.targetIdx, link.id, buf[:n])
+		send := link.remote.SendData(link.target, link.targetIdx, link.id, buf[:n])
+		link.sendBytes += send
+		link.sendPacket++
 	}
 }
 

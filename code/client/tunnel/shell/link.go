@@ -9,6 +9,7 @@ import (
 
 	"github.com/lwch/logging"
 	"golang.org/x/text/encoding/simplifiedchinese"
+	"google.golang.org/protobuf/proto"
 )
 
 // Link shell link
@@ -22,6 +23,11 @@ type Link struct {
 	pid    int
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
+	// runtime
+	sendBytes  uint64
+	recvBytes  uint64
+	sendPacket uint64
+	recvPacket uint64
 }
 
 // NewLink create link
@@ -37,6 +43,21 @@ func NewLink(parent *Shell, id, target string, remote *pool.Conn) *Link {
 	}
 }
 
+// GetID get link id
+func (link *Link) GetID() string {
+	return link.id
+}
+
+// GetBytes get send and recv bytes
+func (link *Link) GetBytes() (uint64, uint64) {
+	return link.recvBytes, link.sendBytes
+}
+
+// GetPackets get send and recv packets
+func (link *Link) GetPackets() (uint64, uint64) {
+	return link.recvPacket, link.sendPacket
+}
+
 // SetTargetIdx set link remote index
 func (link *Link) SetTargetIdx(idx uint32) {
 	link.targetIdx = idx
@@ -50,6 +71,7 @@ func (link *Link) Close() {
 		p.Kill()
 	}
 	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
+	link.parent.remove(link.id)
 }
 
 // Forward forward data
@@ -67,6 +89,9 @@ func (link *Link) remoteRead() {
 		if msg == nil {
 			return
 		}
+		data, _ := proto.Marshal(msg)
+		link.recvBytes += uint64(len(data))
+		link.recvPacket++
 		link.targetIdx = msg.GetFromIdx()
 		switch msg.GetXType() {
 		case network.Msg_shell_resize:
@@ -113,13 +138,17 @@ func (link *Link) localRead() {
 		}
 		logging.Debug("link %s on shell %s read from local %d bytes",
 			link.id, link.parent.Name, n)
-		link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+		send := link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+		link.sendBytes += send
+		link.sendPacket++
 	}
 }
 
 // SendData send data
 func (link *Link) SendData(data []byte) {
-	link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+	send := link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+	link.sendBytes += send
+	link.sendPacket++
 }
 
 // SendResize send resize message

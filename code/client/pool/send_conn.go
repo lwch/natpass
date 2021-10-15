@@ -4,6 +4,8 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/network"
 	"time"
+
+	"google.golang.org/protobuf/proto"
 )
 
 // SendConnectReq send connect request message
@@ -85,7 +87,7 @@ func (conn *Conn) SendConnectOK(to string, toIdx uint32, id string) {
 }
 
 // SendDisconnect send disconnect message
-func (conn *Conn) SendDisconnect(to string, toIdx uint32, id string) {
+func (conn *Conn) SendDisconnect(to string, toIdx uint32, id string) uint64 {
 	var msg network.Msg
 	msg.To = to
 	msg.ToIdx = toIdx
@@ -93,6 +95,9 @@ func (conn *Conn) SendDisconnect(to string, toIdx uint32, id string) {
 	msg.LinkId = id
 	select {
 	case conn.write <- &msg:
+		data, _ := proto.Marshal(&msg)
+		return uint64(len(data))
 	case <-time.After(conn.parent.cfg.WriteTimeout):
+		return 0
 	}
 }

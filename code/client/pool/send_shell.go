@@ -3,10 +3,12 @@ package pool
 import (
 	"natpass/code/network"
 	"time"
+
+	"google.golang.org/protobuf/proto"
 )
 
 // SendShellData send shell data
-func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte) {
+func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte) uint64 {
 	dup := func(data []byte) []byte {
 		ret := make([]byte, len(data))
 		copy(ret, data)
@@ -24,7 +26,10 @@ func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte)
 	}
 	select {
 	case conn.write <- &msg:
+		data, _ := proto.Marshal(&msg)
+		return uint64(len(data))
 	case <-time.After(conn.parent.cfg.WriteTimeout):
+		return 0
 	}
 }
 

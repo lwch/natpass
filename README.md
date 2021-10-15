@@ -12,15 +12,19 @@
 1. [如何部署](docs/startup.md)
 2. [隧道配置](docs/tunnel.md)
 
-## shell隧道
+## 效果图
+
+dashboard页面
+
+![dashboard](docs/imgs/dashboard.png)
 
 linux命令行效果
 
-![linux-shell](docs/shell_linux.png)
+![linux-shell](docs/imgs/shell_linux.png)
 
 windows命令行效果
 
-![windows-shell](docs/shell_win.png)
+![windows-shell](docs/imgs/shell_win.png)
 
 ## iperf3压测对比
 
@@ -40,7 +44,7 @@ windows命令行效果
 
 1. ~~支持include的yaml配置文件~~
 2. ~~通用的connect、connect_response、disconnect消息~~
-3. 所有隧道的portal页面
+3. ~~所有隧道的dashboard页面~~
 4. 文件传输
 5. web远程桌面
-6. 流量监控统计页面，server还是client?
+6. ~~流量监控统计页面，server还是client?~~

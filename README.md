@@ -48,3 +48,4 @@ windows命令行效果
 4. 文件传输
 5. web远程桌面
 6. ~~流量监控统计页面，server还是client?~~
+7. web端管理tunnel

@@ -15,6 +15,8 @@ github.com/kisielk/errcheck v1.2.0 h1:reN85Pxc5larApoH1keMBiu2GWtPqXQ1nc9gx+jOU+
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
 github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6 h1:R52s6I/vW1NfNaJdY+Yr/ivkiFicouKmK0v3nvDQh4s=
 github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
+github.com/lwch/logging v0.0.0-20210831025517-ae81047d6190 h1:C0Fpn2r+o13bVljlrKmpVe1LECPsFLtex5Mrt/v07H0=
+github.com/lwch/logging v0.0.0-20210831025517-ae81047d6190/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789 h1:Z9jucdBfDaTXBT+jxyOw08op3DYpr9lEZJkTbVJ3bmU=

@@ -47,3 +47,17 @@ func (link *Link) GetBytes() (uint64, uint64) {
 func (link *Link) GetPackets() (uint64, uint64) {
 	return link.recvPacket, link.sendPacket
 }
+
+// SetTargetIdx set link remote index
+func (link *Link) SetTargetIdx(idx uint32) {
+	link.targetIdx = idx
+}
+
+// Fork fork worker process
+func (link *Link) Fork() error {
+	return nil
+}
+
+// Forward forward data
+func (link *Link) Forward() {
+}

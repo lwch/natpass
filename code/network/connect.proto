@@ -13,6 +13,10 @@ message connect_shell {
     repeated string env = 2;
 }
 
+message connect_vnc {
+    uint32 fps = 1;
+}
+
 message connect_request {
     enum type {
         tcp   = 0;
@@ -25,6 +29,7 @@ message connect_request {
     oneof payload {
         connect_addr   caddr = 10;
         connect_shell cshell = 11;
+        connect_vnc     cvnc = 12;
     }
 }
 

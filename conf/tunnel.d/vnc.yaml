@@ -1,5 +1,6 @@
-- name: vnc          # 链路名称
+- name: vnc            # 链路名称
   target: that         # 目标客户端ID
-  type: vnc          # web vnc
+  type: vnc            # web vnc
   local_addr: 0.0.0.0  # 本地监听地址
   local_port: 5900     # 本地监听端口号
+  fps: 10              # 刷新频率

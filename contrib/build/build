@@ -13,11 +13,13 @@ LDFLAGS="-X 'main.gitHash=$HASH'
 
 go run contrib/bindata/main.go -pkg shell -o code/client/tunnel/shell/assets.go \
    -prefix html/shell "$@" html/shell/...
+go run contrib/bindata/main.go -pkg vnc -o code/client/tunnel/vnc/assets.go \
+   -prefix html/vnc "$@" html/vnc/...
 go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go \
    -prefix html/dashboard "$@" html/dashboard/...
 
 CC=x86_64-w64-mingw32-gcc
 CXX=x86_64-w64-mingw32-g++
 
-CGO_ENABLED=0 go build -v -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
-CGO_ENABLED=0 go build -v -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go
+CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
+CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go

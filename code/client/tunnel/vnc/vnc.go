@@ -1,10 +1,15 @@
 package vnc
 
 import (
+	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
 	"natpass/code/client/tunnel"
+	"net/http"
 	"sync"
+
+	"github.com/lwch/logging"
+	"github.com/lwch/runtime"
 )
 
 // VNC vnc handler
@@ -62,4 +67,22 @@ func (v *VNC) GetPort() uint16 {
 
 // Handle handle shell
 func (v *VNC) Handle(pl *pool.Pool) {
+	defer func() {
+		if err := recover(); err != nil {
+			logging.Error("close shell tunnel: %s, err=%v", v.Name, err)
+		}
+	}()
+	pf := func(cb func(*pool.Pool, http.ResponseWriter, *http.Request)) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			cb(pl, w, r)
+		}
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/new", pf(v.New))
+	mux.HandleFunc("/", v.Render)
+	svr := &http.Server{
+		Addr:    fmt.Sprintf("%s:%d", v.cfg.LocalAddr, v.cfg.LocalPort),
+		Handler: mux,
+	}
+	runtime.Assert(svr.ListenAndServe())
 }

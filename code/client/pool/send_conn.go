@@ -42,6 +42,18 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 				},
 			},
 		}
+	case "vnc":
+		msg.Payload = &network.Msg_Creq{
+			Creq: &network.ConnectRequest{
+				Name:  cfg.Name,
+				XType: network.ConnectRequest_vnc,
+				Payload: &network.ConnectRequest_Cvnc{
+					Cvnc: &network.ConnectVnc{
+						Fps: cfg.Fps,
+					},
+				},
+			},
+		}
 	}
 	select {
 	case conn.write <- &msg:

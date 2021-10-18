@@ -11,15 +11,18 @@ import (
 
 // Tunnel tunnel config
 type Tunnel struct {
-	Name       string   `yaml:"name"`
-	Target     string   `yaml:"target"`
-	Type       string   `yaml:"type"`
-	LocalAddr  string   `yaml:"local_addr"`
-	LocalPort  uint16   `yaml:"local_port"`
-	RemoteAddr string   `yaml:"remote_addr"`
-	RemotePort uint16   `yaml:"remote_port"`
-	Exec       string   `yaml:"exec"`
-	Env        []string `yaml:"env"`
+	Name       string `yaml:"name"`
+	Target     string `yaml:"target"`
+	Type       string `yaml:"type"`
+	LocalAddr  string `yaml:"local_addr"`
+	LocalPort  uint16 `yaml:"local_port"`
+	RemoteAddr string `yaml:"remote_addr"`
+	RemotePort uint16 `yaml:"remote_port"`
+	// shell
+	Exec string   `yaml:"exec"`
+	Env  []string `yaml:"env"`
+	// vnc
+	Fps uint32 `yaml:"fps"`
 }
 
 // Configure client configure

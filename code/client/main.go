@@ -96,6 +96,8 @@ func (a *app) run() {
 							connect(mgr, conn, msg)
 						case network.ConnectRequest_shell:
 							shellCreate(mgr, conn, msg)
+						case network.ConnectRequest_vnc:
+							vncCreate(mgr, conn, msg)
 						}
 					default:
 						linkID = msg.GetLinkId()

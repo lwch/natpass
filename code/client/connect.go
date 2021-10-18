@@ -7,6 +7,7 @@ import (
 	"natpass/code/client/tunnel"
 	"natpass/code/client/tunnel/reverse"
 	"natpass/code/client/tunnel/shell"
+	"natpass/code/client/tunnel/vnc"
 	"natpass/code/network"
 	"net"
 	"strconv"
@@ -59,6 +60,27 @@ func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	lk := shell.NewLink(sh, msg.GetLinkId(), msg.GetFrom(), conn)
 	lk.SetTargetIdx(msg.GetFromIdx())
 	err := lk.Exec()
+	if err != nil {
+		logging.Error("create shell failed: %v", err)
+		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
+		return
+	}
+	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
+	lk.Forward()
+}
+
+func vncCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+	create := msg.GetCreq()
+	v := vnc.New(global.Tunnel{
+		Name:   create.GetName(),
+		Target: msg.GetFrom(),
+		Type:   "vnc",
+		Fps:    create.GetCvnc().GetFps(),
+	})
+	mgr.Add(v)
+	lk := vnc.NewLink(v, msg.GetLinkId(), msg.GetFrom(), conn)
+	lk.SetTargetIdx(msg.GetFromIdx())
+	err := lk.Fork()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())

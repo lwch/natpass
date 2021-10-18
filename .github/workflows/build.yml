@@ -36,7 +36,9 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: Lint
-        run: golint 
+        run: |
+          go install golang.org/x/lint/golint
+          golint -set_exit_status code/...
 
       - name: Build Server
         run: go build -v code/server/main.go

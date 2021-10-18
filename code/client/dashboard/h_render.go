@@ -15,7 +15,7 @@ import (
 func (db *Dashboard) Render(w http.ResponseWriter, r *http.Request) {
 	dir := strings.TrimPrefix(r.URL.Path, "/")
 	if filepath.Ext(dir) == ".html" {
-		db.renderHtml(w, r, dir)
+		db.renderHTML(w, r, dir)
 		return
 	}
 	data, err := Asset(dir)
@@ -28,10 +28,10 @@ func (db *Dashboard) Render(w http.ResponseWriter, r *http.Request) {
 		io.Copy(w, bytes.NewReader(data))
 		return
 	}
-	db.renderHtml(w, r, "index.html")
+	db.renderHTML(w, r, "index.html")
 }
 
-func (db *Dashboard) renderHtml(w http.ResponseWriter, r *http.Request, name string) {
+func (db *Dashboard) renderHTML(w http.ResponseWriter, r *http.Request, name string) {
 	data, err := Asset(name)
 	if err != nil {
 		if os.IsNotExist(err) {

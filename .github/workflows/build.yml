@@ -35,6 +35,9 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
+      - name: Lint
+        run: golint 
+
       - name: Build Server
         run: go build -v code/server/main.go
 

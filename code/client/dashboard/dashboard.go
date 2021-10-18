@@ -16,6 +16,7 @@ type Dashboard struct {
 	Version string
 }
 
+// New create dashboard object
 func New(cfg *global.Configure, pl *pool.Pool, mgr *tunnel.Mgr, version string) *Dashboard {
 	return &Dashboard{
 		cfg:     cfg,
@@ -25,6 +26,7 @@ func New(cfg *global.Configure, pl *pool.Pool, mgr *tunnel.Mgr, version string) 
 	}
 }
 
+// ListenAndServe listen and serve http handler
 func (db *Dashboard) ListenAndServe(addr string, port uint16) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/info", db.Info)

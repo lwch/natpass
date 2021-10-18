@@ -29,67 +29,67 @@ func New(cfg global.Tunnel) *Tunnel {
 }
 
 // GetName get reverse tunnel name
-func (tunnel *Tunnel) GetName() string {
-	return tunnel.Name
+func (tn *Tunnel) GetName() string {
+	return tn.Name
 }
 
 // GetTypeName get reverse tunnel type name
-func (tunnel *Tunnel) GetTypeName() string {
+func (tn *Tunnel) GetTypeName() string {
 	return "reverse"
 }
 
 // GetTarget get target of this tunnel
-func (tunnel *Tunnel) GetTarget() string {
-	return tunnel.cfg.Target
+func (tn *Tunnel) GetTarget() string {
+	return tn.cfg.Target
 }
 
 // GetLinks get tunnel links
-func (t *Tunnel) GetLinks() []tunnel.Link {
-	ret := make([]tunnel.Link, 0, len(t.links))
-	t.RLock()
-	for _, link := range t.links {
+func (tn *Tunnel) GetLinks() []tunnel.Link {
+	ret := make([]tunnel.Link, 0, len(tn.links))
+	tn.RLock()
+	for _, link := range tn.links {
 		ret = append(ret, link)
 	}
-	t.RUnlock()
+	tn.RUnlock()
 	return ret
 }
 
 // GetRemote get remote target name
-func (t *Tunnel) GetRemote() string {
-	return t.cfg.Target
+func (tn *Tunnel) GetRemote() string {
+	return tn.cfg.Target
 }
 
 // GetPort get listen port
-func (t *Tunnel) GetPort() uint16 {
-	return t.cfg.LocalPort
+func (tn *Tunnel) GetPort() uint16 {
+	return tn.cfg.LocalPort
 }
 
 // Handle handle tunnel
-func (tunnel *Tunnel) Handle(pool *pool.Pool) {
-	if tunnel.cfg.Type == "tcp" {
-		tunnel.handleTcp(pool)
+func (tn *Tunnel) Handle(pool *pool.Pool) {
+	if tn.cfg.Type == "tcp" {
+		tn.handleTCP(pool)
 	} else {
 		// TODO
 		func() {}()
 	}
 }
 
-func (tunnel *Tunnel) handleTcp(pool *pool.Pool) {
+func (tn *Tunnel) handleTCP(pool *pool.Pool) {
 	defer func() {
 		if err := recover(); err != nil {
-			logging.Error("close tcp tunnel: %s, err=%v", tunnel.cfg.Name, err)
+			logging.Error("close tcp tunnel: %s, err=%v", tn.cfg.Name, err)
 		}
 	}()
 	l, err := net.ListenTCP("tcp", &net.TCPAddr{
-		IP:   net.ParseIP(tunnel.cfg.LocalAddr),
-		Port: int(tunnel.cfg.LocalPort),
+		IP:   net.ParseIP(tn.cfg.LocalAddr),
+		Port: int(tn.cfg.LocalPort),
 	})
 	runtime.Assert(err)
 	defer l.Close()
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			logging.Error("accept from %s tunnel, err=%v", tunnel.cfg.Name, err)
+			logging.Error("accept from %s tunnel, err=%v", tn.cfg.Name, err)
 			continue
 		}
 
@@ -106,17 +106,17 @@ func (tunnel *Tunnel) handleTcp(pool *pool.Pool) {
 			logging.Error("no connection available")
 			continue
 		}
-		link := NewLink(tunnel, id, tunnel.cfg.Target, conn, remote)
-		tunnel.Lock()
-		tunnel.links[id] = link
-		tunnel.Unlock()
-		remote.SendConnectReq(id, tunnel.cfg)
+		link := NewLink(tn, id, tn.cfg.Target, conn, remote)
+		tn.Lock()
+		tn.links[id] = link
+		tn.Unlock()
+		remote.SendConnectReq(id, tn.cfg)
 		link.Forward()
 	}
 }
 
-func (tunnel *Tunnel) remove(id string) {
-	tunnel.Lock()
-	delete(tunnel.links, id)
-	tunnel.Unlock()
+func (tn *Tunnel) remove(id string) {
+	tn.Lock()
+	delete(tn.links, id)
+	tn.Unlock()
 }

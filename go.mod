@@ -11,7 +11,7 @@ require (
 	github.com/lwch/logging v0.0.0-20210831025517-ae81047d6190
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
 	github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789
-	golang.org/x/sys v0.0.0-20201015000850-e3ed0017c211
+	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744
 	golang.org/x/text v0.3.7
 	google.golang.org/protobuf v1.27.1
 )

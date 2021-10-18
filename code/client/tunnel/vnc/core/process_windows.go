@@ -1,6 +1,14 @@
 package core
 
-import "golang.org/x/sys/windows"
+import (
+	"os"
+	"strings"
+	"syscall"
+	"unicode/utf16"
+	"unsafe"
+
+	"golang.org/x/sys/windows"
+)
 
 // Process process
 type Process struct {
@@ -40,6 +48,20 @@ func getLogonPid(sessionID uintptr) uint32 {
 	}
 }
 
+func parseProcessName(exeFile [syscall.MAX_PATH]uint16) string {
+	for i, v := range exeFile {
+		if v <= 0 {
+			return string(utf16.Decode(exeFile[:i]))
+		}
+	}
+	return ""
+}
+
+func getSessionID() uintptr {
+	id, _, _ := syscall.Syscall(funcWTSGetActiveConsoleSessionId, 0, 0, 0, 0)
+	return id
+}
+
 func getSessionUserTokenWin() windows.Token {
 	pid := getLogonPid(getSessionID())
 	process, err := windows.OpenProcess(PROCESS_ALL_ACCESS, false, pid)
@@ -55,4 +77,31 @@ func getSessionUserTokenWin() windows.Token {
 // CreateWorkerProcess create worker process
 func CreateWorkerProcess() (*Process, error) {
 	tk := getSessionUserTokenWin()
+	if tk != 0 {
+		defer windows.CloseHandle(windows.Handle(tk))
+	}
+	return createWorker(tk)
+}
+
+func createWorker(tk windows.Token) (*Process, error) {
+	dir, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	var p Process
+	var startup windows.StartupInfo
+	var process windows.ProcessInformation
+	startup.Cb = uint32(unsafe.Sizeof(startup))
+	startup.Desktop = windows.StringToUTF16Ptr("WinSta0\\default")
+	startup.Flags = windows.STARTF_USESHOWWINDOW
+	cmd := windows.StringToUTF16Ptr(dir + " -action vnc.worker")
+	if tk == 0 {
+		err = windows.CreateProcess(nil, cmd, nil, nil, false, windows.DETACHED_PROCESS, nil, nil, &startup, &process)
+	} else {
+		err = windows.CreateProcessAsUser(tk, nil, cmd, nil, nil, false, windows.DETACHED_PROCESS, nil, nil, &startup, &process)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }

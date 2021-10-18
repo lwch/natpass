@@ -13,8 +13,6 @@ github.com/kardianos/service v1.2.0 h1:bGuZ/epo3vrt8IPC7mnKQolqFeYJb7Cs8Rk4PSOBB
 github.com/kardianos/service v1.2.0/go.mod h1:CIMRFEJVL+0DS1a3Nx06NaMn4Dz63Ng6O7dl0qH0zVM=
 github.com/kisielk/errcheck v1.2.0 h1:reN85Pxc5larApoH1keMBiu2GWtPqXQ1nc9gx+jOU+E=
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
-github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6 h1:R52s6I/vW1NfNaJdY+Yr/ivkiFicouKmK0v3nvDQh4s=
-github.com/lwch/logging v0.0.0-20210528090125-a154917d90c6/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/logging v0.0.0-20210831025517-ae81047d6190 h1:C0Fpn2r+o13bVljlrKmpVe1LECPsFLtex5Mrt/v07H0=
 github.com/lwch/logging v0.0.0-20210831025517-ae81047d6190/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=

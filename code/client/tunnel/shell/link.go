@@ -33,7 +33,7 @@ type Link struct {
 // NewLink create link
 func NewLink(parent *Shell, id, target string, remote *pool.Conn) *Link {
 	remote.AddLink(id)
-	logging.Info("create shell %s for tunnel %s on connection %d",
+	logging.Info("create link %s for shell %s on connection %d",
 		id, parent.Name, remote.Idx)
 	return &Link{
 		parent: parent,

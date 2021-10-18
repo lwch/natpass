@@ -2,6 +2,7 @@ package vnc
 
 import (
 	"natpass/code/client/pool"
+	"natpass/code/client/tunnel/vnc/core"
 
 	"github.com/lwch/logging"
 )
@@ -13,6 +14,8 @@ type Link struct {
 	target    string // target id
 	targetIdx uint32 // target idx
 	remote    *pool.Conn
+	// vnc
+	ps *core.Process
 	// runtime
 	sendBytes  uint64
 	recvBytes  uint64
@@ -23,7 +26,7 @@ type Link struct {
 // NewLink create link
 func NewLink(parent *VNC, id, target string, remote *pool.Conn) *Link {
 	remote.AddLink(id)
-	logging.Info("create vnc %s for tunnel %s on connection %d",
+	logging.Info("create link %s for tunnel %s on connection %d",
 		id, parent.Name, remote.Idx)
 	return &Link{
 		parent: parent,
@@ -55,6 +58,11 @@ func (link *Link) SetTargetIdx(idx uint32) {
 
 // Fork fork worker process
 func (link *Link) Fork() error {
+	p, err := core.CreateWorkerProcess()
+	if err != nil {
+		return err
+	}
+	link.ps = p
 	return nil
 }
 

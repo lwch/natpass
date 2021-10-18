@@ -43,6 +43,12 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 			},
 		}
 	case "vnc":
+		fps := cfg.Fps
+		if fps > 50 {
+			fps = 50
+		} else if fps == 0 {
+			fps = 10
+		}
 		msg.Payload = &network.Msg_Creq{
 			Creq: &network.ConnectRequest{
 				Name:  cfg.Name,

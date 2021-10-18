@@ -2,6 +2,7 @@ package tunnel
 
 import "sync"
 
+// Link link interface
 type Link interface {
 	GetID() string
 	// GetBytes rx, tx

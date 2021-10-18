@@ -95,10 +95,10 @@ func build(t target) {
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
 
-	ldflags := "-X 'main._GIT_HASH=" + gitHash() + "' " +
-		"-X 'main._GIT_REVERSION=" + gitReversion() + "' " +
-		"-X 'main._BUILD_TIME=" + buildTime() + "' " +
-		"-X 'main._VERSION=" + version + "'"
+	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
+		"-X 'main.gitReversion=" + gitReversion() + "' " +
+		"-X 'main.buildTime=" + buildTime() + "' " +
+		"-X 'main.version=" + version + "'"
 
 	logging.Info("build server...")
 	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),

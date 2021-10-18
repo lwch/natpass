@@ -23,17 +23,17 @@ import (
 )
 
 var (
-	_VERSION       string = "0.0.0"
-	_GIT_HASH      string
-	_GIT_REVERSION string
-	_BUILD_TIME    string
+	version      string = "0.0.0"
+	gitHash      string
+	gitReversion string
+	buildTime    string
 )
 
 func showVersion() {
 	fmt.Printf("version: v%s\ntime: %s\ncommit: %s.%s\n",
-		_VERSION,
-		_BUILD_TIME,
-		_GIT_HASH, _GIT_REVERSION)
+		version,
+		buildTime,
+		gitHash, gitReversion)
 	os.Exit(0)
 }
 
@@ -108,7 +108,7 @@ func (a *app) run() {
 	}
 
 	if a.cfg.DashboardEnabled {
-		db := dashboard.New(a.cfg, pl, mgr, _VERSION)
+		db := dashboard.New(a.cfg, pl, mgr, version)
 		runtime.Assert(db.ListenAndServe(a.cfg.DashboardListen, a.cfg.DashboardPort))
 	} else {
 		select {}

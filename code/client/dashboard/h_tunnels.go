@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// Tunnels get tunnels list
 func (db *Dashboard) Tunnels(w http.ResponseWriter, r *http.Request) {
 	type link struct {
 		ID         string `json:"id"`

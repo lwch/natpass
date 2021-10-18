@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package network;
+option go_package="./;network";
+
+message vnc_control {
+    uint32      fps = 1;
+    uint32  quality = 2; // image quality, percent
+}
+
+message vnc_image {
+    enum encoding {
+        raw  = 0;
+        jpeg = 1;
+        png  = 2;
+    }
+    encoding encode = 1;
+    bytes      data = 2;
+}
+
+enum vnc_status {
+    unset_st = 0;
+    down     = 1;
+    up       = 2;
+}
+
+message vnc_mouse {
+    enum button {
+        unset_btn = 0;
+        left      = 1;
+        middle    = 2;
+        right     = 3;
+    }
+    vnc_status type = 1;
+    button      btn = 2;
+    uint32        x = 3;
+    uint32        y = 4;
+}
+
+message vnc_keyboard {
+    vnc_status type = 1;
+    // https://github.com/go-vgo/robotgo/blob/master/docs/keys.md
+    string      key = 2;
+}

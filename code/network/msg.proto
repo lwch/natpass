@@ -6,6 +6,7 @@ option go_package="./;network";
 import "connect.proto";
 import "forward.proto";
 import "shell.proto";
+import "vnc.proto";
 
 message handshake_payload {
     bytes enc = 1;
@@ -23,6 +24,11 @@ message msg {
         // shell
         shell_resize = 10;
         shell_data   = 11;
+        // vnc
+        vnc_ctrl     = 20;
+        vnc_mouse    = 21;
+        vnc_keyboard = 22;
+        vnc_cad      = 23; // ctrl+alt+del
     }
     type      _type = 1;
     string     from = 2;
@@ -36,7 +42,11 @@ message msg {
         connect_response  crep = 12;
         data             _data = 13;
         // shell
-        shell_resize   sresize = 20;
-        shell_data       sdata = 21;
+        shell_resize  sresize = 20;
+        shell_data      sdata = 21;
+        // vnc
+        vnc_control  vctrl = 30;
+        vnc_mouse   vmouse = 31;
+        vnc_keyboard  vkbd = 32;
     }
 }

@@ -18,6 +18,7 @@ message connect_request {
         tcp   = 0;
         udp   = 1;
         shell = 2;
+        vnc   = 3;
     }
     string name = 1;
     type  _type = 2;

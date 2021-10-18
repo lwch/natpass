@@ -26,6 +26,8 @@ const releaseDir = "release"
 type target struct {
 	os      string
 	arch    string
+	cc      string
+	cxx     string
 	ext     string
 	packExt string
 }
@@ -33,18 +35,62 @@ type target struct {
 // go tool dist list
 var targets = []target{
 	// darwin
-	{"darwin", "amd64", "", ".tar.gz"},
-	{"darwin", "arm64", "", ".tar.gz"},
+	{
+		os:      "darwin",
+		arch:    "amd64",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "darwin",
+		arch:    "arm64",
+		packExt: ".tar.gz",
+	},
 	// linux
-	{"linux", "386", "", ".tar.gz"},
-	{"linux", "amd64", "", ".tar.gz"},
-	{"linux", "arm", "", ".tar.gz"},
-	{"linux", "arm64", "", ".tar.gz"},
+	{
+		os:      "linux",
+		arch:    "386",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "linux",
+		arch:    "amd64",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "linux",
+		arch:    "arm",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "linux",
+		arch:    "arm64",
+		packExt: ".tar.gz",
+	},
 	// windows
-	{"windows", "386", ".exe", ".zip"},
-	{"windows", "amd64", ".exe", ".zip"},
-	{"windows", "arm", ".exe", ".zip"},
-	{"windows", "arm64", ".exe", ".zip"},
+	{
+		os:   "windows",
+		arch: "386",
+		cc:   "i686-w64-mingw32-gcc", cxx: "i686-w64-mingw32-g++",
+		ext: ".exe", packExt: ".zip",
+	},
+	{
+		os:   "windows",
+		arch: "amd64",
+		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
+		ext: ".exe", packExt: ".zip",
+	},
+	{
+		os:   "windows",
+		arch: "arm",
+		// TODO: cc, cxx?
+		ext: ".exe", packExt: ".zip",
+	},
+	{
+		os:   "windows",
+		arch: "arm64",
+		// TODO: cc, cxx?
+		ext: ".exe", packExt: ".zip",
+	},
 }
 
 func main() {
@@ -98,7 +144,8 @@ func build(t target) {
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
 		"-X 'main.buildTime=" + buildTime() + "' " +
-		"-X 'main.version=" + version + "'"
+		"-X 'main.version=" + version + "' " +
+		"--extldflags '-static -fpic -lssp'"
 
 	logging.Info("build server...")
 	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
@@ -122,7 +169,9 @@ func build(t target) {
 	cmd.Env = append(os.Environ(),
 		"CGO_ENABLED=0",
 		fmt.Sprintf("GOOS=%s", t.os),
-		fmt.Sprintf("GOARCH=%s", t.arch))
+		fmt.Sprintf("GOARCH=%s", t.arch),
+		fmt.Sprintf("CC=%s", t.cc),
+		fmt.Sprintf("CXX=%s", t.cxx))
 	runtime.Assert(cmd.Run())
 
 	logging.Info("packing...")

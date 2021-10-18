@@ -34,7 +34,7 @@ func (shell *Shell) GetName() string {
 	return shell.Name
 }
 
-// GetTypeName get reverse tunnel type name
+// GetTypeName get shell tunnel type name
 func (shell *Shell) GetTypeName() string {
 	return "shell"
 }

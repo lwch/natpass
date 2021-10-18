@@ -9,6 +9,7 @@ import (
 	"natpass/code/client/tunnel"
 	"natpass/code/client/tunnel/reverse"
 	"natpass/code/client/tunnel/shell"
+	"natpass/code/client/tunnel/vnc"
 	"natpass/code/network"
 	"os"
 	"path/filepath"
@@ -67,6 +68,10 @@ func (a *app) run() {
 			sh := shell.New(t)
 			mgr.Add(sh)
 			go sh.Handle(pl)
+		case "vnc":
+			v := vnc.New(t)
+			mgr.Add(v)
+			go v.Handle(pl)
 		}
 	}
 

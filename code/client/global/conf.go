@@ -65,7 +65,7 @@ func LoadConf(dir string) *Configure {
 	runtime.Assert(yaml.Decode(dir, &cfg))
 	for i, t := range cfg.Tunnel {
 		switch t.Type {
-		case "tcp", "shell":
+		case "tcp", "shell", "vnc":
 		default:
 			t.Type = "udp"
 		}

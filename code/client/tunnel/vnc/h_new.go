@@ -13,6 +13,9 @@ import (
 
 // New new vnc
 func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+	if v.link != nil {
+		v.link.close()
+	}
 	id, err := runtime.UUID(16, "0123456789abcdef")
 	if err != nil {
 		logging.Error("failed to generate link_id for vnc: %s, err=%v",
@@ -22,10 +25,7 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	}
 	conn := pool.Get(id)
 	conn.SendConnectReq(id, v.cfg)
-	link := NewLink(v, id, v.cfg.Target, conn)
-	v.Lock()
-	v.links[id] = link
-	v.Unlock()
+	v.link = NewLink(v, id, v.cfg.Target, conn)
 	ch := conn.ChanRead(id)
 	timeout := time.After(conn.ReadTimeout)
 	for {
@@ -33,7 +33,7 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		select {
 		case msg = <-ch:
 		case <-timeout:
-			logging.Error("create vnc %s on tunnel %s failed, timtout", link.id, link.parent.Name)
+			logging.Error("create vnc %s on tunnel %s failed, timtout", v.link.id, v.link.parent.Name)
 			http.Error(w, "timeout", http.StatusBadGateway)
 			return
 		}
@@ -45,7 +45,7 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		rep := msg.GetCrep()
 		if !rep.GetOk() {
 			logging.Error("create vnc %s on tunnel %s failed, err=%s",
-				link.id, link.parent.Name, rep.GetMsg())
+				v.link.id, v.link.parent.Name, rep.GetMsg())
 			http.Error(w, rep.GetMsg(), http.StatusBadGateway)
 			return
 		}

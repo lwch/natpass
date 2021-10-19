@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"syscall"
@@ -12,6 +14,8 @@ import (
 
 // Process process
 type Process struct {
+	pid int
+	srv *http.Server
 }
 
 func getLogonPid(sessionID uintptr) uint32 {
@@ -89,12 +93,16 @@ func createWorker(tk windows.Token) (*Process, error) {
 		return nil, err
 	}
 	var p Process
+	port, err := p.listenAndServe()
+	if err != nil {
+		return nil, err
+	}
 	var startup windows.StartupInfo
 	var process windows.ProcessInformation
 	startup.Cb = uint32(unsafe.Sizeof(startup))
 	startup.Desktop = windows.StringToUTF16Ptr("WinSta0\\default")
 	startup.Flags = windows.STARTF_USESHOWWINDOW
-	cmd := windows.StringToUTF16Ptr(dir + " -action vnc.worker")
+	cmd := windows.StringToUTF16Ptr(dir + fmt.Sprintf(" -action vnc.worker -vnc %d", port))
 	if tk == 0 {
 		err = windows.CreateProcess(nil, cmd, nil, nil, false, windows.DETACHED_PROCESS, nil, nil, &startup, &process)
 	} else {
@@ -103,5 +111,14 @@ func createWorker(tk windows.Token) (*Process, error) {
 	if err != nil {
 		return nil, err
 	}
+	p.pid = int(process.ProcessId)
 	return &p, nil
+}
+
+// Close close process
+func (p *Process) Close() {
+	if p.srv != nil {
+		p.srv.Close()
+	}
+	p.kill()
 }

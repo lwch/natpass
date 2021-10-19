@@ -5,6 +5,7 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
 	"natpass/code/client/tunnel"
+	"net"
 	"net/http"
 	"sync"
 
@@ -15,18 +16,35 @@ import (
 // VNC vnc handler
 type VNC struct {
 	sync.RWMutex
-	Name  string
-	cfg   global.Tunnel
-	links map[string]*Link
+	Name string
+	cfg  global.Tunnel
+	link *Link
 }
 
 // New new vnc
 func New(cfg global.Tunnel) *VNC {
 	return &VNC{
-		Name:  cfg.Name,
-		cfg:   cfg,
-		links: make(map[string]*Link),
+		Name: cfg.Name,
+		cfg:  cfg,
 	}
+}
+
+// NewLink new link
+func (v *VNC) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) tunnel.Link {
+	remoteConn.AddLink(id)
+	logging.Info("create link %s for tunnel %s on connection %d",
+		id, v.Name, remoteConn.Idx)
+	link := &Link{
+		parent: v,
+		id:     id,
+		target: remote,
+		remote: remoteConn,
+	}
+	if v.link != nil {
+		v.link.close()
+	}
+	v.link = link
+	return link
 }
 
 // GetName get vnc tunnel name
@@ -46,13 +64,10 @@ func (v *VNC) GetTarget() string {
 
 // GetLinks get tunnel links
 func (v *VNC) GetLinks() []tunnel.Link {
-	ret := make([]tunnel.Link, 0, len(v.links))
-	v.RLock()
-	for _, link := range v.links {
-		ret = append(ret, link)
+	if v.link != nil {
+		return []tunnel.Link{v.link}
 	}
-	v.RUnlock()
-	return ret
+	return nil
 }
 
 // GetRemote get remote target name

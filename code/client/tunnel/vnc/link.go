@@ -69,3 +69,10 @@ func (link *Link) Fork() error {
 // Forward forward data
 func (link *Link) Forward() {
 }
+
+func (link *Link) close() {
+	if link.ps != nil {
+		link.ps.Close()
+	}
+	// TODO: send close message
+}

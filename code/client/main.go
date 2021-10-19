@@ -11,6 +11,7 @@ import (
 	"natpass/code/client/tunnel/shell"
 	"natpass/code/client/tunnel/vnc"
 	"natpass/code/network"
+	"natpass/code/utils"
 	"os"
 	"path/filepath"
 	rt "runtime"
@@ -131,6 +132,7 @@ func main() {
 	conf := flag.String("conf", "", "configure file path")
 	version := flag.Bool("version", false, "show version info")
 	act := flag.String("action", "", "install or uninstall")
+	vport := flag.Uint("vport", 6155, "vnc worker listen port")
 	flag.Parse()
 
 	if *version {
@@ -161,6 +163,12 @@ func main() {
 	}
 
 	cfg := global.LoadConf(*conf)
+
+	if *act == "vnc.worker" {
+		defer utils.Recover("vnc.worker")
+		vnc.RunWorker(uint16(*vport))
+		return
+	}
 
 	app := &app{cfg: cfg}
 	sv, err := service.New(app, appCfg)

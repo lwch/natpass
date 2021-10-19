@@ -1,6 +1,10 @@
 package tunnel
 
-import "sync"
+import (
+	"natpass/code/client/pool"
+	"net"
+	"sync"
+)
 
 // Link link interface
 type Link interface {
@@ -13,6 +17,7 @@ type Link interface {
 
 // Tunnel tunnel interface
 type Tunnel interface {
+	NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) Link
 	GetName() string
 	GetRemote() string
 	GetPort() uint16
@@ -37,6 +42,18 @@ func (mgr *Mgr) Add(tunnel Tunnel) {
 	mgr.Lock()
 	defer mgr.Unlock()
 	mgr.tunnels = append(mgr.tunnels, tunnel)
+}
+
+// Get get tunnel by name
+func (mgr *Mgr) Get(name, remote string) Tunnel {
+	mgr.RLock()
+	defer mgr.RUnlock()
+	for _, t := range mgr.tunnels {
+		if t.GetName() == name && t.GetRemote() == remote {
+			return t
+		}
+	}
+	return nil
 }
 
 // Range range tunnels

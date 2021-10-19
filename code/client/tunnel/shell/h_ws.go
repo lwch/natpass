@@ -75,7 +75,6 @@ func (shell *Shell) remoteForward(id string, local *websocket.Conn) {
 		data, _ := proto.Marshal(msg)
 		link.recvBytes += uint64(len(data))
 		link.recvPacket++
-		link.SetTargetIdx(msg.GetFromIdx())
 		switch msg.GetXType() {
 		case network.Msg_shell_data:
 			err := local.WriteMessage(websocket.TextMessage, msg.GetSdata().GetData())

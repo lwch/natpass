@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /build
+cd $(dirname $(realpath $0))/../../
 
 HASH=`git log -n1 --pretty=format:%h`
 REVERSION=`git log --oneline|wc -l|tr -d ' '`

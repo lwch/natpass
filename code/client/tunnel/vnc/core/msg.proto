@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package core;
+option go_package="./;core";
+
+message image_data {
+    message info {
+        uint32   screen_bits = 1;
+        uint32  screen_width = 2;
+        uint32 screen_height = 3;
+        uint32        rect_x = 4;
+        uint32        rect_y = 5;
+        uint32    rect_width = 6;
+        uint32   rect_height = 7;
+    }
+    info data_info = 1;
+    bytes     data = 2;
+}
+
+enum status {
+    unset_st = 0;
+    down     = 1;
+    up       = 2;
+}
+
+message mouse_data {
+    enum button {
+        unset_btn = 0;
+        left      = 1;
+        middle    = 2;
+        right     = 3;
+    }
+    status type = 1;
+    button  btn = 2;
+    uint32    x = 3;
+    uint32    y = 4;
+}
+
+message keyboard_data {
+    status type = 1;
+    string  key = 2;
+}
+
+message msg {
+    enum type {
+        capture_req    = 0;
+        capture_data   = 1;
+        mouse_event    = 2;
+        keyboard_event = 3;
+        cad_event      = 4;
+    }
+    type _type = 1;
+    oneof payload {
+        image_data        data = 2;
+        mouse_data       mouse = 3;
+        keyboard_data keyboard = 4;
+    }
+}

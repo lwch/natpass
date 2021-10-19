@@ -5,6 +5,7 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
 	"natpass/code/client/tunnel"
+	"net"
 	"net/http"
 	"sync"
 
@@ -27,6 +28,24 @@ func New(cfg global.Tunnel) *Shell {
 		cfg:   cfg,
 		links: make(map[string]*Link),
 	}
+}
+
+// NewLink new link
+func (shell *Shell) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) tunnel.Link {
+	remoteConn.AddLink(id)
+	logging.Info("create link %s for shell %s on connection %d",
+		id, shell.Name, remoteConn.Idx)
+	link := &Link{
+		parent:    shell,
+		id:        id,
+		target:    remote,
+		targetIdx: remoteIdx,
+		remote:    remoteConn,
+	}
+	shell.Lock()
+	shell.links[link.id] = link
+	shell.Unlock()
+	return link
 }
 
 // GetName get shell tunnel name

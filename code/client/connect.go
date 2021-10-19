@@ -30,18 +30,20 @@ func connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	}
 	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
 	port, _ := strconv.ParseUint(pt, 10, 16)
-	tn := reverse.New(global.Tunnel{
-		Name:       req.GetName(),
-		Target:     msg.GetFrom(),
-		Type:       dial,
-		LocalAddr:  host,
-		LocalPort:  uint16(port),
-		RemoteAddr: addr.GetAddr(),
-		RemotePort: uint16(addr.GetPort()),
-	})
-	mgr.Add(tn)
-	lk := reverse.NewLink(tn, msg.GetLinkId(), msg.GetFrom(), link, conn)
-	lk.SetTargetIdx(msg.GetFromIdx())
+	tn := mgr.Get(req.GetName(), msg.GetFrom())
+	if tn == nil {
+		tn = reverse.New(global.Tunnel{
+			Name:       req.GetName(),
+			Target:     msg.GetFrom(),
+			Type:       dial,
+			LocalAddr:  host,
+			LocalPort:  uint16(port),
+			RemoteAddr: addr.GetAddr(),
+			RemotePort: uint16(addr.GetPort()),
+		})
+		mgr.Add(tn)
+	}
+	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), link, conn).(*reverse.Link)
 	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
 	lk.OnWork <- struct{}{}
@@ -49,16 +51,18 @@ func connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 
 func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
-	sh := shell.New(global.Tunnel{
-		Name:   create.GetName(),
-		Target: msg.GetFrom(),
-		Type:   "shell",
-		Exec:   create.GetCshell().GetExec(),
-		Env:    create.GetCshell().GetEnv(),
-	})
-	mgr.Add(sh)
-	lk := shell.NewLink(sh, msg.GetLinkId(), msg.GetFrom(), conn)
-	lk.SetTargetIdx(msg.GetFromIdx())
+	tn := mgr.Get(create.GetName(), msg.GetFrom())
+	if tn == nil {
+		tn = shell.New(global.Tunnel{
+			Name:   create.GetName(),
+			Target: msg.GetFrom(),
+			Type:   "shell",
+			Exec:   create.GetCshell().GetExec(),
+			Env:    create.GetCshell().GetEnv(),
+		})
+		mgr.Add(tn)
+	}
+	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), nil, conn).(*shell.Link)
 	err := lk.Exec()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
@@ -71,18 +75,21 @@ func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 
 func vncCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
-	v := vnc.New(global.Tunnel{
-		Name:   create.GetName(),
-		Target: msg.GetFrom(),
-		Type:   "vnc",
-		Fps:    create.GetCvnc().GetFps(),
-	})
-	mgr.Add(v)
-	lk := vnc.NewLink(v, msg.GetLinkId(), msg.GetFrom(), conn)
+	tn := mgr.Get(create.GetName(), msg.GetFrom())
+	if tn == nil {
+		tn = vnc.New(global.Tunnel{
+			Name:   create.GetName(),
+			Target: msg.GetFrom(),
+			Type:   "vnc",
+			Fps:    create.GetCvnc().GetFps(),
+		})
+		mgr.Add(tn)
+	}
+	lk := vnc.NewLink(tn.(*vnc.VNC), msg.GetLinkId(), msg.GetFrom(), conn)
 	lk.SetTargetIdx(msg.GetFromIdx())
 	err := lk.Fork()
 	if err != nil {
-		logging.Error("create shell failed: %v", err)
+		logging.Error("create vnc failed: %v", err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
 		return
 	}

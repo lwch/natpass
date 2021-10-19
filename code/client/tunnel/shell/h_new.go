@@ -21,11 +21,8 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	conn := pool.Get(id)
+	link := shell.NewLink(id, shell.cfg.Target, 0, nil, conn).(*Link)
 	conn.SendConnectReq(id, shell.cfg)
-	link := NewLink(shell, id, shell.cfg.Target, conn)
-	shell.Lock()
-	shell.links[id] = link
-	shell.Unlock()
 	ch := conn.ChanRead(id)
 	timeout := time.After(conn.ReadTimeout)
 	for {
@@ -37,6 +34,7 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 			http.Error(w, "timeout", http.StatusBadGateway)
 			return
 		}
+		link.SetTargetIdx(msg.GetFromIdx())
 		if msg.GetXType() != network.Msg_connect_rep {
 			conn.Reset(id, msg)
 			time.Sleep(conn.ReadTimeout / 10)

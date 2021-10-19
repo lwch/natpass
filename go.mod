@@ -3,7 +3,7 @@ module natpass
 go 1.16
 
 require (
-	github.com/creack/pty v1.1.16
+	github.com/creack/pty v1.1.17
 	github.com/dustin/go-humanize v1.0.0
 	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/gorilla/websocket v1.4.2
@@ -14,4 +14,5 @@ require (
 	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744
 	golang.org/x/text v0.3.7
 	google.golang.org/protobuf v1.27.1
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce
 )

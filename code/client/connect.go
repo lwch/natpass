@@ -85,8 +85,7 @@ func vncCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 		})
 		mgr.Add(tn)
 	}
-	lk := vnc.NewLink(tn.(*vnc.VNC), msg.GetLinkId(), msg.GetFrom(), conn)
-	lk.SetTargetIdx(msg.GetFromIdx())
+	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), nil, conn).(*vnc.Link)
 	err := lk.Fork()
 	if err != nil {
 		logging.Error("create vnc failed: %v", err)

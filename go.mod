@@ -14,5 +14,4 @@ require (
 	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744
 	golang.org/x/text v0.3.7
 	google.golang.org/protobuf v1.27.1
-	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce
 )

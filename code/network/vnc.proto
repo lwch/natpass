@@ -4,18 +4,26 @@ package network;
 option go_package="./;network";
 
 message vnc_control {
-    uint32      fps = 1;
-    uint32  quality = 2; // image quality, percent
+    uint32 quality = 1; // image quality, percent
 }
 
 message vnc_image {
+    message info {
+        uint32  screen_width = 1;
+        uint32 screen_height = 2;
+        uint32        rect_x = 3;
+        uint32        rect_y = 4;
+        uint32    rect_width = 5;
+        uint32   rect_height = 6;
+    }
     enum encoding {
         raw  = 0;
         jpeg = 1;
         png  = 2;
     }
-    encoding encode = 1;
-    bytes      data = 2;
+    info      _info = 1;
+    encoding encode = 2;
+    bytes      data = 3;
 }
 
 enum vnc_status {

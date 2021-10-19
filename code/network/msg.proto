@@ -46,7 +46,8 @@ message msg {
         shell_data      sdata = 21;
         // vnc
         vnc_control  vctrl = 30;
-        vnc_mouse   vmouse = 31;
-        vnc_keyboard  vkbd = 32;
+        vnc_image     vimg = 31;
+        vnc_mouse   vmouse = 32;
+        vnc_keyboard  vkbd = 33;
     }
 }

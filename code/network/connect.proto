@@ -14,7 +14,8 @@ message connect_shell {
 }
 
 message connect_vnc {
-    uint32 fps = 1;
+    uint32     fps = 1;
+    uint32 quality = 2; // image quality, percent
 }
 
 message connect_request {

@@ -3,11 +3,15 @@ package core
 import (
 	"errors"
 	"fmt"
+	"natpass/code/utils"
 	"net"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/lwch/logging"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -46,6 +50,47 @@ func (p *Process) ws(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
+	defer p.Close()
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer utils.Recover("ws read")
+		defer wg.Done()
+		for {
+			_, data, err := conn.ReadMessage()
+			if err != nil {
+				logging.Error("read message: %v", err)
+				return
+			}
+			var msg Msg
+			err = proto.Unmarshal(data, &msg)
+			if err != nil {
+				continue
+			}
+			switch msg.GetXType() {
+			case Msg_capture_data:
+				p.chImage <- msg.GetData()
+			default:
+			}
+		}
+	}()
+	go func() {
+		defer utils.Recover("ws write")
+		defer wg.Done()
+		for {
+			msg := <-p.chWrite
+			data, err := proto.Marshal(msg)
+			if err != nil {
+				continue
+			}
+			err = conn.WriteMessage(websocket.BinaryMessage, data)
+			if err != nil {
+				logging.Error("write message: %v", err)
+				return
+			}
+		}
+	}()
+	wg.Wait()
 }
 
 func (p *Process) kill() {

@@ -17,6 +17,7 @@ import (
 
 func connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	req := msg.GetCreq()
+	// TODO: 创建tcp连接移到reverse包中实现
 	dial := "tcp"
 	if req.GetXType() == network.ConnectRequest_udp {
 		dial = "udp"
@@ -86,6 +87,7 @@ func vncCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 		mgr.Add(tn)
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), nil, conn).(*vnc.Link)
+	lk.SetQuality(create.GetCvnc().GetQuality())
 	err := lk.Fork()
 	if err != nil {
 		logging.Error("create vnc failed: %v", err)

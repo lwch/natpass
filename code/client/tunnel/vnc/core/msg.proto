@@ -4,17 +4,10 @@ package core;
 option go_package="./;core";
 
 message image_data {
-    message info {
-        uint32   screen_bits = 1;
-        uint32  screen_width = 2;
-        uint32 screen_height = 3;
-        uint32        rect_x = 4;
-        uint32        rect_y = 5;
-        uint32    rect_width = 6;
-        uint32   rect_height = 7;
-    }
-    info data_info = 1;
-    bytes     data = 2;
+    uint32   bits = 1;
+    uint32  width = 2;
+    uint32 height = 3;
+    bytes    data = 4;
 }
 
 enum status {

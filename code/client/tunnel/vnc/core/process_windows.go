@@ -1,11 +1,15 @@
 package core
 
 import (
+	"errors"
 	"fmt"
+	"image"
+	"natpass/code/client/tunnel/vnc/core/define"
 	"net/http"
 	"os"
 	"strings"
 	"syscall"
+	"time"
 	"unicode/utf16"
 	"unsafe"
 
@@ -14,8 +18,10 @@ import (
 
 // Process process
 type Process struct {
-	pid int
-	srv *http.Server
+	pid     int
+	srv     *http.Server
+	chWrite chan *Msg
+	chImage chan *ImageData
 }
 
 func getLogonPid(sessionID uintptr) uint32 {
@@ -62,13 +68,13 @@ func parseProcessName(exeFile [syscall.MAX_PATH]uint16) string {
 }
 
 func getSessionID() uintptr {
-	id, _, _ := syscall.Syscall(funcWTSGetActiveConsoleSessionId, 0, 0, 0, 0)
+	id, _, _ := syscall.Syscall(define.FuncWTSGetActiveConsoleSessionId, 0, 0, 0, 0)
 	return id
 }
 
 func getSessionUserTokenWin() windows.Token {
 	pid := getLogonPid(getSessionID())
-	process, err := windows.OpenProcess(PROCESS_ALL_ACCESS, false, pid)
+	process, err := windows.OpenProcess(define.PROCESS_ALL_ACCESS, false, pid)
 	if err != nil {
 		return 0
 	}
@@ -93,6 +99,8 @@ func createWorker(tk windows.Token) (*Process, error) {
 		return nil, err
 	}
 	var p Process
+	p.chWrite = make(chan *Msg)
+	p.chImage = make(chan *ImageData)
 	port, err := p.listenAndServe()
 	if err != nil {
 		return nil, err
@@ -120,5 +128,40 @@ func (p *Process) Close() {
 	if p.srv != nil {
 		p.srv.Close()
 	}
+	if p.chImage != nil {
+		close(p.chImage)
+	}
+	if p.chWrite != nil {
+		close(p.chWrite)
+	}
 	p.kill()
+}
+
+func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
+	var msg Msg
+	msg.XType = Msg_capture_req
+	p.chWrite <- &msg
+	trans := func(data *ImageData) *image.RGBA {
+		img := image.NewRGBA(image.Rect(0, 0, int(data.GetWidth()), int(data.GetHeight())))
+		switch data.GetBits() {
+		case 8:
+			// TODO
+		case 24:
+			// TODO
+		case 32:
+			copy(img.Pix, data.GetData())
+		}
+		return img
+	}
+	if timeout > 0 {
+		select {
+		case data := <-p.chImage:
+			return trans(data), nil
+		case <-time.After(timeout):
+			return nil, errors.New("timeout")
+		}
+	} else {
+		data := <-p.chImage
+		return trans(data), nil
+	}
 }

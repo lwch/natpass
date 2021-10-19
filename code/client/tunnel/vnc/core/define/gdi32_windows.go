@@ -1,10 +1,10 @@
-package core
+package define
 
 import "syscall"
 
 var (
 	libGdi32, _          = syscall.LoadLibrary("Gdi32.dll")
-	funcGetDeviceCaps, _ = syscall.GetProcAddress(syscall.Handle(libGdi32), "GetDeviceCaps")
+	FuncGetDeviceCaps, _ = syscall.GetProcAddress(syscall.Handle(libGdi32), "GetDeviceCaps")
 )
 
 const (

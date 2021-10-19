@@ -2,26 +2,27 @@ package core
 
 import "github.com/gorilla/websocket"
 
-type DesktopInfo struct {
-	Bits   int
-	Width  int
-	Height int
+type desktopInfo struct {
+	bits   int
+	width  int
+	height int
 }
 
-type Context struct {
-	ctxOsBased
-	Info DesktopInfo
+type Worker struct {
+	workerOsBased
+	info desktopInfo
 }
 
-func NewContext() *Context {
-	ctx := &Context{}
-	err := ctx.init()
+func NewWorker() *Worker {
+	worker := &Worker{}
+	err := worker.init()
 	if err != nil {
 		return nil
 	}
-	return ctx
+	return worker
 }
 
-func (ctx *Context) Do(conn *websocket.Conn) {
+func (worker *Worker) Do(conn *websocket.Conn) {
 	defer conn.Close()
+	// TODO: handle msg
 }

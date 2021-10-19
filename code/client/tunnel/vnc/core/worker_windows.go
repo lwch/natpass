@@ -10,13 +10,13 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-type ctxOsBased struct {
+type workerOsBased struct {
 	hwnd   uintptr
 	hdc    uintptr
 	buffer uintptr
 }
 
-func (ctx *Context) attachDesktop() (func(), error) {
+func attachDesktop() (func(), error) {
 	runtime.LockOSThread()
 	locked := true
 	oldDesktop, _, err := syscall.Syscall(define.FuncGetThreadDesktop, 1, uintptr(windows.GetCurrentThreadId()), 0, 0)
@@ -41,25 +41,25 @@ func (ctx *Context) attachDesktop() (func(), error) {
 	}, nil
 }
 
-func (ctx *Context) init() error {
-	detach, err := ctx.attachDesktop()
+func (worker *Worker) init() error {
+	detach, err := attachDesktop()
 	if err != nil {
 		return err
 	}
 	defer detach()
-	err = ctx.getHandle()
+	err = worker.getHandle()
 	if err != nil {
 		return err
 	}
-	err = ctx.updateInfo()
+	err = worker.updateInfo()
 	if err != nil {
 		return err
 	}
 	detach()
-	return ctx.updateBuffer()
+	return worker.updateBuffer()
 }
 
-func (ctx *Context) getHandle() error {
+func (worker *workerOsBased) getHandle() error {
 	hwnd, _, err := syscall.Syscall(define.FuncGetDesktopWindow, 0, 0, 0, 0)
 	if hwnd == 0 {
 		return fmt.Errorf("get desktop window: %v", err)
@@ -68,41 +68,41 @@ func (ctx *Context) getHandle() error {
 	if hdc == 0 {
 		return fmt.Errorf("get dc: %v", err)
 	}
-	if ctx.hdc != 0 {
-		syscall.Syscall(define.FuncReleaseDC, 2, ctx.hwnd, ctx.hdc, 0)
+	if worker.hdc != 0 {
+		syscall.Syscall(define.FuncReleaseDC, 2, worker.hwnd, worker.hdc, 0)
 	}
-	ctx.hwnd = hwnd
-	ctx.hdc = hdc
+	worker.hwnd = hwnd
+	worker.hdc = hdc
 	return nil
 }
 
-func (ctx *Context) updateInfo() error {
-	bits, _, err := syscall.Syscall(define.FuncGetDeviceCaps, 2, ctx.hdc, define.BITSPIXEL, 0)
+func (worker *Worker) updateInfo() error {
+	bits, _, err := syscall.Syscall(define.FuncGetDeviceCaps, 2, worker.hdc, define.BITSPIXEL, 0)
 	if bits == 0 {
 		return fmt.Errorf("get device caps(bits): %v", err)
 	}
-	width, _, err := syscall.Syscall(define.FuncGetDeviceCaps, 2, ctx.hdc, define.HORZRES, 0)
+	width, _, err := syscall.Syscall(define.FuncGetDeviceCaps, 2, worker.hdc, define.HORZRES, 0)
 	if width == 0 {
 		return fmt.Errorf("get device caps(width): %v", err)
 	}
-	height, _, err := syscall.Syscall(define.FuncGetDeviceCaps, 2, ctx.hdc, define.VERTRES, 0)
+	height, _, err := syscall.Syscall(define.FuncGetDeviceCaps, 2, worker.hdc, define.VERTRES, 0)
 	if height == 0 {
 		return fmt.Errorf("get device caps(height): %v", err)
 	}
-	ctx.Info.Bits = int(bits)
-	ctx.Info.Width = int(width)
-	ctx.Info.Height = int(height)
+	worker.info.bits = int(bits)
+	worker.info.width = int(width)
+	worker.info.height = int(height)
 	return nil
 }
 
-func (ctx *Context) updateBuffer() error {
-	addr, _, err := syscall.Syscall(define.FuncGlobalAlloc, 2, define.GMEM_FIXED, uintptr(ctx.Info.Bits*ctx.Info.Width*ctx.Info.Height/8), 0)
+func (worker *Worker) updateBuffer() error {
+	addr, _, err := syscall.Syscall(define.FuncGlobalAlloc, 2, define.GMEM_FIXED, uintptr(worker.info.bits*worker.info.width*worker.info.height/8), 0)
 	if addr == 0 {
 		return fmt.Errorf("global alloc: %v", err)
 	}
-	if ctx.buffer != 0 {
-		syscall.Syscall(define.FuncGlobalFree, 1, ctx.buffer, 0, 0)
+	if worker.buffer != 0 {
+		syscall.Syscall(define.FuncGlobalFree, 1, worker.buffer, 0, 0)
 	}
-	ctx.buffer = addr
+	worker.buffer = addr
 	return nil
 }

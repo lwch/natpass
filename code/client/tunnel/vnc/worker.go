@@ -10,11 +10,11 @@ import (
 
 // RunWorker run vnc worker
 func RunWorker(port uint16) {
-	ctx := core.NewContext()
-	if ctx == nil {
+	worker := core.NewWorker()
+	if worker == nil {
 		panic("build context failed")
 	}
 	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://127.0.0.1:%d", port), nil)
 	runtime.Assert(err)
-	ctx.Do(conn)
+	worker.Do(conn)
 }

@@ -19,6 +19,14 @@ const (
 	listenEnd   = 6955
 )
 
+// Process process
+type Process struct {
+	pid     int
+	srv     *http.Server
+	chWrite chan *Msg
+	chImage chan *ImageData
+}
+
 func (p *Process) listenAndServe() (uint16, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", p.ws)

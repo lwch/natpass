@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"natpass/code/client/tunnel/vnc/core/define"
-	"net/http"
 	"os"
 	"strings"
 	"syscall"
@@ -15,14 +14,6 @@ import (
 
 	"golang.org/x/sys/windows"
 )
-
-// Process process
-type Process struct {
-	pid     int
-	srv     *http.Server
-	chWrite chan *Msg
-	chImage chan *ImageData
-}
 
 func getLogonPid(sessionID uintptr) uint32 {
 	snapshot, err := syscall.CreateToolhelp32Snapshot(syscall.TH32CS_SNAPPROCESS, 0)

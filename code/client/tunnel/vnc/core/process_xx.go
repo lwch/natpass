@@ -2,9 +2,10 @@
 
 package core
 
-// Process process
-type Process struct {
-}
+import (
+	"image"
+	"time"
+)
 
 // CreateWorkerProcess create worker process
 func CreateWorkerProcess() (*Process, error) {
@@ -13,4 +14,8 @@ func CreateWorkerProcess() (*Process, error) {
 
 // Close close process
 func (p *Process) Close() {
+}
+
+func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
+	return nil, nil
 }

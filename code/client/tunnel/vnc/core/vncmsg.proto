@@ -4,10 +4,12 @@ package core;
 option go_package="./;core";
 
 message image_data {
-    uint32   bits = 1;
-    uint32  width = 2;
-    uint32 height = 3;
-    bytes    data = 4;
+    bool       ok = 1;
+    string    msg = 2;
+    uint32   bits = 3;
+    uint32  width = 4;
+    uint32 height = 5;
+    bytes    data = 6;
 }
 
 enum status {

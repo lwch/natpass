@@ -23,7 +23,7 @@ const (
 type Process struct {
 	pid     int
 	srv     *http.Server
-	chWrite chan *Msg
+	chWrite chan *VncMsg
 	chImage chan *ImageData
 }
 
@@ -70,13 +70,13 @@ func (p *Process) ws(w http.ResponseWriter, r *http.Request) {
 				logging.Error("read message: %v", err)
 				return
 			}
-			var msg Msg
+			var msg VncMsg
 			err = proto.Unmarshal(data, &msg)
 			if err != nil {
 				continue
 			}
 			switch msg.GetXType() {
-			case Msg_capture_data:
+			case VncMsg_capture_data:
 				p.chImage <- msg.GetData()
 			default:
 			}

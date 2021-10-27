@@ -34,7 +34,7 @@ message keyboard_data {
     string  key = 2;
 }
 
-message msg {
+message vnc_msg {
     enum type {
         capture_req    = 0;
         capture_data   = 1;

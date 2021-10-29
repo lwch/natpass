@@ -13,7 +13,7 @@ import (
 func (worker *Worker) runCapture(conn *websocket.Conn) {
 	err := worker.capture()
 	if err != nil {
-		logging.Error(err.Error())
+		logging.Error("capture: %v", err.Error())
 		captureError(conn, err.Error())
 		return
 	}

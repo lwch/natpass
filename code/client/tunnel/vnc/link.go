@@ -65,8 +65,8 @@ func (link *Link) SetQuality(q uint32) {
 }
 
 // Fork fork worker process
-func (link *Link) Fork() error {
-	p, err := core.CreateWorkerProcess()
+func (link *Link) Fork(confDir string) error {
+	p, err := core.CreateWorkerProcess(confDir)
 	if err != nil {
 		return err
 	}

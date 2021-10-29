@@ -52,6 +52,7 @@ func (p *Process) listenAndServe() (uint16, error) {
 var upgrader = websocket.Upgrader{EnableCompression: true}
 
 func (p *Process) ws(w http.ResponseWriter, r *http.Request) {
+	logging.Info("child process connected")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

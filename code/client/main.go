@@ -40,7 +40,8 @@ func showVersion() {
 }
 
 type app struct {
-	cfg *global.Configure
+	confDir string
+	cfg     *global.Configure
 }
 
 func (a *app) Start(s service.Service) error {
@@ -98,7 +99,7 @@ func (a *app) run() {
 						case network.ConnectRequest_shell:
 							shellCreate(mgr, conn, msg)
 						case network.ConnectRequest_vnc:
-							vncCreate(mgr, conn, msg)
+							vncCreate(a.confDir, mgr, conn, msg)
 						}
 					default:
 						linkID = msg.GetLinkId()
@@ -166,11 +167,13 @@ func main() {
 
 	if *act == "vnc.worker" {
 		defer utils.Recover("vnc.worker")
+		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
+		defer logging.Flush()
 		vnc.RunWorker(uint16(*vport))
 		return
 	}
 
-	app := &app{cfg: cfg}
+	app := &app{confDir: *conf, cfg: cfg}
 	sv, err := service.New(app, appCfg)
 	runtime.Assert(err)
 

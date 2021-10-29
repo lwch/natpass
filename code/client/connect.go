@@ -74,7 +74,7 @@ func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	lk.Forward()
 }
 
-func vncCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+func vncCreate(confDir string, mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.Get(create.GetName(), msg.GetFrom())
 	if tn == nil {
@@ -88,7 +88,7 @@ func vncCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), nil, conn).(*vnc.Link)
 	lk.SetQuality(create.GetCvnc().GetQuality())
-	err := lk.Fork()
+	err := lk.Fork(confDir)
 	if err != nil {
 		logging.Error("create vnc failed: %v", err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())

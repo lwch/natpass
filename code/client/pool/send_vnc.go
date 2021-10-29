@@ -12,7 +12,7 @@ func (conn *Conn) SendVNCImage(to string, toIdx uint32, id string, screen, rect 
 	var msg network.Msg
 	msg.To = to
 	msg.ToIdx = toIdx
-	msg.XType = network.Msg_shell_resize
+	msg.XType = network.Msg_vnc_image
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vimg{
 		Vimg: &network.VncImage{

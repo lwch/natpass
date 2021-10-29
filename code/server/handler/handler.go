@@ -137,14 +137,7 @@ func (h *Handler) getClient(linkID, to string, toIdx uint32) *client {
 func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) {
 	to := msg.GetTo()
 	toIdx := msg.GetToIdx()
-	switch msg.GetXType() {
-	case network.Msg_connect_req:
-	case network.Msg_connect_rep:
-	case network.Msg_disconnect:
-	case network.Msg_forward:
-	case network.Msg_shell_resize:
-	case network.Msg_shell_data:
-	default:
+	if msg.GetXType() == network.Msg_keepalive {
 		return
 	}
 	cli := h.getClient(msg.GetLinkId(), to, toIdx)

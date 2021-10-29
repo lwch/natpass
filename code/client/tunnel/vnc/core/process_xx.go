@@ -1,3 +1,4 @@
+//go:build !windows
 // +build !windows
 
 package core
@@ -8,7 +9,7 @@ import (
 )
 
 // CreateWorkerProcess create worker process
-func CreateWorkerProcess() (*Process, error) {
+func CreateWorkerProcess(confDir string) (*Process, error) {
 	return nil, ErrNotSupported
 }
 

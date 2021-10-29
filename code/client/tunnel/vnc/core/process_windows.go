@@ -103,7 +103,9 @@ func createWorker(confDir string, tk windows.Token) (*Process, error) {
 	startup.Flags = windows.STARTF_USESHOWWINDOW
 	cmd := windows.StringToUTF16Ptr(dir + fmt.Sprintf(" -conf %s -action vnc.worker -vport %d", confDir, port))
 	if tk == 0 {
-		err = windows.CreateProcess(nil, cmd, nil, nil, false, windows.DETACHED_PROCESS, nil, nil, &startup, &process)
+		// only for debug
+		startup.Flags = 0
+		err = windows.CreateProcess(nil, cmd, nil, nil, false, windows.CREATE_NEW_CONSOLE, nil, nil, &startup, &process)
 	} else {
 		err = windows.CreateProcessAsUser(tk, nil, cmd, nil, nil, false, windows.DETACHED_PROCESS, nil, nil, &startup, &process)
 	}

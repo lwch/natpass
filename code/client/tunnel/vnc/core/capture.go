@@ -30,5 +30,6 @@ func captureOK(conn *websocket.Conn, bits, width, height int, data []byte) {
 			Data:   data,
 		},
 	}
+	data, _ = proto.Marshal(&msg)
 	conn.WriteMessage(websocket.BinaryMessage, data)
 }

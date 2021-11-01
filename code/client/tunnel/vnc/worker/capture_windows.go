@@ -1,8 +1,8 @@
-package core
+package worker
 
 import (
 	"errors"
-	"natpass/code/client/tunnel/vnc/core/define"
+	"natpass/code/client/tunnel/vnc/define"
 	"syscall"
 	"unsafe"
 

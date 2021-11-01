@@ -1,15 +1,15 @@
 //go:build !windows
 // +build !windows
 
-package core
+package process
 
 import (
 	"image"
 	"time"
 )
 
-// CreateWorkerProcess create worker process
-func CreateWorkerProcess(confDir string) (*Process, error) {
+// CreateWorker create worker process
+func CreateWorker(confDir string) (*Process, error) {
 	return nil, ErrNotSupported
 }
 

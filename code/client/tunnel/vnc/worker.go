@@ -2,7 +2,7 @@ package vnc
 
 import (
 	"fmt"
-	"natpass/code/client/tunnel/vnc/core"
+	"natpass/code/client/tunnel/vnc/worker"
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/runtime"
@@ -10,7 +10,7 @@ import (
 
 // RunWorker run vnc worker
 func RunWorker(port uint16) {
-	worker := core.NewWorker()
+	worker := worker.NewWorker()
 	if worker == nil {
 		panic("build context failed")
 	}

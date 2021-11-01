@@ -1,8 +1,9 @@
-package core
+package process
 
 import (
 	"errors"
 	"fmt"
+	"natpass/code/client/tunnel/vnc/network"
 	"natpass/code/utils"
 	"net"
 	"net/http"
@@ -23,8 +24,8 @@ const (
 type Process struct {
 	pid     int
 	srv     *http.Server
-	chWrite chan *VncMsg
-	chImage chan *ImageData
+	chWrite chan *network.VncMsg
+	chImage chan *network.ImageData
 }
 
 func (p *Process) listenAndServe() (uint16, error) {
@@ -71,13 +72,13 @@ func (p *Process) ws(w http.ResponseWriter, r *http.Request) {
 				logging.Error("read message: %v", err)
 				return
 			}
-			var msg VncMsg
+			var msg network.VncMsg
 			err = proto.Unmarshal(data, &msg)
 			if err != nil {
 				continue
 			}
 			switch msg.GetXType() {
-			case VncMsg_capture_data:
+			case network.VncMsg_capture_data:
 				p.chImage <- msg.GetData()
 			default:
 			}

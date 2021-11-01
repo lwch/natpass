@@ -1,6 +1,7 @@
+//go:build !windows
 // +build !windows
 
-package core
+package worker
 
 type workerOsBased struct {
 }

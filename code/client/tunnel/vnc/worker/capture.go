@@ -1,15 +1,17 @@
-package core
+package worker
 
 import (
+	"natpass/code/client/tunnel/vnc/network"
+
 	"github.com/gorilla/websocket"
 	"google.golang.org/protobuf/proto"
 )
 
 func captureError(conn *websocket.Conn, msg string) {
-	var m VncMsg
-	m.XType = VncMsg_capture_data
-	m.Payload = &VncMsg_Data{
-		Data: &ImageData{
+	var m network.VncMsg
+	m.XType = network.VncMsg_capture_data
+	m.Payload = &network.VncMsg_Data{
+		Data: &network.ImageData{
 			Ok:  false,
 			Msg: msg,
 		},
@@ -19,10 +21,10 @@ func captureError(conn *websocket.Conn, msg string) {
 }
 
 func captureOK(conn *websocket.Conn, bits, width, height int, data []byte) {
-	var msg VncMsg
-	msg.XType = VncMsg_capture_data
-	msg.Payload = &VncMsg_Data{
-		Data: &ImageData{
+	var msg network.VncMsg
+	msg.XType = network.VncMsg_capture_data
+	msg.Payload = &network.VncMsg_Data{
+		Data: &network.ImageData{
 			Ok:     true,
 			Bits:   uint32(bits),
 			Width:  uint32(width),

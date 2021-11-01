@@ -5,7 +5,7 @@ import (
 	"image"
 	"image/jpeg"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel/vnc/core"
+	"natpass/code/client/tunnel/vnc/process"
 	"natpass/code/network"
 	"natpass/code/utils"
 	"time"
@@ -26,7 +26,7 @@ type Link struct {
 	targetIdx uint32 // target idx
 	remote    *pool.Conn
 	// vnc
-	ps      *core.Process
+	ps      *process.Process
 	quality uint32
 	img     *image.RGBA
 	// runtime
@@ -66,7 +66,7 @@ func (link *Link) SetQuality(q uint32) {
 
 // Fork fork worker process
 func (link *Link) Fork(confDir string) error {
-	p, err := core.CreateWorkerProcess(confDir)
+	p, err := process.CreateWorker(confDir)
 	if err != nil {
 		return err
 	}

@@ -1,8 +1,8 @@
-package core
+package worker
 
 import (
 	"fmt"
-	"natpass/code/client/tunnel/vnc/core/define"
+	"natpass/code/client/tunnel/vnc/define"
 	"runtime"
 	"syscall"
 

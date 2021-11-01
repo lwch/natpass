@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package core;
-option go_package="./;core";
+package network;
+option go_package="./;network";
 
 message image_data {
     bool       ok = 1;

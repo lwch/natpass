@@ -1,10 +1,11 @@
-package core
+package process
 
 import (
 	"errors"
 	"fmt"
 	"image"
-	"natpass/code/client/tunnel/vnc/core/define"
+	"natpass/code/client/tunnel/vnc/define"
+	"natpass/code/client/tunnel/vnc/network"
 	"os"
 	"strings"
 	"syscall"
@@ -75,8 +76,8 @@ func getSessionUserTokenWin() windows.Token {
 	return ret
 }
 
-// CreateWorkerProcess create worker process
-func CreateWorkerProcess(confDir string) (*Process, error) {
+// CreateWorker create worker process
+func CreateWorker(confDir string) (*Process, error) {
 	tk := getSessionUserTokenWin()
 	if tk != 0 {
 		defer windows.CloseHandle(windows.Handle(tk))
@@ -90,8 +91,8 @@ func createWorker(confDir string, tk windows.Token) (*Process, error) {
 		return nil, err
 	}
 	var p Process
-	p.chWrite = make(chan *VncMsg)
-	p.chImage = make(chan *ImageData)
+	p.chWrite = make(chan *network.VncMsg)
+	p.chImage = make(chan *network.ImageData)
 	port, err := p.listenAndServe()
 	if err != nil {
 		return nil, err
@@ -131,10 +132,10 @@ func (p *Process) Close() {
 }
 
 func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
-	var msg VncMsg
-	msg.XType = VncMsg_capture_req
+	var msg network.VncMsg
+	msg.XType = network.VncMsg_capture_req
 	p.chWrite <- &msg
-	trans := func(data *ImageData) *image.RGBA {
+	trans := func(data *network.ImageData) *image.RGBA {
 		img := image.NewRGBA(image.Rect(0, 0, int(data.GetWidth()), int(data.GetHeight())))
 		switch data.GetBits() {
 		case 8:

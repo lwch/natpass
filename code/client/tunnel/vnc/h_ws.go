@@ -2,6 +2,7 @@ package vnc
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"image"
 	"image/draw"
@@ -9,17 +10,26 @@ import (
 	"natpass/code/client/pool"
 	"natpass/code/network"
 	"net/http"
+	"os"
 	"strings"
 
+	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
+
+var upgrader = websocket.Upgrader{}
 
 func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/ws/")
 	conn := pool.Get(id)
 	if conn == nil {
 		http.NotFound(w, r)
+		return
+	}
+	local, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	ch := conn.ChanRead(id)
@@ -30,7 +40,10 @@ func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		case network.Msg_vnc_image:
 			data, err := decodeImage(msg.GetVimg())
 			runtime.Assert(err)
-			logging.Info("%d", len(data))
+			replyImage(local, msg.GetVimg(), data)
+		default:
+			logging.Error("on message: %s", msg.GetXType().String())
+			return
 		}
 	}
 }
@@ -44,6 +57,7 @@ func decodeImage(data *network.VncImage) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		// dumpImage(img)
 		rect := img.Bounds()
 		raw := image.NewRGBA(rect)
 		draw.Draw(raw, rect, img, rect.Min, draw.Src)
@@ -52,4 +66,31 @@ func decodeImage(data *network.VncImage) ([]byte, error) {
 		// TODO
 	}
 	return nil, errors.New("unsupported")
+}
+
+func dumpImage(img image.Image) {
+	f, err := os.Create(`./debug.jpeg`)
+	if err != nil {
+		logging.Error("debug: %v", err)
+		return
+	}
+	defer f.Close()
+	err = jpeg.Encode(f, img, nil)
+	if err != nil {
+		logging.Error("encode: %v", err)
+		return
+	}
+}
+
+func replyImage(conn *websocket.Conn, msg *network.VncImage, data []byte) {
+	info := msg.GetXInfo()
+	buf := make([]byte, len(data)+24)
+	binary.BigEndian.PutUint32(buf, info.GetScreenWidth())
+	binary.BigEndian.PutUint32(buf[4:], info.GetScreenHeight())
+	binary.BigEndian.PutUint32(buf[8:], info.GetRectX())
+	binary.BigEndian.PutUint32(buf[12:], info.GetRectY())
+	binary.BigEndian.PutUint32(buf[16:], info.GetRectWidth())
+	binary.BigEndian.PutUint32(buf[20:], info.GetRectHeight())
+	copy(buf[24:], data)
+	conn.WriteMessage(websocket.BinaryMessage, buf)
 }

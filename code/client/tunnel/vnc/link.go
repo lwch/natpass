@@ -81,13 +81,15 @@ func (link *Link) Forward() {
 }
 
 func (link *Link) remoteRead() {
+	defer link.close()
 	ch := link.remote.ChanRead(link.id)
 	for {
 		msg := <-ch
 		switch msg.GetXType() {
 		case network.Msg_vnc_ctrl:
 		case network.Msg_disconnect:
-			logging.Info("disconnect")
+			logging.Info("link %s disconnected", link.id)
+			return
 		}
 	}
 }

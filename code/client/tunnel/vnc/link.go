@@ -76,48 +76,52 @@ func (link *Link) Fork(confDir string) error {
 
 // Forward forward data
 func (link *Link) Forward() {
-	go func() {
-		// TODO: exit by context
-		defer utils.Recover("capture")
-		defer link.close()
-		img, err := link.ps.Capture(3 * time.Second)
+	go link.remoteRead()
+	go link.localRead()
+}
+
+func (link *Link) remoteRead() {
+	ch := link.remote.ChanRead(link.id)
+	for {
+		msg := <-ch
+		switch msg.GetXType() {
+		case network.Msg_vnc_ctrl:
+		}
+	}
+}
+
+func (link *Link) localRead() {
+	// TODO: exit by context
+	defer utils.Recover("capture")
+	defer link.close()
+	img, err := link.ps.Capture(3 * time.Second)
+	if err != nil {
+		logging.Error("capture: %v", err)
+		return
+	}
+	link.sendAll(img)
+	link.img = img
+	size := img.Rect
+	sleep := time.Second / time.Duration(link.parent.cfg.Fps)
+	for {
+		time.Sleep(sleep)
+		img, err = link.ps.Capture(0)
 		if err != nil {
 			logging.Error("capture: %v", err)
-			return
+			continue
 		}
-		link.sendAll(img)
+		if img.Rect.Dx() != size.Dx() ||
+			img.Rect.Dy() != size.Dy() ||
+			link.resetQuality ||
+			link.idx%100 == 0 {
+			link.sendAll(img)
+			link.resetQuality = false
+		} else {
+			link.sendDiff(img)
+		}
 		link.img = img
-		size := img.Rect
-		sleep := time.Second / time.Duration(link.parent.cfg.Fps)
-		for {
-			time.Sleep(sleep)
-			img, err = link.ps.Capture(0)
-			if err != nil {
-				logging.Error("capture: %v", err)
-				continue
-			}
-			if img.Rect.Dx() != size.Dx() ||
-				img.Rect.Dy() != size.Dy() ||
-				link.resetQuality ||
-				link.idx%100 == 0 {
-				link.sendAll(img)
-				link.resetQuality = false
-			} else {
-				link.sendDiff(img)
-			}
-			link.img = img
-			link.idx++
-		}
-	}()
-	go func() {
-		ch := link.remote.ChanRead(link.id)
-		for {
-			msg := <-ch
-			switch msg.GetXType() {
-			case network.Msg_vnc_ctrl:
-			}
-		}
-	}()
+		link.idx++
+	}
 }
 
 func (link *Link) close() {

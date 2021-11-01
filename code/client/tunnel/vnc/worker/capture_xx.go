@@ -3,7 +3,7 @@
 
 package worker
 
-import "github.com/gorilla/websocket"
+import "natpass/code/client/tunnel/vnc/vncnetwork"
 
 func (worker *Worker) runCapture() vncnetwork.ImageData {
 	return vncnetwork.ImageData{}

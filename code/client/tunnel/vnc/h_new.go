@@ -30,6 +30,12 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	conn := pool.Get(id)
+	if v.link != nil {
+		old := pool.Get(v.link.id)
+		if old != nil {
+			old.SendDisconnect(v.link.target, v.link.targetIdx, v.link.id)
+		}
+	}
 	conn.SendConnectVnc(id, v.cfg, quality)
 	v.link = v.NewLink(id, v.cfg.Target, 0, nil, conn).(*Link)
 	ch := conn.ChanRead(id)

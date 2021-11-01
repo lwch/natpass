@@ -86,6 +86,8 @@ func (link *Link) remoteRead() {
 		msg := <-ch
 		switch msg.GetXType() {
 		case network.Msg_vnc_ctrl:
+		case network.Msg_disconnect:
+			logging.Info("disconnect")
 		}
 	}
 }

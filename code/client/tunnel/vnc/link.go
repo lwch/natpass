@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	zoneWidth  = 256
-	zoneHeight = 256
+	zoneWidth  = 128
+	zoneHeight = 128
 )
 
 // Link vnc link

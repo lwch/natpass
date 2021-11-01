@@ -35,10 +35,11 @@ func (v *VNC) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, r
 	logging.Info("create link %s for tunnel %s on connection %d",
 		id, v.Name, remoteConn.Idx)
 	link := &Link{
-		parent: v,
-		id:     id,
-		target: remote,
-		remote: remoteConn,
+		parent:    v,
+		id:        id,
+		target:    remote,
+		targetIdx: remoteIdx,
+		remote:    remoteConn,
 	}
 	if v.link != nil {
 		v.link.close()

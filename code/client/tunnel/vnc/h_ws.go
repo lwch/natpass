@@ -4,8 +4,6 @@ import (
 	"natpass/code/client/pool"
 	"net/http"
 	"strings"
-
-	"github.com/lwch/logging"
 )
 
 func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
@@ -18,6 +16,7 @@ func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	ch := conn.ChanRead(id)
 	for {
 		msg := <-ch
-		logging.Info("%s", msg.String())
+		// logging.Info("%s", msg.String())
+		_ = msg
 	}
 }

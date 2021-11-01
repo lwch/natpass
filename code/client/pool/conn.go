@@ -62,6 +62,7 @@ func (conn *Conn) AddLink(id string) {
 
 // RemoveLink detach read message
 func (conn *Conn) RemoveLink(id string) {
+	logging.Info("remove link %s from %d", id, conn.Idx)
 	conn.Lock()
 	ch := conn.read[id]
 	if ch != nil {
@@ -98,7 +99,7 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 	defer cancel()
 	var timeout int
 	for {
-		msg, err := conn.conn.ReadMessage(conn.parent.cfg.ReadTimeout)
+		msg, _, err := conn.conn.ReadMessage(conn.parent.cfg.ReadTimeout)
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				timeout++

@@ -98,7 +98,7 @@ func (h *Handler) tryGetClients(id string) *clients {
 
 // readHandshake read handshake message and compare secret encoded from md5
 func (h *Handler) readHandshake(c *network.Conn) (string, uint32, error) {
-	msg, err := c.ReadMessage(5 * time.Second)
+	msg, _, err := c.ReadMessage(5 * time.Second)
 	if err != nil {
 		return "", 0, err
 	}
@@ -134,7 +134,7 @@ func (h *Handler) getClient(linkID, to string, toIdx uint32) *client {
 	return clients.next()
 }
 
-func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) {
+func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg, size uint16) {
 	to := msg.GetTo()
 	toIdx := msg.GetToIdx()
 	if msg.GetXType() == network.Msg_keepalive {
@@ -145,7 +145,7 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg) 
 		logging.Error("client %s-%d not found", to, toIdx)
 		return
 	}
-	h.msgHook(msg, from, cli)
+	h.msgHook(msg, from, cli, size)
 	cli.writeMessage(msg)
 }
 
@@ -194,7 +194,7 @@ func (h *Handler) responseLink(id string, ok bool, msg string, from, to *client)
 }
 
 // msgHook hook from on message
-func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
+func (h *Handler) msgHook(msg *network.Msg, from, to *client, size uint16) {
 	switch msg.GetXType() {
 	// create link
 	case network.Msg_connect_req:
@@ -226,6 +226,8 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client) {
 	msg.FromIdx = from.idx
 	msg.To = to.parent.id
 	msg.ToIdx = to.idx
+	logging.Info("forward %d bytes on link %s from %s-%d to %s-%d", size, msg.GetLinkId(),
+		from.parent.id, from.idx, to.parent.id, to.idx)
 }
 
 func (h *Handler) closeClient(cli *client) {

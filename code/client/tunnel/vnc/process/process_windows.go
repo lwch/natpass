@@ -126,9 +126,11 @@ func (p *Process) Close() {
 	}
 	if p.chImage != nil {
 		close(p.chImage)
+		p.chImage = nil
 	}
 	if p.chWrite != nil {
 		close(p.chWrite)
+		p.chWrite = nil
 	}
 	p.kill()
 }

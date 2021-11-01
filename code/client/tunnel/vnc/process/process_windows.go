@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"image"
 	"natpass/code/client/tunnel/vnc/define"
-	"natpass/code/client/tunnel/vnc/network"
+	"natpass/code/client/tunnel/vnc/vncnetwork"
 	"os"
 	"strings"
 	"syscall"
@@ -91,8 +91,8 @@ func createWorker(confDir string, tk windows.Token) (*Process, error) {
 		return nil, err
 	}
 	var p Process
-	p.chWrite = make(chan *network.VncMsg)
-	p.chImage = make(chan *network.ImageData)
+	p.chWrite = make(chan *vncnetwork.VncMsg)
+	p.chImage = make(chan *vncnetwork.ImageData)
 	port, err := p.listenAndServe()
 	if err != nil {
 		return nil, err
@@ -132,10 +132,10 @@ func (p *Process) Close() {
 }
 
 func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
-	var msg network.VncMsg
-	msg.XType = network.VncMsg_capture_req
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_capture_req
 	p.chWrite <- &msg
-	trans := func(data *network.ImageData) *image.RGBA {
+	trans := func(data *vncnetwork.ImageData) *image.RGBA {
 		img := image.NewRGBA(image.Rect(0, 0, int(data.GetWidth()), int(data.GetHeight())))
 		switch data.GetBits() {
 		case 8:

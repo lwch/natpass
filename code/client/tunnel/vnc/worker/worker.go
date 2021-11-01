@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"natpass/code/client/tunnel/vnc/network"
+	"natpass/code/client/tunnel/vnc/vncnetwork"
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
@@ -34,14 +34,14 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 	for {
 		_, data, err := conn.ReadMessage()
 		runtime.Assert(err)
-		var msg network.VncMsg
+		var msg vncnetwork.VncMsg
 		err = proto.Unmarshal(data, &msg)
 		if err != nil {
 			logging.Error("proto unmarshal: %v", err)
 			continue
 		}
 		switch msg.GetXType() {
-		case network.VncMsg_capture_req:
+		case vncnetwork.VncMsg_capture_req:
 			worker.runCapture(conn)
 		}
 	}

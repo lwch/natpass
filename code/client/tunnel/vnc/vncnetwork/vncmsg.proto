@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package network;
-option go_package="./;network";
+package vncnetwork;
+option go_package="./;vncnetwork";
 
 message image_data {
     bool       ok = 1;

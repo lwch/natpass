@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"natpass/code/client/tunnel/vnc/define"
 	"natpass/code/client/tunnel/vnc/vncnetwork"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"unicode/utf16"
 	"unsafe"
 
+	"github.com/lwch/logging"
 	"golang.org/x/sys/windows"
 )
 
@@ -137,14 +139,8 @@ func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
 	p.chWrite <- &msg
 	trans := func(data *vncnetwork.ImageData) *image.RGBA {
 		img := image.NewRGBA(image.Rect(0, 0, int(data.GetWidth()), int(data.GetHeight())))
-		switch data.GetBits() {
-		case 8:
-			// TODO
-		case 24:
-			// TODO
-		case 32:
-			copy(img.Pix, data.GetData())
-		}
+		copy(img.Pix, data.GetData())
+		// dumpImage(img)
 		return img
 	}
 	if timeout > 0 {
@@ -157,5 +153,19 @@ func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
 	} else {
 		data := <-p.chImage
 		return trans(data), nil
+	}
+}
+
+func dumpImage(img image.Image) {
+	f, err := os.Create(`C:\Users\lwch\Pictures\debug.jpeg`)
+	if err != nil {
+		logging.Error("debug: %v", err)
+		return
+	}
+	defer f.Close()
+	err = jpeg.Encode(f, img, nil)
+	if err != nil {
+		logging.Error("encode: %v", err)
+		return
 	}
 }

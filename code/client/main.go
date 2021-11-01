@@ -146,6 +146,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	// for test
+	// work := worker.NewWorker()
+	// work.TestCapture()
+	// return
+
 	dir, err := filepath.Abs(*conf)
 	runtime.Assert(err)
 

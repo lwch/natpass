@@ -92,6 +92,10 @@ func (worker *Worker) updateInfo() error {
 	worker.info.bits = int(bits)
 	worker.info.width = int(width)
 	worker.info.height = int(height)
+	if worker.info.bits != 32 {
+		worker.info.bits = 32
+		logging.Info("reset bits to 32")
+	}
 	return nil
 }
 

@@ -5,5 +5,6 @@ package worker
 
 import "github.com/gorilla/websocket"
 
-func (worker *Worker) runCapture(conn *websocket.Conn) {
+func (worker *Worker) runCapture() vncnetwork.ImageData {
+	return vncnetwork.ImageData{}
 }

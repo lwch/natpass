@@ -3,25 +3,36 @@ package worker
 import (
 	"errors"
 	"natpass/code/client/tunnel/vnc/define"
+	"natpass/code/client/tunnel/vnc/vncnetwork"
 	"syscall"
 	"unsafe"
 
-	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
 )
 
-func (worker *Worker) runCapture(conn *websocket.Conn) {
+func (worker *Worker) runCapture() vncnetwork.ImageData {
 	err := worker.capture()
 	if err != nil {
-		logging.Error("capture: %v", err.Error())
-		captureError(conn, err.Error())
-		return
+		return vncnetwork.ImageData{
+			Ok:  false,
+			Msg: err.Error(),
+		}
 	}
 	data := make([]byte, worker.info.width*worker.info.height*worker.info.bits/8)
 	for i := 0; i < len(data); i++ {
 		data[i] = *(*uint8)(unsafe.Pointer(worker.buffer + uintptr(i)))
 	}
-	captureOK(conn, worker.info.bits, worker.info.width, worker.info.height, data)
+	// BGR => RGB
+	for i := 0; i < len(data); i += (worker.info.bits / 8) {
+		data[i], data[i+2] = data[i+2], data[i]
+	}
+	return vncnetwork.ImageData{
+		Ok:     true,
+		Bits:   uint32(worker.info.bits),
+		Width:  uint32(worker.info.width),
+		Height: uint32(worker.info.height),
+		Data:   data,
+	}
 }
 
 func (worker *Worker) capture() error {
@@ -43,6 +54,7 @@ func (worker *Worker) capture() error {
 			return errors.New("update buffer: " + err.Error())
 		}
 	}
+	logging.Info("width=%d, height=%d, bits=%d", info.width, info.height, info.bits)
 	memDC, _, err := syscall.Syscall(define.FuncCreateCompatibleDC, 1, worker.hdc, 0, 0)
 	if memDC == 0 {
 		return errors.New("create dc: " + err.Error())
@@ -59,7 +71,7 @@ func (worker *Worker) capture() error {
 		return errors.New("select object: " + err.Error())
 	}
 	defer syscall.Syscall(define.FuncSelectObject, 2, memDC, oldDC, 0)
-	ok, _, err := syscall.Syscall9(define.FuncBitBlt, 0, memDC, 0, 0,
+	ok, _, err := syscall.Syscall9(define.FuncBitBlt, 9, memDC, 0, 0,
 		uintptr(worker.info.width), uintptr(worker.info.height), worker.hdc, 0, 0, define.SRCCOPY)
 	if ok == 0 {
 		return errors.New("bitblt: " + err.Error())
@@ -92,6 +104,9 @@ func (worker *Worker) copyImageData(bitmap uintptr) {
 	hdr.BiHeight = int32(-worker.info.height)
 	hdr.BiCompression = define.BI_RGB
 	hdr.BiSizeImage = 0
-	syscall.Syscall9(define.FuncGetDIBits, 7, worker.hdc, bitmap, 0, uintptr(worker.info.height),
+	lines, _, err := syscall.Syscall9(define.FuncGetDIBits, 7, worker.hdc, bitmap, 0, uintptr(worker.info.height),
 		worker.buffer, uintptr(unsafe.Pointer(&hdr)), define.DIB_RGB_COLORS, 0, 0)
+	if lines == 0 {
+		logging.Error("get bits: %v", err)
+	}
 }

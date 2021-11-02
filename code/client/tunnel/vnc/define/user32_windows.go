@@ -12,6 +12,7 @@ var (
 	FuncGetDC, _            = syscall.GetProcAddress(syscall.Handle(libUser32), "GetDC")
 	FuncReleaseDC, _        = syscall.GetProcAddress(syscall.Handle(libUser32), "ReleaseDC")
 	FuncGetCursorInfo, _    = syscall.GetProcAddress(syscall.Handle(libUser32), "GetCursorInfo")
+	FuncGetIconInfo, _      = syscall.GetProcAddress(syscall.Handle(libUser32), "GetIconInfo")
 	FuncDrawIcon, _         = syscall.GetProcAddress(syscall.Handle(libUser32), "DrawIcon")
 )
 

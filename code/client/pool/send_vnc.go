@@ -9,6 +9,11 @@ import (
 // SendVNCImage send vnc image data
 func (conn *Conn) SendVNCImage(to string, toIdx uint32, id string, screen, rect image.Rectangle,
 	encode network.VncImageEncoding, data []byte) {
+	dup := func(data []byte) []byte {
+		ret := make([]byte, len(data))
+		copy(ret, data)
+		return ret
+	}
 	var msg network.Msg
 	msg.To = to
 	msg.ToIdx = toIdx
@@ -25,7 +30,7 @@ func (conn *Conn) SendVNCImage(to string, toIdx uint32, id string, screen, rect 
 				RectHeight:   uint32(rect.Dy()),
 			},
 			Encode: encode,
-			Data:   data,
+			Data:   dup(data),
 		},
 	}
 	select {

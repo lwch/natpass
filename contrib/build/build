@@ -8,8 +8,12 @@ BUILD_TIME=`date +'%Y-%m-%d %H:%M:%S'`
 LDFLAGS="-X 'main.gitHash=$HASH'
 -X 'main.gitReversion=$REVERSION'
 -X 'main.buildTime=$BUILD_TIME'
--X 'main.version=$BUILD_VERSION'
+-X 'main.version=$BUILD_VERSION'"
+
+if [ "$GOOS" = "windows" ]; then
+LDFLAGS="$LDFLAGS
 --extldflags '-static -fpic -lssp'"
+fi
 
 go run contrib/bindata/main.go -pkg shell -o code/client/tunnel/shell/assets.go \
    -prefix html/shell "$@" html/shell/...
@@ -18,9 +22,7 @@ go run contrib/bindata/main.go -pkg vnc -o code/client/tunnel/vnc/assets.go \
 go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go \
    -prefix html/dashboard "$@" html/dashboard/...
 
-CC=x86_64-w64-mingw32-gcc \
-CXX=x86_64-w64-mingw32-g++ \
 go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
-CC=x86_64-w64-mingw32-gcc \
-CXX=x86_64-w64-mingw32-g++ \
+# CC=x86_64-w64-mingw32-gcc \
+# CXX=x86_64-w64-mingw32-g++ \
 go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go

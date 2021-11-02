@@ -77,7 +77,31 @@ func (worker *Worker) capture() error {
 		return errors.New("bitblt: " + err.Error())
 	}
 	defer worker.copyImageData(bitmap)
-	// TODO: draw cursor
+	if !worker.showCursor {
+		return
+	}
+	var curInfo CURSORINFO
+	curInfo.CbSize = DWORD(unsafe.Sizeof(curInfo))
+	ok, _, err = syscall.Syscall(define.FuncGetCursorInfo, 1, uintptr(unsafe.Pointer(&curInfo)), 0, 0)
+	if ok == 0 {
+		logging.Error("get cursor info: %v", err)
+		return nil
+	}
+	if curInfo.Flags == CURSOR_SHOWING {
+		var info ICONINFO
+		ok, _, err = syscall.Syscall(define.FuncGetIconInfo, 2, uintptr(curInfo.HCursor), uintptr(unsafe.Pointer(&info)), 0)
+		if ok == 0 {
+			logging.Error("get icon info: %v", err)
+			return nil
+		}
+		x := curInfo.PTScreenPos.X - LONG(info.XHotspot)
+		y := curInfo.PTScreenPos.Y - LONG(info.YHotspot)
+		ok, _, err = syscall.Syscall6(define.FuncDrawIcon, 4, memDC, uintptr(x), uintptr(y), uintptr(curInfo.HCursor), 0, 0)
+		if ok == 0 {
+			logging.Error("draw icon: %v", err)
+			return nil
+		}
+	}
 	return nil
 }
 

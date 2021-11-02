@@ -18,9 +18,14 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		v.link.close()
 	}
 	q := r.FormValue("quality")
+	s := r.FormValue("show_cursor")
 	quality, err := strconv.ParseUint(q, 10, 32)
 	if err != nil {
-		quality = 75
+		quality = 50
+	}
+	showCursor, err := strconv.ParseBool(s)
+	if err != nil {
+		showCursor = false
 	}
 	id, err := runtime.UUID(16, "0123456789abcdef")
 	if err != nil {
@@ -36,7 +41,7 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 			old.SendDisconnect(v.link.target, v.link.targetIdx, v.link.id)
 		}
 	}
-	conn.SendConnectVnc(id, v.cfg, quality)
+	conn.SendConnectVnc(id, v.cfg, quality, showCursor)
 	v.link = v.NewLink(id, v.cfg.Target, 0, nil, conn).(*Link)
 	ch := conn.ChanRead(id)
 	timeout := time.After(conn.ReadTimeout)

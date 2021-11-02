@@ -9,8 +9,8 @@ import (
 )
 
 // RunWorker run vnc worker
-func RunWorker(port uint16) {
-	worker := worker.NewWorker()
+func RunWorker(port uint16, cursor bool) {
+	worker := worker.NewWorker(cursor)
 	if worker == nil {
 		panic("build context failed")
 	}

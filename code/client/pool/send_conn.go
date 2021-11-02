@@ -68,7 +68,7 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 }
 
 // SendConnectVnc send connect vnc request message
-func (conn *Conn) SendConnectVnc(id string, cfg global.Tunnel, quality uint64) {
+func (conn *Conn) SendConnectVnc(id string, cfg global.Tunnel, quality uint64, showCursor bool) {
 	var msg network.Msg
 	msg.To = cfg.Target
 	msg.XType = network.Msg_connect_req
@@ -87,6 +87,7 @@ func (conn *Conn) SendConnectVnc(id string, cfg global.Tunnel, quality uint64) {
 				Cvnc: &network.ConnectVnc{
 					Fps:     cfg.Fps,
 					Quality: uint32(quality),
+					Cursor:  showCursor,
 				},
 			},
 		},

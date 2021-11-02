@@ -134,6 +134,7 @@ func main() {
 	version := flag.Bool("version", false, "show version info")
 	act := flag.String("action", "", "install or uninstall")
 	vport := flag.Uint("vport", 6155, "vnc worker listen port")
+	vcursor := flag.Bool("vcursor", false, "vnc show cursor")
 	flag.Parse()
 
 	if *version {
@@ -174,7 +175,7 @@ func main() {
 		defer utils.Recover("vnc.worker")
 		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
 		defer logging.Flush()
-		vnc.RunWorker(uint16(*vport))
+		vnc.RunWorker(uint16(*vport), *vcursor)
 		return
 	}
 

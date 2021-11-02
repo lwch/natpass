@@ -5,6 +5,7 @@ option go_package="./;network";
 
 message vnc_control {
     uint32 quality = 1; // image quality, percent
+    bool    cursor = 2; // show cursor
 }
 
 message vnc_image {

@@ -20,11 +20,14 @@ type desktopInfo struct {
 
 type Worker struct {
 	workerOsBased
-	info desktopInfo
+	info       desktopInfo
+	showCursor bool
 }
 
-func NewWorker() *Worker {
-	worker := &Worker{}
+func NewWorker(showCursor bool) *Worker {
+	worker := &Worker{
+		showCursor: showCursor,
+	}
 	err := worker.init()
 	if err != nil {
 		return nil

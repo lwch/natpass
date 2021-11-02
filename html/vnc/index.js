@@ -5,7 +5,9 @@ var page = {
         page.connect();
     },
     connect: function() {
-        $.get('/new?quality=50', function(ret) {
+        var quality = $('#quality').val();
+        var show_cursor = $('#show-cursor').val();
+        $.get('/new?quality='+quality+'&show_cursor='+show_cursor, function(ret) {
             page.id = ret;
             page.ws = new WebSocket('ws://'+location.host+'/ws/'+ret);
             page.ws.onmessage = page.render;

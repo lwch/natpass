@@ -5,11 +5,30 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>vnc - [{{.Name}}]</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/AdminLTE/css/adminlte.min.css" />
         <script src="/jquery/jquery-3.6.0.min.js"></script>
+        <script src="/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/AdminLTE/js/adminlte.min.js"></script>
         <link rel="stylesheet" href="/index.css" />
         <script src="/index.js"></script>
     </head>
     <body>
-        <canvas id="vnc"></canvas>
+        <div class="container-fluid">
+            <div class="display:inline-block">
+                <div class="form-check form-check-inline">
+                    <input id="draw-cursor" class="form-check-input" type="checkbox">
+                    <label class="form-check-label">绘制鼠标</label>
+                </div>
+                <select id="quality" class="form-select">
+                    <option value="50">低</option>
+                    <option value="70">中</option>
+                    <option value="90">高</option>
+                    <option value="100">原始</option>
+                </select>
+            </div>
+            <!-- header -->
+            <canvas id="vnc"></canvas>
+        </div>
     </body>
 </html>

@@ -8,8 +8,8 @@ import (
 
 func calcDiff(src, dst *image.RGBA) []image.Rectangle {
 	// 宽度必须为2的倍数
-	const width = 64
-	const height = 64
+	const width = 32
+	const height = 32
 	size := dst.Bounds()
 	ret := make([]image.Rectangle, 0, (size.Max.X*size.Max.Y)/(width*height))
 	for y := 0; y < size.Max.Y; y += height {

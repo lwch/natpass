@@ -95,6 +95,7 @@ func (v *VNC) Handle(pl *pool.Pool) {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/new", pf(v.New))
+	mux.HandleFunc("/ctrl", pf(v.Ctrl))
 	mux.HandleFunc("/ws/", pf(v.WS))
 	mux.HandleFunc("/", v.Render)
 	svr := &http.Server{

@@ -2,16 +2,20 @@ package vnc
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"image"
 	"image/draw"
 	"image/jpeg"
 	"natpass/code/client/pool"
 	"natpass/code/network"
+	"natpass/code/utils"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
@@ -34,8 +38,32 @@ func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	}
 	ch := conn.ChanRead(id)
 	defer conn.SendDisconnect(v.link.target, v.link.targetIdx, v.link.id)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer cancel()
+		defer wg.Done()
+		v.remoteRead(ctx, ch, local)
+	}()
+	go func() {
+		defer cancel()
+		defer wg.Done()
+		v.localRead(ctx, local, conn)
+	}()
+	wg.Wait()
+}
+
+func (v *VNC) remoteRead(ctx context.Context, ch <-chan *network.Msg, local *websocket.Conn) {
+	defer utils.Recover("remoteRead")
 	for {
-		msg := <-ch
+		var msg *network.Msg
+		select {
+		case msg = <-ch:
+		case <-ctx.Done():
+			return
+		}
 		switch msg.GetXType() {
 		case network.Msg_vnc_image:
 			data, err := decodeImage(msg.GetVimg())
@@ -44,6 +72,36 @@ func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		default:
 			logging.Error("on message: %s", msg.GetXType().String())
 			return
+		}
+	}
+}
+
+func (v *VNC) localRead(ctx context.Context, local *websocket.Conn, remote *pool.Conn) {
+	defer utils.Recover("localRead")
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+		_, data, err := local.ReadMessage()
+		if err != nil {
+			logging.Error("local read: %v", err)
+			return
+		}
+		var msg struct {
+			Action string `json:"action"`
+		}
+		err = json.Unmarshal(data, &msg)
+		if err != nil {
+			logging.Error("unmarshal: %v", err)
+			return
+		}
+		switch msg.Action {
+		case "mouse":
+			v.mouseEvent(remote, data)
+		case "keyboard":
+		case "cad":
 		}
 	}
 }

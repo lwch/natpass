@@ -2,11 +2,22 @@ var page = {
     init: function() {
         page.canvas = document.getElementById('vnc');
         page.ctx = page.canvas.getContext('2d');
+        // bind events
+        $('#vnc').bind('dragstart', function() {
+            return false;
+        });
+        $('#vnc').mousemove(page.mousemove);
+        $('#vnc').mousedown(page.mousedown);
+        $('#vnc').mouseup(page.mouseup);
+        $('#quality').change(page.ctrl);
+        $('#show-cursor').change(page.ctrl);
+        $('#cad').click(page.cad);
+        // connect
         page.connect();
     },
     connect: function() {
         var quality = $('#quality').val();
-        var show_cursor = $('#show-cursor').val();
+        var show_cursor = $('#show-cursor').prop('checked');
         $.get('/new?quality='+quality+'&show_cursor='+show_cursor, function(ret) {
             page.id = ret;
             page.ws = new WebSocket('ws://'+location.host+'/ws/'+ret);
@@ -40,6 +51,56 @@ var page = {
             page.ctx.putImageData(id, dx, dy);
         };
         reader.readAsArrayBuffer(e.data);
+    },
+    ctrl: function() {
+        var quality = $('#quality').val();
+        var show_cursor = $('#show-cursor').prop('checked');
+        $.post('/ctrl', {
+            quality: quality,
+            show_cursor: show_cursor
+        });
+    },
+    cad: function() {
+        // TODO
+    },
+    mousemove: function(e) {
+        if (!page.ws) {
+            return;
+        }
+        page.ws.send(JSON.stringify({
+            action: 'mouse',
+            payload: page.get_pointer(e)
+        }));
+    },
+    mousedown: function(e) {
+        if (!page.ws) {
+            return;
+        }
+        var pointer = page.get_pointer(e);
+        pointer.button = 'left';
+        pointer.status = 'down';
+        page.ws.send(JSON.stringify({
+            action: 'mouse',
+            payload: pointer
+        }));
+    },
+    mouseup: function(e) {
+        if (!page.ws) {
+            return;
+        }
+        var pointer = page.get_pointer(e);
+        pointer.button = 'left';
+        pointer.status = 'up';
+        page.ws.send(JSON.stringify({
+            action: 'mouse',
+            payload: pointer
+        }));
+    },
+    get_pointer: function(e) {
+        return {
+            x: e.offsetX,
+            y: e.offsetY
+        }
     },
     canvas: undefined,
     ctx: undefined,

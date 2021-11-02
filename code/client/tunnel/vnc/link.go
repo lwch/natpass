@@ -94,6 +94,11 @@ func (link *Link) remoteRead() {
 		msg := <-ch
 		switch msg.GetXType() {
 		case network.Msg_vnc_ctrl:
+			ctrl := msg.GetVctrl()
+			link.SetQuality(ctrl.GetQuality())
+			link.SetCursor(ctrl.GetCursor())
+		case network.Msg_vnc_mouse:
+			link.ps.MouseEvent(msg.GetVmouse())
 		case network.Msg_disconnect:
 			logging.Info("link %s disconnected", link.id)
 			return

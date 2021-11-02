@@ -139,6 +139,7 @@ func (p *Process) Close() {
 	p.kill()
 }
 
+// Capture capture desktop image
 func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
 	var msg vncnetwork.VncMsg
 	msg.XType = vncnetwork.VncMsg_capture_req

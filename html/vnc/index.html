@@ -15,17 +15,19 @@
     </head>
     <body>
         <div class="container-fluid">
-            <div class="display:inline-block">
-                <div class="form-check form-check-inline">
-                    <input id="draw-cursor" class="form-check-input" type="checkbox">
-                    <label class="form-check-label">绘制鼠标</label>
-                </div>
+            <div>
+                <label>图像质量：</label>
                 <select id="quality" class="form-select">
                     <option value="50">低</option>
                     <option value="70">中</option>
                     <option value="90">高</option>
                     <option value="100">原始</option>
-                </select>
+                </select>&nbsp;&nbsp;
+                <div class="form-check form-check-inline">
+                    <input id="show-cursor" class="form-check-input" type="checkbox">
+                    <label class="form-check-label">绘制鼠标</label>
+                </div>&nbsp;&nbsp;
+                <button id="cad" type="button" class="btn btn-primary">ctrl+alt+del</button>
             </div>
             <!-- header -->
             <canvas id="vnc"></canvas>

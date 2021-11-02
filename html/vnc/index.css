@@ -1,0 +1,10 @@
+.container-fluid {
+    margin-top: 10px;
+}
+#quality {
+    width: 80px;
+    display: inline-block;
+}
+#vnc {
+    margin-top: 10px;
+}

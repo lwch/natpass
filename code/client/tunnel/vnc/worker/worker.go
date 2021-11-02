@@ -61,6 +61,8 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 			}
 			enc, _ := proto.Marshal(&msg)
 			conn.WriteMessage(websocket.BinaryMessage, enc)
+		case vncnetwork.VncMsg_mouse_event:
+			runMouse(msg.GetMouse())
 		}
 	}
 }

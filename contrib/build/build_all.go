@@ -150,6 +150,13 @@ func build(t target) {
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
 
+	logging.Info("go env...")
+	cmd := exec.Command("go", "env")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = os.Environ()
+	runtime.Assert(cmd.Run())
+
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
 		"-X 'main.buildTime=" + buildTime() + "' " +
@@ -157,7 +164,7 @@ func build(t target) {
 		"--extldflags '-static -fpic -lssp'"
 
 	logging.Info("build server...")
-	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
+	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
 		"-ldflags", ldflags,
 		path.Join("code", "server", "main.go"))
 	cmd.Stdout = os.Stdout
@@ -168,7 +175,7 @@ func build(t target) {
 		fmt.Sprintf("GOARCH=%s", t.arch))
 	runtime.Assert(cmd.Run())
 
-	logging.Info("build client...")
+	logging.Info("build client(no vnc)...")
 	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-cli"+t.ext),
 		"-ldflags", ldflags,
 		path.Join("code", "client", "main.go"),
@@ -176,7 +183,21 @@ func build(t target) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(os.Environ(),
-		"CGO_ENABLED=0",
+		fmt.Sprintf("GOOS=%s", t.os),
+		fmt.Sprintf("GOARCH=%s", t.arch),
+		fmt.Sprintf("CC=%s", t.cc),
+		fmt.Sprintf("CXX=%s", t.cxx))
+	runtime.Assert(cmd.Run())
+
+	logging.Info("build client(vnc)...")
+	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-cli"+".vnc"+t.ext),
+		"-ldflags", ldflags,
+		"-tags", "vnc",
+		path.Join("code", "client", "main.go"),
+		path.Join("code", "client", "connect.go"))
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = append(os.Environ(),
 		fmt.Sprintf("GOOS=%s", t.os),
 		fmt.Sprintf("GOARCH=%s", t.arch),
 		fmt.Sprintf("CC=%s", t.cc),

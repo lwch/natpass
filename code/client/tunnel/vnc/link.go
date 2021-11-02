@@ -149,6 +149,19 @@ func (link *Link) close() {
 	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
 }
 
+func cut(src *image.RGBA, rect image.Rectangle) *image.RGBA {
+	size := rect.Size()
+	ret := image.NewRGBA(image.Rect(0, 0, rect.Max.X, rect.Max.Y))
+	sx := src.Bounds().Size().X * 4
+	dx := rect.Min.X * 4
+	idx := rect.Min.Y*sx + dx
+	for y := 0; y < size.Y; y++ {
+		copy(ret.Pix[y*size.X*4:], src.Pix[idx:idx+size.X*4-1])
+		idx += sx
+	}
+	return ret
+}
+
 func (link *Link) sendAll(img *image.RGBA) {
 	size := img.Bounds()
 	screen := image.Rect(0, 0, img.Rect.Dx(), img.Rect.Dy())
@@ -164,10 +177,10 @@ func (link *Link) sendAll(img *image.RGBA) {
 				height = zoneHeight
 			}
 			rect := image.Rect(x, y, x+width, y+height)
-			next := img.SubImage(rect)
+			next := cut(img, rect)
 			if link.quality == 100 {
 				link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
-					screen, rect, network.VncImage_raw, next.(*image.RGBA).Pix)
+					screen, rect, network.VncImage_raw, next.Pix)
 				continue
 			}
 			buf.Reset()
@@ -177,7 +190,7 @@ func (link *Link) sendAll(img *image.RGBA) {
 					screen, rect, network.VncImage_jpeg, buf.Bytes())
 			} else {
 				link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
-					screen, rect, network.VncImage_raw, next.(*image.RGBA).Pix)
+					screen, rect, network.VncImage_raw, next.Pix)
 			}
 		}
 	}
@@ -188,10 +201,10 @@ func (link *Link) sendDiff(img *image.RGBA) {
 	screen := image.Rect(0, 0, img.Rect.Dx(), img.Rect.Dy())
 	var buf bytes.Buffer
 	for _, block := range blocks {
-		next := img.SubImage(block)
+		next := cut(img, block)
 		if link.quality == 100 {
 			link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
-				screen, block, network.VncImage_raw, next.(*image.RGBA).Pix)
+				screen, block, network.VncImage_raw, next.Pix)
 			continue
 		}
 		buf.Reset()
@@ -201,7 +214,7 @@ func (link *Link) sendDiff(img *image.RGBA) {
 				screen, block, network.VncImage_jpeg, buf.Bytes())
 		} else {
 			link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
-				screen, block, network.VncImage_raw, next.(*image.RGBA).Pix)
+				screen, block, network.VncImage_raw, next.Pix)
 		}
 	}
 }

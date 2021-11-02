@@ -165,6 +165,11 @@ func (link *Link) sendAll(img *image.RGBA) {
 			}
 			rect := image.Rect(x, y, x+width, y+height)
 			next := img.SubImage(rect)
+			if link.quality == 100 {
+				link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+					screen, rect, network.VncImage_raw, next.(*image.RGBA).Pix)
+				continue
+			}
 			buf.Reset()
 			err := jpeg.Encode(&buf, next, &jpeg.Options{Quality: int(link.quality)})
 			if err == nil {
@@ -184,6 +189,11 @@ func (link *Link) sendDiff(img *image.RGBA) {
 	var buf bytes.Buffer
 	for _, block := range blocks {
 		next := img.SubImage(block)
+		if link.quality == 100 {
+			link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+				screen, block, network.VncImage_raw, next.(*image.RGBA).Pix)
+			continue
+		}
 		buf.Reset()
 		err := jpeg.Encode(&buf, next, &jpeg.Options{Quality: int(link.quality)})
 		if err == nil {

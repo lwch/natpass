@@ -26,16 +26,17 @@ type Link struct {
 	targetIdx uint32 // target idx
 	remote    *pool.Conn
 	// vnc
-	ps      *process.Process
-	quality uint32
-	img     *image.RGBA
+	ps         *process.Process
+	quality    uint32
+	showCursor bool
+	img        *image.RGBA
 	// runtime
-	sendBytes    uint64
-	recvBytes    uint64
-	sendPacket   uint64
-	recvPacket   uint64
-	idx          int
-	resetQuality bool
+	sendBytes  uint64
+	recvBytes  uint64
+	sendPacket uint64
+	recvPacket uint64
+	idx        int
+	reDraw     bool
 }
 
 // GetID get link id
@@ -61,12 +62,18 @@ func (link *Link) SetTargetIdx(idx uint32) {
 // SetQuality transfer quality
 func (link *Link) SetQuality(q uint32) {
 	link.quality = q
-	link.resetQuality = true
+	link.reDraw = true
+}
+
+// SetCursor set show cursor
+func (link *Link) SetCursor(b bool) {
+	link.showCursor = b
+	link.reDraw = true
 }
 
 // Fork fork worker process
 func (link *Link) Fork(confDir string) error {
-	p, err := process.CreateWorker(confDir)
+	p, err := process.CreateWorker(confDir, link.showCursor)
 	if err != nil {
 		return err
 	}
@@ -116,10 +123,10 @@ func (link *Link) localRead() {
 		}
 		if img.Rect.Dx() != size.Dx() ||
 			img.Rect.Dy() != size.Dy() ||
-			link.resetQuality ||
+			link.reDraw ||
 			link.idx%100 == 0 {
 			link.sendAll(img)
-			link.resetQuality = false
+			link.reDraw = false
 		} else {
 			link.sendDiff(img)
 		}

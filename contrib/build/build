@@ -18,5 +18,9 @@ go run contrib/bindata/main.go -pkg vnc -o code/client/tunnel/vnc/assets.go \
 go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go \
    -prefix html/dashboard "$@" html/dashboard/...
 
-CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
-CGO_ENABLED=0 go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go
+CC=x86_64-w64-mingw32-gcc \
+CXX=x86_64-w64-mingw32-g++ \
+go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
+CC=x86_64-w64-mingw32-gcc \
+CXX=x86_64-w64-mingw32-g++ \
+go build -ldflags "$LDFLAGS" -o bin/np-cli code/client/*.go

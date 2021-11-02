@@ -24,3 +24,19 @@ func (v *VNC) mouseEvent(remote *pool.Conn, data []byte) {
 	remote.SendVNCMouse(v.link.target, v.link.targetIdx, v.link.id,
 		payload.Payload.Button, payload.Payload.Status, payload.Payload.X, payload.Payload.Y)
 }
+
+func (v *VNC) keyboardEvent(remote *pool.Conn, data []byte) {
+	var payload struct {
+		Payload struct {
+			Status string `json:"status"`
+			Key    string `json:"key"`
+		} `json:"payload"`
+	}
+	err := json.Unmarshal(data, &payload)
+	if err != nil {
+		logging.Error("unmarshal: %v", err)
+		return
+	}
+	remote.SendVNCKeyboard(v.link.target, v.link.targetIdx, v.link.id,
+		payload.Payload.Status, payload.Payload.Key)
+}

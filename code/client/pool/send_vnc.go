@@ -95,3 +95,30 @@ func (conn *Conn) SendVNCMouse(to string, toIdx uint32, id string,
 	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
+
+// SendVNCKeyboard send vnc keyboard event
+func (conn *Conn) SendVNCKeyboard(to string, toIdx uint32, id string,
+	status, key string) {
+	t := network.VncStatus_unset_st
+	switch status {
+	case "down":
+		t = network.VncStatus_down
+	case "up":
+		t = network.VncStatus_up
+	}
+	var msg network.Msg
+	msg.To = to
+	msg.ToIdx = toIdx
+	msg.XType = network.Msg_vnc_keyboard
+	msg.LinkId = id
+	msg.Payload = &network.Msg_Vkbd{
+		Vkbd: &network.VncKeyboard{
+			Type: t,
+			Key:  key,
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}

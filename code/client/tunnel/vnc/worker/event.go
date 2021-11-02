@@ -31,3 +31,18 @@ func runMouse(data *vncnetwork.MouseData) {
 		robotgo.MouseToggle("up", key)
 	}
 }
+
+func runKeyboard(data *vncnetwork.KeyboardData) {
+	detach, err := attachDesktop()
+	if err != nil {
+		logging.Error("attach desktop: %v", err)
+		return
+	}
+	defer detach()
+	switch data.Type {
+	case vncnetwork.Status_down:
+		robotgo.KeyToggle(data.Key, "down")
+	case vncnetwork.Status_up:
+		robotgo.KeyToggle(data.Key, "up")
+	}
+}

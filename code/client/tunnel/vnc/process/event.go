@@ -34,3 +34,22 @@ func (p *Process) MouseEvent(data *network.VncMouse) {
 	}
 	p.chWrite <- &msg
 }
+
+func (p *Process) KeyboardEvent(data *network.VncKeyboard) {
+	t := vncnetwork.Status_unset_st
+	switch data.GetType() {
+	case network.VncStatus_down:
+		t = vncnetwork.Status_down
+	case network.VncStatus_up:
+		t = vncnetwork.Status_up
+	}
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_keyboard_event
+	msg.Payload = &vncnetwork.VncMsg_Keyboard{
+		Keyboard: &vncnetwork.KeyboardData{
+			Type: t,
+			Key:  data.GetKey(),
+		},
+	}
+	p.chWrite <- &msg
+}

@@ -99,6 +99,8 @@ func (link *Link) remoteRead() {
 			link.SetCursor(ctrl.GetCursor())
 		case network.Msg_vnc_mouse:
 			link.ps.MouseEvent(msg.GetVmouse())
+		case network.Msg_vnc_keyboard:
+			link.ps.KeyboardEvent(msg.GetVkbd())
 		case network.Msg_disconnect:
 			logging.Info("link %s disconnected", link.id)
 			return

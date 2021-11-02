@@ -9,6 +9,9 @@ var page = {
         $('#vnc').mousemove(page.mousemove);
         $('#vnc').mousedown(page.mousedown);
         $('#vnc').mouseup(page.mouseup);
+        $('#vnc').contextmenu(page.right_click);
+        $('#vnc').keydown(page.keydown);
+        $('#vnc').keyup(page.keyup);
         $('#quality').change(page.ctrl);
         $('#show-cursor').change(page.ctrl);
         $('#cad').click(page.cad);
@@ -96,11 +99,92 @@ var page = {
             payload: pointer
         }));
     },
+    right_click: function(e) {
+        if (!page.ws) {
+            return;
+        }
+        var pointer = page.get_pointer(e);
+        pointer.button = 'right';
+        pointer.status = 'down';
+        page.ws.send(JSON.stringify({
+            action: 'mouse',
+            payload: pointer
+        }));
+        pointer.status = 'up';
+        page.ws.send(JSON.stringify({
+            action: 'mouse',
+            payload: pointer
+        }));
+        return false;
+    },
     get_pointer: function(e) {
         return {
             x: e.offsetX,
             y: e.offsetY
         }
+    },
+    keydown: function(e) {
+        page.keyboard(e, 'down');
+        return false;
+    },
+    keyup: function(e) {
+        page.keyboard(e, 'up');
+        return false;
+    },
+    keyboard: function(e, status) {
+        if (!page.ws) {
+            return;
+        }
+        var key = '';
+        if ((e.which >= 65 && e.which <= 90) || // a-z
+            (e.which >= 48 && e.which <= 57)) { // 0-9
+            key = String.fromCharCode(e.which).toLowerCase();
+        } else if (e.which >= 112 && e.which <= 123) {
+            key = 'f'+(e.which - 111);
+        } else if (e.which == 8) {
+            key = 'backspace';
+        } else if (e.which == 46) {
+            key = 'delete';
+        } else if (e.which == 13) {
+            key = 'enter';
+        } else if (e.which == 9) {
+            key = 'tab';
+        } else if (e.which == 27) {
+            key = 'esc';
+        } else if (e.which == 38) {
+            key = 'up';
+        } else if (e.which == 40) {
+            key = 'down';
+        } else if (e.which == 39) {
+            key = 'right';
+        } else if (e.which == 37) {
+            key = 'left';
+        } else if (e.which == 36) {
+            key = 'home';
+        } else if (e.which == 35) {
+            key = 'end';
+        } else if (e.which == 33) {
+            key = 'pageup';
+        } else if (e.which == 34) {
+            key = 'pagedown';
+        } else if (e.which == 16) {
+            key = 'shift';
+        } else if (e.which == 17) {
+            key = 'control';
+        } else if (e.which == 18) {
+            key = 'alt';
+        } else if (e.which == 32) {
+            key = 'space';
+        }
+        // TODO: 符号
+        page.ws.send(JSON.stringify({
+            action: 'keyboard',
+            payload: {
+                key: key,
+                status: status
+            }
+        }));
+        console.log(e);
     },
     canvas: undefined,
     ctx: undefined,

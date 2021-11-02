@@ -63,6 +63,8 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 			conn.WriteMessage(websocket.BinaryMessage, enc)
 		case vncnetwork.VncMsg_mouse_event:
 			runMouse(msg.GetMouse())
+		case vncnetwork.VncMsg_keyboard_event:
+			runKeyboard(msg.GetKeyboard())
 		}
 	}
 }

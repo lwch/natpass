@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	zoneWidth  = 128
-	zoneHeight = 128
+	zoneWidth  = 64
+	zoneHeight = 64
 )
 
 // Link vnc link
@@ -151,7 +151,7 @@ func (link *Link) close() {
 
 func cut(src *image.RGBA, rect image.Rectangle) *image.RGBA {
 	size := rect.Size()
-	ret := image.NewRGBA(image.Rect(0, 0, rect.Max.X, rect.Max.Y))
+	ret := image.NewRGBA(image.Rect(0, 0, size.X, size.Y))
 	sx := src.Bounds().Size().X * 4
 	dx := rect.Min.X * 4
 	idx := rect.Min.Y*sx + dx

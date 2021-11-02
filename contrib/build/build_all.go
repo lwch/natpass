@@ -175,33 +175,24 @@ func build(t target) {
 		fmt.Sprintf("GOARCH=%s", t.arch))
 	runtime.Assert(cmd.Run())
 
-	logging.Info("build client(no vnc)...")
-	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-cli"+t.ext),
-		"-ldflags", ldflags,
-		path.Join("code", "client", "main.go"),
-		path.Join("code", "client", "connect.go"))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(),
+	logging.Info("build client...")
+	env := append(os.Environ(),
 		fmt.Sprintf("GOOS=%s", t.os),
 		fmt.Sprintf("GOARCH=%s", t.arch),
 		fmt.Sprintf("CC=%s", t.cc),
 		fmt.Sprintf("CXX=%s", t.cxx))
-	runtime.Assert(cmd.Run())
-
-	logging.Info("build client(vnc)...")
-	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-cli"+".vnc"+t.ext),
-		"-ldflags", ldflags,
-		"-tags", "vnc",
+	args := []string{"build", "-o", path.Join(buildDir, "np-cli"+t.ext), "-ldflags", ldflags}
+	if t.os == "windows" && (t.arch == "amd64" || t.arch == "386") {
+		args = append(args, "-tags", "vnc")
+		env = append(env, "CGO_ENABLED=1")
+	}
+	args = append(args,
 		path.Join("code", "client", "main.go"),
 		path.Join("code", "client", "connect.go"))
+	cmd = exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(),
-		fmt.Sprintf("GOOS=%s", t.os),
-		fmt.Sprintf("GOARCH=%s", t.arch),
-		fmt.Sprintf("CC=%s", t.cc),
-		fmt.Sprintf("CXX=%s", t.cxx))
+	cmd.Env = env
 	runtime.Assert(cmd.Run())
 
 	logging.Info("packing...")

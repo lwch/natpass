@@ -42,8 +42,7 @@ message vnc_msg {
         capture_data   = 1;
         mouse_event    = 2;
         keyboard_event = 3;
-        cad_event      = 4;
-        set_cursor     = 5;
+        set_cursor     = 4;
     }
     type _type = 1;
     oneof payload {

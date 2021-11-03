@@ -38,6 +38,7 @@ var page = {
                     <a href="https://${location.hostname}:${tunnel.port}" target="_blank">https</a>`;
                     break;
                 case 'shell':
+                case 'vnc':
                     op = `<a href="http://${location.host}/terminal.html?name=${tunnel.name}" target="_blank">连接</a>`;
                     break;
                 }

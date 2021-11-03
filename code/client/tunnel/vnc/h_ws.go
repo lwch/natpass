@@ -68,7 +68,7 @@ func (v *VNC) remoteRead(ctx context.Context, ch <-chan *network.Msg, local *web
 		case network.Msg_vnc_image:
 			data, err := decodeImage(msg.GetVimg())
 			runtime.Assert(err)
-			replyImage(local, msg.GetVimg(), data)
+			replyImage(local, msg.GetVimg(), data, len(msg.GetVimg().GetData()))
 		default:
 			logging.Error("on message: %s", msg.GetXType().String())
 			return
@@ -142,15 +142,16 @@ func dumpImage(img image.Image) {
 	}
 }
 
-func replyImage(conn *websocket.Conn, msg *network.VncImage, data []byte) {
+func replyImage(conn *websocket.Conn, msg *network.VncImage, data []byte, srcSize int) {
 	info := msg.GetXInfo()
-	buf := make([]byte, len(data)+24)
+	buf := make([]byte, len(data)+28)
 	binary.BigEndian.PutUint32(buf, info.GetScreenWidth())
 	binary.BigEndian.PutUint32(buf[4:], info.GetScreenHeight())
 	binary.BigEndian.PutUint32(buf[8:], info.GetRectX())
 	binary.BigEndian.PutUint32(buf[12:], info.GetRectY())
 	binary.BigEndian.PutUint32(buf[16:], info.GetRectWidth())
 	binary.BigEndian.PutUint32(buf[20:], info.GetRectHeight())
-	copy(buf[24:], data)
+	binary.BigEndian.PutUint32(buf[24:], uint32(srcSize))
+	copy(buf[28:], data)
 	conn.WriteMessage(websocket.BinaryMessage, buf)
 }

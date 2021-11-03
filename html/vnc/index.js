@@ -17,6 +17,7 @@ var page = {
         $('#cad').click(page.cad);
         // connect
         page.connect();
+        setInterval(page.update_info, page.secs*1000);
     },
     connect: function() {
         var quality = $('#quality').val();
@@ -28,6 +29,7 @@ var page = {
         });
     },
     render: function(e) {
+        page.fps++;
         var reader = new FileReader;
         reader.onload = function() {
             var dv = new DataView(this.result);
@@ -42,8 +44,10 @@ var page = {
             var dy = dv.getUint32(12, false);
             var dwidth = dv.getUint32(16, false);
             var dheight = dv.getUint32(20, false);
+            var size = dv.getUint32(24, false);
+            page.bandwidth += size;
             var id = page.ctx.getImageData(dx, dy, dwidth, dheight);
-            var data = new Uint8Array(this.result.slice(24));
+            var data = new Uint8Array(this.result.slice(28));
             var buf = id.data;
             for (var i = 0; i < buf.length; i++) {
                 buf[i] = data[i];
@@ -178,8 +182,25 @@ var page = {
             key = 'alt';
         } else if (e.which == 32) {
             key = 'space';
+        } else if (e.which == 189) {
+            key = '-';
+        } else if (e.which == 187) {
+            key = '=';
+        } else if (e.which == 219) {
+            key = '[';
+        } else if (e.which == 221) {
+            key = ']';
+        } else if (e.which == 186) {
+            key = ';';
+        } else if (e.which == 222) {
+            key = "'";
+        } else if (e.which == 188) {
+            key = ',';
+        } else if (e.which == 190) {
+            key = '.';
+        } else if (e.which == 191) {
+            key = '/';
         }
-        // TODO: 符号
         page.ws.send(JSON.stringify({
             action: 'keyboard',
             payload: {
@@ -189,9 +210,19 @@ var page = {
         }));
         console.log(e);
     },
+    update_info: function() {
+        var str = 'fps: '+parseInt(page.fps/page.secs)+
+            ', bandwidth: '+humanize.bytes(page.bandwidth/page.secs)+'/s';
+        page.fps = 0;
+        page.bandwidth = 0;
+        $('#info').text(str);
+    },
     canvas: undefined,
     ctx: undefined,
     id: '',
-    ws: undefined
+    ws: undefined,
+    secs: 2,
+    fps: 0,
+    bandwidth: 0
 };
 $(document).ready(page.init);

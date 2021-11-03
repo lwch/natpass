@@ -82,18 +82,25 @@ var targets = []target{
 	{
 		os:   "windows",
 		arch: "arm",
-		// TODO: cc, cxx?
+		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
 		ext: ".exe", packExt: ".zip",
 	},
 	{
 		os:   "windows",
 		arch: "arm64",
-		// TODO: cc, cxx?
+		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
 		ext: ".exe", packExt: ".zip",
 	},
 }
 
 func main() {
+	logging.Info("go env...")
+	cmd := exec.Command("go", "env")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = os.Environ()
+	runtime.Assert(cmd.Run())
+
 	os.RemoveAll(releaseDir)
 	runtime.Assert(os.MkdirAll(releaseDir, 0755))
 	bindata()
@@ -150,13 +157,6 @@ func build(t target) {
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
 
-	logging.Info("go env...")
-	cmd := exec.Command("go", "env")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Env = os.Environ()
-	runtime.Assert(cmd.Run())
-
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
 		"-X 'main.buildTime=" + buildTime() + "' " +
@@ -164,7 +164,7 @@ func build(t target) {
 		"--extldflags '-static -fpic -lssp'"
 
 	logging.Info("build server...")
-	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
+	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
 		"-ldflags", ldflags,
 		path.Join("code", "server", "main.go"))
 	cmd.Stdout = os.Stdout
@@ -182,7 +182,7 @@ func build(t target) {
 		fmt.Sprintf("CC=%s", t.cc),
 		fmt.Sprintf("CXX=%s", t.cxx))
 	args := []string{"build", "-o", path.Join(buildDir, "np-cli"+t.ext), "-ldflags", ldflags}
-	if t.os == "windows" && (t.arch == "amd64" || t.arch == "386") {
+	if t.os == "windows" && !strings.Contains(t.arch, "arm") {
 		args = append(args, "-tags", "vnc")
 		env = append(env, "CGO_ENABLED=1")
 	}

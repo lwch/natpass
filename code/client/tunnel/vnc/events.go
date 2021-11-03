@@ -40,3 +40,7 @@ func (v *VNC) keyboardEvent(remote *pool.Conn, data []byte) {
 	remote.SendVNCKeyboard(v.link.target, v.link.targetIdx, v.link.id,
 		payload.Payload.Status, payload.Payload.Key)
 }
+
+func (v *VNC) cadEvent(remote *pool.Conn) {
+	remote.SendVNCCADEvent(v.link.target, v.link.targetIdx, v.link.id)
+}

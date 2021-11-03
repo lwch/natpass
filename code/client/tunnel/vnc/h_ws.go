@@ -103,6 +103,7 @@ func (v *VNC) localRead(ctx context.Context, local *websocket.Conn, remote *pool
 		case "keyboard":
 			v.keyboardEvent(remote, data)
 		case "cad":
+			v.cadEvent(remote)
 		}
 	}
 }

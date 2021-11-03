@@ -122,3 +122,16 @@ func (conn *Conn) SendVNCKeyboard(to string, toIdx uint32, id string,
 	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
+
+// SendVNC send vnc keyboard event
+func (conn *Conn) SendVNCCADEvent(to string, toIdx uint32, id string) {
+	var msg network.Msg
+	msg.To = to
+	msg.ToIdx = toIdx
+	msg.XType = network.Msg_vnc_cad
+	msg.LinkId = id
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}

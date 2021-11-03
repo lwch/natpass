@@ -64,7 +64,10 @@ var page = {
         });
     },
     cad: function() {
-        // TODO
+        if (!page.ws) {
+            return;
+        }
+        page.ws.send(JSON.stringify({action: 'cad'}));
     },
     mousemove: function(e) {
         if (!page.ws) {

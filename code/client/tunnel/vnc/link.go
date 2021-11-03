@@ -101,6 +101,8 @@ func (link *Link) remoteRead() {
 			link.ps.MouseEvent(msg.GetVmouse())
 		case network.Msg_vnc_keyboard:
 			link.ps.KeyboardEvent(msg.GetVkbd())
+		case network.Msg_vnc_cad:
+			link.ps.CADEvent()
 		case network.Msg_disconnect:
 			logging.Info("link %s disconnected", link.id)
 			return

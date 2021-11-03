@@ -133,7 +133,7 @@ func (link *Link) localRead() {
 		if img.Rect.Dx() != size.Dx() ||
 			img.Rect.Dy() != size.Dy() ||
 			link.reDraw ||
-			link.idx%100 == 0 {
+			link.idx%10000 == 0 {
 			link.sendAll(img)
 			link.reDraw = false
 		} else {

@@ -1,3 +1,4 @@
+//go:build vnc
 // +build vnc
 
 package worker

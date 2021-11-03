@@ -41,8 +41,13 @@ func (worker *Worker) capture() error {
 		return errors.New("attach desktop: " + err.Error())
 	}
 	defer detach()
+	cancel, hdc, err := worker.getHandle()
+	if err != nil {
+		return errors.New("get handle: " + err.Error())
+	}
+	defer cancel()
 	info := worker.info
-	err = worker.updateInfo()
+	err = worker.updateInfo(hdc)
 	if err != nil {
 		return errors.New("update info: " + err.Error())
 	}
@@ -54,13 +59,13 @@ func (worker *Worker) capture() error {
 			return errors.New("update buffer: " + err.Error())
 		}
 	}
-	logging.Info("width=%d, height=%d, bits=%d", info.width, info.height, info.bits)
-	memDC, _, err := syscall.Syscall(define.FuncCreateCompatibleDC, 1, worker.hdc, 0, 0)
+	// logging.Info("width=%d, height=%d, bits=%d", info.width, info.height, info.bits)
+	memDC, _, err := syscall.Syscall(define.FuncCreateCompatibleDC, 1, hdc, 0, 0)
 	if memDC == 0 {
 		return errors.New("create dc: " + err.Error())
 	}
 	defer syscall.Syscall(define.FuncDeleteDC, 1, memDC, 0, 0)
-	bitmap, _, err := syscall.Syscall(define.FuncCreateCompatibleBitmap, 3, worker.hdc,
+	bitmap, _, err := syscall.Syscall(define.FuncCreateCompatibleBitmap, 3, hdc,
 		uintptr(worker.info.width), uintptr(worker.info.height))
 	if bitmap == 0 {
 		return errors.New("create bitmap: " + err.Error())
@@ -72,11 +77,11 @@ func (worker *Worker) capture() error {
 	}
 	defer syscall.Syscall(define.FuncSelectObject, 2, memDC, oldDC, 0)
 	ok, _, err := syscall.Syscall9(define.FuncBitBlt, 9, memDC, 0, 0,
-		uintptr(worker.info.width), uintptr(worker.info.height), worker.hdc, 0, 0, define.SRCCOPY)
+		uintptr(worker.info.width), uintptr(worker.info.height), hdc, 0, 0, define.SRCCOPY)
 	if ok == 0 {
 		return errors.New("bitblt: " + err.Error())
 	}
-	defer worker.copyImageData(bitmap)
+	defer worker.copyImageData(hdc, bitmap)
 	if !worker.showCursor {
 		return nil
 	}
@@ -119,7 +124,7 @@ type BITMAPINFOHEADER struct {
 	BiClrImportant  uint32
 }
 
-func (worker *Worker) copyImageData(bitmap uintptr) {
+func (worker *Worker) copyImageData(hdc, bitmap uintptr) {
 	var hdr BITMAPINFOHEADER
 	hdr.BiSize = uint32(unsafe.Sizeof(hdr))
 	hdr.BiPlanes = 1
@@ -128,7 +133,7 @@ func (worker *Worker) copyImageData(bitmap uintptr) {
 	hdr.BiHeight = int32(-worker.info.height)
 	hdr.BiCompression = define.BI_RGB
 	hdr.BiSizeImage = 0
-	lines, _, err := syscall.Syscall9(define.FuncGetDIBits, 7, worker.hdc, bitmap, 0, uintptr(worker.info.height),
+	lines, _, err := syscall.Syscall9(define.FuncGetDIBits, 7, hdc, bitmap, 0, uintptr(worker.info.height),
 		worker.buffer, uintptr(unsafe.Pointer(&hdr)), define.DIB_RGB_COLORS, 0, 0)
 	if lines == 0 {
 		logging.Error("get bits: %v", err)

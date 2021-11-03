@@ -141,6 +141,7 @@ func (link *Link) localRead() {
 			link.sendDiff(img)
 		}
 		link.img = img
+		size = img.Rect
 		link.idx++
 	}
 }

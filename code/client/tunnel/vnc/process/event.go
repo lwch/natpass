@@ -53,3 +53,12 @@ func (p *Process) KeyboardEvent(data *network.VncKeyboard) {
 	}
 	p.chWrite <- &msg
 }
+
+func (p *Process) SetCursor(b bool) {
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_set_cursor
+	msg.Payload = &vncnetwork.VncMsg_ShowCursor{
+		ShowCursor: b,
+	}
+	p.chWrite <- &msg
+}

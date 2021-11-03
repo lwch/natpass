@@ -97,6 +97,7 @@ func (link *Link) remoteRead() {
 			ctrl := msg.GetVctrl()
 			link.SetQuality(ctrl.GetQuality())
 			link.SetCursor(ctrl.GetCursor())
+			link.ps.SetCursor(ctrl.GetCursor())
 		case network.Msg_vnc_mouse:
 			link.ps.MouseEvent(msg.GetVmouse())
 		case network.Msg_vnc_keyboard:

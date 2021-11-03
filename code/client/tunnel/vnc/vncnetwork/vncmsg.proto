@@ -43,11 +43,13 @@ message vnc_msg {
         mouse_event    = 2;
         keyboard_event = 3;
         cad_event      = 4;
+        set_cursor     = 5;
     }
     type _type = 1;
     oneof payload {
         image_data        data = 2;
         mouse_data       mouse = 3;
         keyboard_data keyboard = 4;
+        bool       show_cursor = 5;
     }
 }

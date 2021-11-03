@@ -65,6 +65,8 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 			runMouse(msg.GetMouse())
 		case vncnetwork.VncMsg_keyboard_event:
 			runKeyboard(msg.GetKeyboard())
+		case vncnetwork.VncMsg_set_cursor:
+			worker.showCursor = msg.GetShowCursor()
 		}
 	}
 }

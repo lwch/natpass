@@ -18,7 +18,7 @@ require (
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/sys v0.0.0-20211102192858-4dd72447c267
+	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.7 // indirect
 	google.golang.org/protobuf v1.27.1

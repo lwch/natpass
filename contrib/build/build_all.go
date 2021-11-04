@@ -316,6 +316,9 @@ func packZip(src, dst string) {
 		if path == src {
 			return nil
 		}
+		if info.IsDir() {
+			return nil
+		}
 		dst := strings.TrimPrefix(path, src)
 		dst = filepath.Join("natpass_"+version, dst)
 		hdr, err := zip.FileInfoHeader(info)
@@ -326,9 +329,6 @@ func packZip(src, dst string) {
 		w, err := zw.CreateHeader(hdr)
 		if err != nil {
 			return err
-		}
-		if info.IsDir() {
-			return nil
 		}
 		f, err = os.Open(path)
 		if err != nil {

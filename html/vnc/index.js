@@ -222,6 +222,7 @@ var page = {
     },
     closed: function() {
         $('#closed').css('display', 'inline-block');
+        $('#info').css('display', 'none');
     },
     canvas: undefined,
     ctx: undefined,

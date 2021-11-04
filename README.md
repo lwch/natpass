@@ -26,6 +26,18 @@ windows命令行效果
 
 ![windows-shell](docs/imgs/shell_win.png)
 
+windows2008远程桌面
+
+![win2008-vnc](docs/imgs/vnc_win2008.png)
+
+windows10远程桌面
+
+![win10-vnc](docs/imgs/vnc_win10.png)
+
+windows11远程桌面
+
+![win11-vnc](docs/imgs/vnc_win11.png)
+
 ## iperf3压测对比
 
 使用相同参数，iperf3压测1分钟

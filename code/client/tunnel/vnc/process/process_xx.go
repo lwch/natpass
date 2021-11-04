@@ -9,7 +9,7 @@ import (
 )
 
 // CreateWorker create worker process
-func CreateWorker(confDir string, showCursor bool) (*Process, error) {
+func CreateWorker(name, confDir string, showCursor bool) (*Process, error) {
 	return nil, ErrNotSupported
 }
 

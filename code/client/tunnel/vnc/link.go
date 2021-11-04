@@ -73,7 +73,7 @@ func (link *Link) SetCursor(b bool) {
 
 // Fork fork worker process
 func (link *Link) Fork(confDir string) error {
-	p, err := process.CreateWorker(confDir, link.showCursor)
+	p, err := process.CreateWorker(link.parent.Name, confDir, link.showCursor)
 	if err != nil {
 		return err
 	}

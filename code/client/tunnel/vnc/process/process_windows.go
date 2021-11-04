@@ -79,15 +79,15 @@ func getSessionUserTokenWin() windows.Token {
 }
 
 // CreateWorker create worker process
-func CreateWorker(confDir string, showCursor bool) (*Process, error) {
+func CreateWorker(name, confDir string, showCursor bool) (*Process, error) {
 	tk := getSessionUserTokenWin()
 	if tk != 0 {
 		defer windows.CloseHandle(windows.Handle(tk))
 	}
-	return createWorker(confDir, tk, showCursor)
+	return createWorker(name, confDir, tk, showCursor)
 }
 
-func createWorker(confDir string, tk windows.Token, showCursor bool) (*Process, error) {
+func createWorker(name, confDir string, tk windows.Token, showCursor bool) (*Process, error) {
 	dir, err := os.Executable()
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func createWorker(confDir string, tk windows.Token, showCursor bool) (*Process, 
 	startup.Cb = uint32(unsafe.Sizeof(startup))
 	startup.Desktop = windows.StringToUTF16Ptr("WinSta0\\default")
 	startup.Flags = windows.STARTF_USESHOWWINDOW
-	str := dir + fmt.Sprintf(" -conf %s -action vnc.worker -vport %d", confDir, port)
+	str := dir + fmt.Sprintf(" -conf %s -action vnc.worker -name %s -vport %d", confDir, name, port)
 	if showCursor {
 		str += "-vcursor"
 	}

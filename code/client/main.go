@@ -137,6 +137,7 @@ func main() {
 	conf := flag.String("conf", "", "configure file path")
 	version := flag.Bool("version", false, "show version info")
 	act := flag.String("action", "", "install or uninstall")
+	name := flag.String("name", "", "tunnel name")
 	vport := flag.Uint("vport", 6155, "vnc worker listen port")
 	vcursor := flag.Bool("vcursor", false, "vnc show cursor")
 	flag.Parse()
@@ -184,7 +185,7 @@ func main() {
 		// go func() {
 		// 	http.ListenAndServe(":9001", nil)
 		// }()
-		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc", int(cfg.LogSize.Bytes()), cfg.LogRotate, stdout)
+		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc."+*name, int(cfg.LogSize.Bytes()), cfg.LogRotate, stdout)
 		defer logging.Flush()
 		vnc.RunWorker(uint16(*vport), *vcursor)
 		return

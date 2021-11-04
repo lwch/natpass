@@ -54,7 +54,11 @@ func (a *app) run() {
 	// 	http.ListenAndServe(":9000", nil)
 	// }()
 
-	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
+	stdout := true
+	if rt.GOOS == "windows" {
+		stdout = false
+	}
+	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, stdout)
 	defer logging.Flush()
 
 	pl := pool.New(a.cfg)
@@ -173,7 +177,11 @@ func main() {
 
 	if *act == "vnc.worker" {
 		defer utils.Recover("vnc.worker")
-		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc", int(cfg.LogSize.Bytes()), cfg.LogRotate, true)
+		stdout := true
+		if rt.GOOS == "windows" {
+			stdout = false
+		}
+		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc", int(cfg.LogSize.Bytes()), cfg.LogRotate, stdout)
 		defer logging.Flush()
 		vnc.RunWorker(uint16(*vport), *vcursor)
 		return

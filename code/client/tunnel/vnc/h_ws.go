@@ -36,6 +36,7 @@ func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer local.Close()
 	ch := conn.ChanRead(id)
 	defer conn.SendDisconnect(v.link.target, v.link.targetIdx, v.link.id)
 	ctx, cancel := context.WithCancel(context.Background())

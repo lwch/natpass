@@ -123,7 +123,7 @@ func (conn *Conn) SendVNCKeyboard(to string, toIdx uint32, id string,
 	}
 }
 
-// SendVNC send vnc keyboard event
+// SendVNCCADEvent send vnc keyboard event
 func (conn *Conn) SendVNCCADEvent(to string, toIdx uint32, id string) {
 	var msg network.Msg
 	msg.To = to

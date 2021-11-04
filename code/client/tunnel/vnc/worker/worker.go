@@ -18,12 +18,14 @@ type desktopInfo struct {
 	height int
 }
 
+// Worker worker object
 type Worker struct {
 	workerOsBased
 	info       desktopInfo
 	showCursor bool
 }
 
+// NewWorker create worker
 func NewWorker(showCursor bool) *Worker {
 	worker := &Worker{
 		showCursor: showCursor,
@@ -35,6 +37,7 @@ func NewWorker(showCursor bool) *Worker {
 	return worker
 }
 
+// Do handle worker
 func (worker *Worker) Do(conn *websocket.Conn) {
 	defer conn.Close()
 	for {
@@ -71,6 +74,7 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 	}
 }
 
+// TestCapture test capture
 func (worker *Worker) TestCapture() {
 	msg := worker.runCapture()
 	dumpImage(msg.Data, int(msg.Width), int(msg.Height))

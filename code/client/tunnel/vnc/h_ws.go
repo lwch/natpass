@@ -24,6 +24,7 @@ import (
 
 var upgrader = websocket.Upgrader{}
 
+// WS websocket handler
 func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/ws/")
 	conn := pool.Get(id)

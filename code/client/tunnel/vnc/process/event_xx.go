@@ -3,5 +3,6 @@
 
 package process
 
+// CADEvent handle ctrl+alt+del event
 func (p *Process) CADEvent() {
 }

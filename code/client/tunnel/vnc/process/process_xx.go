@@ -17,6 +17,7 @@ func CreateWorker(name, confDir string, showCursor bool) (*Process, error) {
 func (p *Process) Close() {
 }
 
+// Capture capture desktop image
 func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
 	return nil, nil
 }

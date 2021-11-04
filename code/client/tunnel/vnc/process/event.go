@@ -5,6 +5,7 @@ import (
 	"natpass/code/network"
 )
 
+// MouseEvent dispatch mouse event to child process
 func (p *Process) MouseEvent(data *network.VncMouse) {
 	t := vncnetwork.Status_unset_st
 	switch data.GetType() {
@@ -35,6 +36,7 @@ func (p *Process) MouseEvent(data *network.VncMouse) {
 	p.chWrite <- &msg
 }
 
+// KeyboardEvent dispatch keyboard event to child process
 func (p *Process) KeyboardEvent(data *network.VncKeyboard) {
 	t := vncnetwork.Status_unset_st
 	switch data.GetType() {
@@ -54,6 +56,7 @@ func (p *Process) KeyboardEvent(data *network.VncKeyboard) {
 	p.chWrite <- &msg
 }
 
+// SetCursor dispatch draw cursor to child process
 func (p *Process) SetCursor(b bool) {
 	var msg vncnetwork.VncMsg
 	msg.XType = vncnetwork.VncMsg_set_cursor

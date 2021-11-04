@@ -48,3 +48,8 @@
 
     sudo systemctl enable np-cli
     sudo systemctl start np-cli
+
+## 注册为系统服务
+
+1. 在命令行中使用`-action install`参数即可将程序注册为系统服务，使用参数`-user`可设置该服务的启动身份
+2. linux系统使用systemd管理系统服务，windows系统可用services.msc面板启动或停止服务

@@ -181,6 +181,9 @@ func main() {
 		if rt.GOOS == "windows" {
 			stdout = false
 		}
+		// go func() {
+		// 	http.ListenAndServe(":9001", nil)
+		// }()
 		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc", int(cfg.LogSize.Bytes()), cfg.LogRotate, stdout)
 		defer logging.Flush()
 		vnc.RunWorker(uint16(*vport), *vcursor)

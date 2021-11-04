@@ -92,6 +92,9 @@ func (link *Link) remoteRead() {
 	ch := link.remote.ChanRead(link.id)
 	for {
 		msg := <-ch
+		if msg == nil {
+			return
+		}
 		switch msg.GetXType() {
 		case network.Msg_vnc_ctrl:
 			ctrl := msg.GetVctrl()

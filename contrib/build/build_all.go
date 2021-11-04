@@ -19,7 +19,8 @@ import (
 	"github.com/lwch/runtime"
 )
 
-const version = "0.5.0"
+var version = "0.0.0"
+
 const buildDir = "tmp"
 const releaseDir = "release"
 
@@ -94,6 +95,10 @@ var targets = []target{
 }
 
 func main() {
+	if v, ok := os.LookupEnv("BUILD_VERSION"); ok {
+		version = v
+	}
+
 	logging.Info("go env...")
 	cmd := exec.Command("go", "env")
 	cmd.Stdout = os.Stdout

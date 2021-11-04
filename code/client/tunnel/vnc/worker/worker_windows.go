@@ -100,7 +100,7 @@ func (worker *Worker) updateInfo(hdc uintptr) error {
 }
 
 func (worker *Worker) updateBuffer() error {
-	addr, _, err := syscall.Syscall(define.FuncGlobalAlloc, 2, define.GMEM_FIXED, uintptr(worker.info.bits*worker.info.width*worker.info.height/8), 0)
+	addr, _, err := syscall.Syscall(define.FuncGlobalAlloc, 2, define.GMEMFIXED, uintptr(worker.info.bits*worker.info.width*worker.info.height/8), 0)
 	if addr == 0 {
 		return fmt.Errorf("global alloc: %v", err)
 	}

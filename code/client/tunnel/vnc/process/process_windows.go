@@ -62,13 +62,13 @@ func parseProcessName(exeFile [syscall.MAX_PATH]uint16) string {
 }
 
 func getSessionID() uintptr {
-	id, _, _ := syscall.Syscall(define.FuncWTSGetActiveConsoleSessionId, 0, 0, 0, 0)
+	id, _, _ := syscall.Syscall(define.FuncWTSGetActiveConsoleSessionID, 0, 0, 0, 0)
 	return id
 }
 
 func getSessionUserTokenWin() windows.Token {
 	pid := getLogonPid(getSessionID())
-	process, err := windows.OpenProcess(define.PROCESS_ALL_ACCESS, false, pid)
+	process, err := windows.OpenProcess(define.PROCESSALLACCESS, false, pid)
 	if err != nil {
 		return 0
 	}

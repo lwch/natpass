@@ -92,7 +92,7 @@ func (worker *Worker) capture() error {
 		logging.Error("get cursor info: %v", err)
 		return nil
 	}
-	if curInfo.Flags == define.CURSOR_SHOWING {
+	if curInfo.Flags == define.CURSORSHOWING {
 		var info define.ICONINFO
 		ok, _, err = syscall.Syscall(define.FuncGetIconInfo, 2, uintptr(curInfo.HCursor), uintptr(unsafe.Pointer(&info)), 0)
 		if ok == 0 {
@@ -110,6 +110,7 @@ func (worker *Worker) capture() error {
 	return nil
 }
 
+// BITMAPINFOHEADER https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
 type BITMAPINFOHEADER struct {
 	BiSize          uint32
 	BiWidth         int32
@@ -131,10 +132,10 @@ func (worker *Worker) copyImageData(hdc, bitmap uintptr) {
 	hdr.BiBitCount = uint16(worker.info.bits)
 	hdr.BiWidth = int32(worker.info.width)
 	hdr.BiHeight = int32(-worker.info.height)
-	hdr.BiCompression = define.BI_RGB
+	hdr.BiCompression = define.BIRGB
 	hdr.BiSizeImage = 0
 	lines, _, err := syscall.Syscall9(define.FuncGetDIBits, 7, hdc, bitmap, 0, uintptr(worker.info.height),
-		worker.buffer, uintptr(unsafe.Pointer(&hdr)), define.DIB_RGB_COLORS, 0, 0)
+		worker.buffer, uintptr(unsafe.Pointer(&hdr)), define.DIBRGBCOLORS, 0, 0)
 	if lines == 0 {
 		logging.Error("get bits: %v", err)
 	}

@@ -37,8 +37,8 @@ const (
 )
 
 const (
-	// BI_RGB https://docs.microsoft.com/en-us/previous-versions/dd183376(v=vs.85)
-	BI_RGB = 0
-	// DIB_RGB_COLORS https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getdibits
-	DIB_RGB_COLORS = 0
+	// BIRGB https://docs.microsoft.com/en-us/previous-versions/dd183376(v=vs.85)
+	BIRGB = 0
+	// DIBRGBCOLORS https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getdibits
+	DIBRGBCOLORS = 0
 )

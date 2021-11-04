@@ -226,7 +226,7 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client, size uint16) {
 	msg.FromIdx = from.idx
 	msg.To = to.parent.id
 	msg.ToIdx = to.idx
-	logging.Info("forward %d bytes on link %s from %s-%d to %s-%d", size, msg.GetLinkId(),
+	logging.Debug("forward %d bytes on link %s from %s-%d to %s-%d", size, msg.GetLinkId(),
 		from.parent.id, from.idx, to.parent.id, to.idx)
 }
 

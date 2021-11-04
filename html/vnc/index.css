@@ -11,3 +11,16 @@
 #cad {
     float: right;
 }
+#info {
+    float: right;
+    margin-right: 5px;
+}
+#closed {
+    color: red;
+    float: right;
+    margin-right: 5px;
+    font-weight: bold;
+}
+label, span {
+    line-height: 38px;
+}

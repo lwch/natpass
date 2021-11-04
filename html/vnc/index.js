@@ -26,6 +26,7 @@ var page = {
             page.id = ret;
             page.ws = new WebSocket('ws://'+location.host+'/ws/'+ret);
             page.ws.onmessage = page.render;
+            page.ws.onclose = page.closed;
         });
     },
     render: function(e) {
@@ -200,6 +201,8 @@ var page = {
             key = '.';
         } else if (e.which == 191) {
             key = '/';
+        } else if (e.which == 91) {
+            key = 'cmd';
         }
         page.ws.send(JSON.stringify({
             action: 'keyboard',
@@ -216,6 +219,9 @@ var page = {
         page.fps = 0;
         page.bandwidth = 0;
         $('#info').text(str);
+    },
+    closed: function() {
+        $('#closed').css('display', 'inline-block');
     },
     canvas: undefined,
     ctx: undefined,

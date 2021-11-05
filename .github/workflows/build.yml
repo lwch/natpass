@@ -37,8 +37,10 @@ jobs:
 
       - name: Lint
         run: |
-          go install golang.org/x/lint/golint
+          go install golang.org/x/lint/golint@latest
           golint -set_exit_status code/...
+          go install github.com/gordonklaus/ineffassign@latest
+          ineffassign ./...
 
       - name: Build Server
         run: go build -v code/server/main.go

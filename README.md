@@ -58,6 +58,6 @@ windows11远程桌面
 2. ~~通用的connect、connect_response、disconnect消息~~
 3. ~~所有隧道的dashboard页面~~
 4. 文件传输
-5. web远程桌面
+5. ~web远程桌面~
 6. ~~流量监控统计页面，server还是client?~~
 7. web端管理tunnel

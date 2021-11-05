@@ -9,7 +9,9 @@ import (
 	"natpass/code/client/tunnel"
 	"natpass/code/client/tunnel/reverse"
 	"natpass/code/client/tunnel/shell"
+	"natpass/code/client/tunnel/vnc"
 	"natpass/code/network"
+	"natpass/code/utils"
 	"os"
 	"path/filepath"
 	rt "runtime"
@@ -38,7 +40,8 @@ func showVersion() {
 }
 
 type app struct {
-	cfg *global.Configure
+	confDir string
+	cfg     *global.Configure
 }
 
 func (a *app) Start(s service.Service) error {
@@ -51,7 +54,11 @@ func (a *app) run() {
 	// 	http.ListenAndServe(":9000", nil)
 	// }()
 
-	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
+	stdout := true
+	if rt.GOOS == "windows" {
+		stdout = false
+	}
+	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, stdout)
 	defer logging.Flush()
 
 	pl := pool.New(a.cfg)
@@ -67,6 +74,10 @@ func (a *app) run() {
 			sh := shell.New(t)
 			mgr.Add(sh)
 			go sh.Handle(pl)
+		case "vnc":
+			v := vnc.New(t)
+			mgr.Add(v)
+			go v.Handle(pl)
 		}
 	}
 
@@ -91,6 +102,8 @@ func (a *app) run() {
 							connect(mgr, conn, msg)
 						case network.ConnectRequest_shell:
 							shellCreate(mgr, conn, msg)
+						case network.ConnectRequest_vnc:
+							vncCreate(a.confDir, mgr, conn, msg)
 						}
 					default:
 						linkID = msg.GetLinkId()
@@ -124,6 +137,9 @@ func main() {
 	conf := flag.String("conf", "", "configure file path")
 	version := flag.Bool("version", false, "show version info")
 	act := flag.String("action", "", "install or uninstall")
+	name := flag.String("name", "", "tunnel name")
+	vport := flag.Uint("vport", 6155, "vnc worker listen port")
+	vcursor := flag.Bool("vcursor", false, "vnc show cursor")
 	flag.Parse()
 
 	if *version {
@@ -135,6 +151,11 @@ func main() {
 		fmt.Println("missing -conf param")
 		os.Exit(1)
 	}
+
+	// for test
+	// work := worker.NewWorker()
+	// work.TestCapture()
+	// return
 
 	dir, err := filepath.Abs(*conf)
 	runtime.Assert(err)
@@ -155,7 +176,22 @@ func main() {
 
 	cfg := global.LoadConf(*conf)
 
-	app := &app{cfg: cfg}
+	if *act == "vnc.worker" {
+		defer utils.Recover("vnc.worker")
+		stdout := true
+		if rt.GOOS == "windows" {
+			stdout = false
+		}
+		// go func() {
+		// 	http.ListenAndServe(":9001", nil)
+		// }()
+		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc."+*name, int(cfg.LogSize.Bytes()), cfg.LogRotate, stdout)
+		defer logging.Flush()
+		vnc.RunWorker(uint16(*vport), *vcursor)
+		return
+	}
+
+	app := &app{confDir: *conf, cfg: cfg}
 	sv, err := service.New(app, appCfg)
 	runtime.Assert(err)
 

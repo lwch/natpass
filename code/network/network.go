@@ -36,30 +36,30 @@ func (c *Conn) Close() {
 }
 
 // ReadMessage read message with timeout
-func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, error) {
+func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, uint16, error) {
 	c.lockRead.Lock()
 	defer c.lockRead.Unlock()
 	c.c.SetReadDeadline(time.Now().Add(timeout))
 	_, err := io.ReadFull(c.c, c.sizeRead[:])
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	size := binary.BigEndian.Uint16(c.sizeRead[:])
 	enc := binary.BigEndian.Uint32(c.sizeRead[2:])
 	buf := make([]byte, size)
 	_, err = io.ReadFull(c.c, buf)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	if crc32.ChecksumIEEE(buf) != enc {
-		return nil, errChecksum
+		return nil, 0, errChecksum
 	}
 	var msg Msg
 	err = proto.Unmarshal(buf, &msg)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return &msg, nil
+	return &msg, size, nil
 }
 
 // WriteMessage write message with timeout

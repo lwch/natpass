@@ -31,7 +31,7 @@ func (c *client) run() {
 			logging.Info("%s-%d is not keepalived, links: %v", c.parent.id, c.idx, links)
 			return
 		}
-		msg, err := c.conn.ReadMessage(c.parent.parent.cfg.ReadTimeout)
+		msg, size, err := c.conn.ReadMessage(c.parent.parent.cfg.ReadTimeout)
 		if err != nil {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				continue
@@ -40,7 +40,7 @@ func (c *client) run() {
 			return
 		}
 		c.updated = time.Now()
-		c.parent.parent.onMessage(c, c.conn, msg)
+		c.parent.parent.onMessage(c, c.conn, msg, size)
 	}
 }
 

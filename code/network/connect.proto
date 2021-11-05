@@ -13,17 +13,25 @@ message connect_shell {
     repeated string env = 2;
 }
 
+message connect_vnc {
+    uint32     fps = 1;
+    uint32 quality = 2; // image quality, percent
+    bool    cursor = 3; // show cursor
+}
+
 message connect_request {
     enum type {
         tcp   = 0;
         udp   = 1;
         shell = 2;
+        vnc   = 3;
     }
     string name = 1;
     type  _type = 2;
     oneof payload {
         connect_addr   caddr = 10;
         connect_shell cshell = 11;
+        connect_vnc     cvnc = 12;
     }
 }
 

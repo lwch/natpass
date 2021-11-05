@@ -30,19 +30,6 @@ type Link struct {
 	recvPacket uint64
 }
 
-// NewLink create link
-func NewLink(parent *Shell, id, target string, remote *pool.Conn) *Link {
-	remote.AddLink(id)
-	logging.Info("create shell %s for tunnel %s on connection %d",
-		id, parent.Name, remote.Idx)
-	return &Link{
-		parent: parent,
-		id:     id,
-		target: target,
-		remote: remote,
-	}
-}
-
 // GetID get link id
 func (link *Link) GetID() string {
 	return link.id

@@ -42,6 +42,55 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 				},
 			},
 		}
+	case "vnc":
+		fps := cfg.Fps
+		if fps > 50 {
+			fps = 50
+		} else if fps == 0 {
+			fps = 10
+		}
+		msg.Payload = &network.Msg_Creq{
+			Creq: &network.ConnectRequest{
+				Name:  cfg.Name,
+				XType: network.ConnectRequest_vnc,
+				Payload: &network.ConnectRequest_Cvnc{
+					Cvnc: &network.ConnectVnc{
+						Fps: cfg.Fps,
+					},
+				},
+			},
+		}
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}
+
+// SendConnectVnc send connect vnc request message
+func (conn *Conn) SendConnectVnc(id string, cfg global.Tunnel, quality uint64, showCursor bool) {
+	var msg network.Msg
+	msg.To = cfg.Target
+	msg.XType = network.Msg_connect_req
+	msg.LinkId = id
+	fps := cfg.Fps
+	if fps > 50 {
+		fps = 50
+	} else if fps == 0 {
+		fps = 10
+	}
+	msg.Payload = &network.Msg_Creq{
+		Creq: &network.ConnectRequest{
+			Name:  cfg.Name,
+			XType: network.ConnectRequest_vnc,
+			Payload: &network.ConnectRequest_Cvnc{
+				Cvnc: &network.ConnectVnc{
+					Fps:     cfg.Fps,
+					Quality: uint32(quality),
+					Cursor:  showCursor,
+				},
+			},
+		},
 	}
 	select {
 	case conn.write <- &msg:

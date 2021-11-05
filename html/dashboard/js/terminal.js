@@ -14,7 +14,8 @@ var page = {
         $.get('/api/tunnels', function(ret) {
             $('#terms').empty();
             $.each(ret, function(_, tunnel) {
-                if (tunnel.type != 'shell') {
+                if (tunnel.type != 'shell' &&
+                    tunnel.type != 'vnc') {
                     return;
                 }
                 $('#terms').append($(`<option value="${tunnel.port}">${tunnel.name}</option>`));
@@ -44,7 +45,7 @@ var page = {
         var str = `
         <div class="tab-pane fade show active" id="tab-${idx}">
             <iframe src="http://${location.hostname}:${$('#terms').val()}"
-                    style="width:100%;min-height:500px"></iframe>
+                    style="width:100%;min-height:800px"></iframe>
         </div>`;
         var obj = $(str);
         $('#tab-content').append(obj);

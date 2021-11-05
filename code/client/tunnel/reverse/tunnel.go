@@ -28,6 +28,26 @@ func New(cfg global.Tunnel) *Tunnel {
 	}
 }
 
+// NewLink new link
+func (tn *Tunnel) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) tunnel.Link {
+	remoteConn.AddLink(id)
+	logging.Info("create link %s for reverse %s on connection %d",
+		id, tn.Name, remoteConn.Idx)
+	link := &Link{
+		parent:    tn,
+		id:        id,
+		target:    remote,
+		targetIdx: remoteIdx,
+		local:     localConn,
+		remote:    remoteConn,
+		OnWork:    make(chan struct{}),
+	}
+	tn.Lock()
+	tn.links[link.id] = link
+	tn.Unlock()
+	return link
+}
+
 // GetName get reverse tunnel name
 func (tn *Tunnel) GetName() string {
 	return tn.Name
@@ -106,10 +126,7 @@ func (tn *Tunnel) handleTCP(pool *pool.Pool) {
 			logging.Error("no connection available")
 			continue
 		}
-		link := NewLink(tn, id, tn.cfg.Target, conn, remote)
-		tn.Lock()
-		tn.links[id] = link
-		tn.Unlock()
+		link := tn.NewLink(id, tn.cfg.Target, 0, conn, remote).(*Link)
 		remote.SendConnectReq(id, tn.cfg)
 		link.Forward()
 	}

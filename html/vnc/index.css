@@ -1,0 +1,26 @@
+.container-fluid {
+    margin-top: 10px;
+}
+#quality {
+    width: 120px;
+    display: inline-block;
+}
+#vnc {
+    margin-top: 10px;
+}
+#cad {
+    float: right;
+}
+#info {
+    float: right;
+    margin-right: 5px;
+}
+#closed {
+    color: red;
+    float: right;
+    margin-right: 5px;
+    font-weight: bold;
+}
+label, span {
+    line-height: 38px;
+}

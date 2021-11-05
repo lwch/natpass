@@ -19,13 +19,16 @@ import (
 	"github.com/lwch/runtime"
 )
 
-const version = "0.5.0"
+var version = "0.0.0"
+
 const buildDir = "tmp"
 const releaseDir = "release"
 
 type target struct {
 	os      string
 	arch    string
+	cc      string
+	cxx     string
 	ext     string
 	packExt string
 }
@@ -33,21 +36,76 @@ type target struct {
 // go tool dist list
 var targets = []target{
 	// darwin
-	{"darwin", "amd64", "", ".tar.gz"},
-	{"darwin", "arm64", "", ".tar.gz"},
+	{
+		os:      "darwin",
+		arch:    "amd64",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "darwin",
+		arch:    "arm64",
+		packExt: ".tar.gz",
+	},
 	// linux
-	{"linux", "386", "", ".tar.gz"},
-	{"linux", "amd64", "", ".tar.gz"},
-	{"linux", "arm", "", ".tar.gz"},
-	{"linux", "arm64", "", ".tar.gz"},
+	{
+		os:      "linux",
+		arch:    "386",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "linux",
+		arch:    "amd64",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "linux",
+		arch:    "arm",
+		packExt: ".tar.gz",
+	},
+	{
+		os:      "linux",
+		arch:    "arm64",
+		packExt: ".tar.gz",
+	},
 	// windows
-	{"windows", "386", ".exe", ".zip"},
-	{"windows", "amd64", ".exe", ".zip"},
-	{"windows", "arm", ".exe", ".zip"},
-	{"windows", "arm64", ".exe", ".zip"},
+	{
+		os:   "windows",
+		arch: "386",
+		cc:   "i686-w64-mingw32-gcc", cxx: "i686-w64-mingw32-g++",
+		ext: ".exe", packExt: ".zip",
+	},
+	{
+		os:   "windows",
+		arch: "amd64",
+		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
+		ext: ".exe", packExt: ".zip",
+	},
+	{
+		os:   "windows",
+		arch: "arm",
+		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
+		ext: ".exe", packExt: ".zip",
+	},
+	{
+		os:   "windows",
+		arch: "arm64",
+		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
+		ext: ".exe", packExt: ".zip",
+	},
 }
 
 func main() {
+	if v, ok := os.LookupEnv("BUILD_VERSION"); ok {
+		version = v
+	}
+
+	logging.Info("go env...")
+	cmd := exec.Command("go", "env")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Env = os.Environ()
+	runtime.Assert(cmd.Run())
+
 	os.RemoveAll(releaseDir)
 	runtime.Assert(os.MkdirAll(releaseDir, 0755))
 	bindata()
@@ -63,6 +121,15 @@ func bindata() {
 		"-o", "code/client/tunnel/shell/assets.go",
 		"-prefix", "html/shell",
 		"html/shell/...")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	runtime.Assert(cmd.Run())
+
+	cmd = exec.Command("go", "run", "contrib/bindata/main.go",
+		"-pkg", "vnc",
+		"-o", "code/client/tunnel/vnc/assets.go",
+		"-prefix", "html/vnc",
+		"html/vnc/...")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	runtime.Assert(cmd.Run())
@@ -98,7 +165,8 @@ func build(t target) {
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
 		"-X 'main.buildTime=" + buildTime() + "' " +
-		"-X 'main.version=" + version + "'"
+		"-X 'main.version=" + version + "' " +
+		"--extldflags '-static -fpic -lssp'"
 
 	logging.Info("build server...")
 	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
@@ -113,16 +181,23 @@ func build(t target) {
 	runtime.Assert(cmd.Run())
 
 	logging.Info("build client...")
-	cmd = exec.Command("go", "build", "-o", path.Join(buildDir, "np-cli"+t.ext),
-		"-ldflags", ldflags,
+	env := append(os.Environ(),
+		fmt.Sprintf("GOOS=%s", t.os),
+		fmt.Sprintf("GOARCH=%s", t.arch),
+		fmt.Sprintf("CC=%s", t.cc),
+		fmt.Sprintf("CXX=%s", t.cxx))
+	args := []string{"build", "-o", path.Join(buildDir, "np-cli"+t.ext), "-ldflags", ldflags}
+	if t.os == "windows" && !strings.Contains(t.arch, "arm") {
+		args = append(args, "-tags", "vnc")
+		env = append(env, "CGO_ENABLED=1")
+	}
+	args = append(args,
 		path.Join("code", "client", "main.go"),
 		path.Join("code", "client", "connect.go"))
+	cmd = exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Env = append(os.Environ(),
-		"CGO_ENABLED=0",
-		fmt.Sprintf("GOOS=%s", t.os),
-		fmt.Sprintf("GOARCH=%s", t.arch))
+	cmd.Env = env
 	runtime.Assert(cmd.Run())
 
 	logging.Info("packing...")
@@ -241,6 +316,9 @@ func packZip(src, dst string) {
 		if path == src {
 			return nil
 		}
+		if info.IsDir() {
+			return nil
+		}
 		dst := strings.TrimPrefix(path, src)
 		dst = filepath.Join("natpass_"+version, dst)
 		hdr, err := zip.FileInfoHeader(info)
@@ -251,9 +329,6 @@ func packZip(src, dst string) {
 		w, err := zw.CreateHeader(hdr)
 		if err != nil {
 			return err
-		}
-		if info.IsDir() {
-			return nil
 		}
 		f, err = os.Open(path)
 		if err != nil {

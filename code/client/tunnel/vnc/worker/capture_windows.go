@@ -60,28 +60,47 @@ func (worker *Worker) capture() error {
 		}
 	}
 	// logging.Info("width=%d, height=%d, bits=%d", info.width, info.height, info.bits)
+	free, err := worker.bitblt()
+	if err != nil {
+		return err
+	}
+	defer worker.copyImageData(hdc, bitmap)
+	return worker.drawCursor()
+}
+
+func (worker *Worker) bitblt() (func(), error) {
 	memDC, _, err := syscall.Syscall(define.FuncCreateCompatibleDC, 1, hdc, 0, 0)
 	if memDC == 0 {
 		return errors.New("create dc: " + err.Error())
 	}
-	defer syscall.Syscall(define.FuncDeleteDC, 1, memDC, 0, 0)
 	bitmap, _, err := syscall.Syscall(define.FuncCreateCompatibleBitmap, 3, hdc,
 		uintptr(worker.info.width), uintptr(worker.info.height))
 	if bitmap == 0 {
+		syscall.Syscall(define.FuncDeleteDC, 1, memDC, 0, 0)
 		return errors.New("create bitmap: " + err.Error())
 	}
-	defer syscall.Syscall(define.FuncDeleteObject, 1, bitmap, 0, 0)
 	oldDC, _, err := syscall.Syscall(define.FuncSelectObject, 2, memDC, bitmap, 0)
 	if oldDC == 0 {
+		syscall.Syscall(define.FuncDeleteObject, 1, bitmap, 0, 0)
+		syscall.Syscall(define.FuncDeleteDC, 1, memDC, 0, 0)
 		return errors.New("select object: " + err.Error())
 	}
-	defer syscall.Syscall(define.FuncSelectObject, 2, memDC, oldDC, 0)
 	ok, _, err := syscall.Syscall9(define.FuncBitBlt, 9, memDC, 0, 0,
 		uintptr(worker.info.width), uintptr(worker.info.height), hdc, 0, 0, define.SRCCOPY)
 	if ok == 0 {
+		syscall.Syscall(define.FuncSelectObject, 2, memDC, oldDC, 0)
+		syscall.Syscall(define.FuncDeleteObject, 1, bitmap, 0, 0)
+		syscall.Syscall(define.FuncDeleteDC, 1, memDC, 0, 0)
 		return errors.New("bitblt: " + err.Error())
 	}
-	defer worker.copyImageData(hdc, bitmap)
+	return func() {
+		syscall.Syscall(define.FuncSelectObject, 2, memDC, oldDC, 0)
+		syscall.Syscall(define.FuncDeleteObject, 1, bitmap, 0, 0)
+		syscall.Syscall(define.FuncDeleteDC, 1, memDC, 0, 0)
+	}, nil
+}
+
+func (worker *Worker) drawCursor() error {
 	if !worker.showCursor {
 		return nil
 	}

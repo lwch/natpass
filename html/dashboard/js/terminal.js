@@ -45,7 +45,7 @@ var page = {
         var str = `
         <div class="tab-pane fade show active" id="tab-${idx}">
             <iframe src="http://${location.hostname}:${$('#terms').val()}"
-                    style="width:100%;min-height:800px"></iframe>
+                    style="width:100%;min-height:800px" allowfullscreen></iframe>
         </div>`;
         var obj = $(str);
         $('#tab-content').append(obj);

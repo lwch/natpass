@@ -55,7 +55,7 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 				XType: network.ConnectRequest_vnc,
 				Payload: &network.ConnectRequest_Cvnc{
 					Cvnc: &network.ConnectVnc{
-						Fps: cfg.Fps,
+						Fps: fps,
 					},
 				},
 			},
@@ -85,7 +85,7 @@ func (conn *Conn) SendConnectVnc(id string, cfg global.Tunnel, quality uint64, s
 			XType: network.ConnectRequest_vnc,
 			Payload: &network.ConnectRequest_Cvnc{
 				Cvnc: &network.ConnectVnc{
-					Fps:     cfg.Fps,
+					Fps:     fps,
 					Quality: uint32(quality),
 					Cursor:  showCursor,
 				},

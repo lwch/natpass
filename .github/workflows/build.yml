@@ -21,10 +21,6 @@ jobs:
           - macos-10.15
           - macos-11
         go:
-          - '1.12'
-          - '1.13'
-          - '1.14'
-          - '1.15'
           - '1.16'
           - '1.17'
     steps:
@@ -37,8 +33,10 @@ jobs:
 
       - name: Lint
         run: |
-          go install golang.org/x/lint/golint
+          go install golang.org/x/lint/golint@latest
           golint -set_exit_status code/...
+          go install github.com/gordonklaus/ineffassign@latest
+          ineffassign ./...
 
       - name: Build Server
         run: go build -v code/server/main.go
@@ -48,4 +46,4 @@ jobs:
           go run contrib/bindata/main.go -pkg shell -o code/client/tunnel/shell/assets.go -prefix html/shell html/shell/...
           go run contrib/bindata/main.go -pkg vnc -o code/client/tunnel/vnc/assets.go -prefix html/vnc html/vnc/...
           go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go -prefix html/dashboard html/dashboard/...
-          go build -v code/client/main.go code/client/connect.go
+          go build -v code/client/main.go

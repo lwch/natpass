@@ -7,10 +7,12 @@
 }
 #vnc {
     margin-top: 10px;
+    object-fit: none;
 }
-#cad {
+#fullscreen {
     float: right;
 }
+#cad,
 #info {
     float: right;
     margin-right: 5px;
@@ -23,4 +25,8 @@
 }
 label, span {
     line-height: 38px;
+}
+#fullscreen {
+    cursor: pointer;
+    font-size: 38px;
 }

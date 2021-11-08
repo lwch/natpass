@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ import (
 	"github.com/lwch/logging"
 )
 
-func connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+func (a *App) connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	req := msg.GetCreq()
 	// TODO: 创建tcp连接移到reverse包中实现
 	dial := "tcp"
@@ -50,7 +50,7 @@ func connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	lk.OnWork <- struct{}{}
 }
 
-func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+func (a *App) shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.Get(create.GetName(), msg.GetFrom())
 	if tn == nil {
@@ -74,7 +74,7 @@ func shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	lk.Forward()
 }
 
-func vncCreate(confDir string, mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+func (a *App) vncCreate(confDir string, mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.Get(create.GetName(), msg.GetFrom())
 	if tn == nil {

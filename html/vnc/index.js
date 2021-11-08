@@ -15,6 +15,7 @@ var page = {
         $('#quality').change(page.ctrl);
         $('#show-cursor').change(page.ctrl);
         $('#cad').click(page.cad);
+        $('#fullscreen').click(page.fullscreen);
         // connect
         page.connect();
         setInterval(page.update_info, page.secs*1000);
@@ -126,9 +127,16 @@ var page = {
         return false;
     },
     get_pointer: function(e) {
+        var width = parseInt($(e.target).css('width'), 10);
+        var height = parseInt($(e.target).css('height'), 10);
+        var x = e.offsetX - ((width - page.canvas.width) >> 1);
+        var y = e.offsetY - ((height - page.canvas.height) >> 1);
+        // page.ctx.beginPath();
+        // page.ctx.arc(x, y, 5, 0, 2*Math.PI);
+        // page.ctx.stroke();
         return {
-            x: e.offsetX,
-            y: e.offsetY
+            x: x,
+            y: y
         }
     },
     keydown: function(e) {
@@ -223,6 +231,9 @@ var page = {
     closed: function() {
         $('#closed').css('display', 'inline-block');
         $('#info').css('display', 'none');
+    },
+    fullscreen: function() {
+        $('#vnc')[0].requestFullscreen();
     },
     canvas: undefined,
     ctx: undefined,

@@ -2,6 +2,8 @@
 
 cd $(dirname $(realpath $0))/../../
 
+BUILD_VERSION=${BUILD_VERSION:-0.0.0}
+
 HASH=`git log -n1 --pretty=format:%h`
 REVERSION=`git log --oneline|wc -l|tr -d ' '`
 BUILD_TIME=`date +'%Y-%m-%d %H:%M:%S'`

@@ -192,8 +192,7 @@ func build(t target) {
 		env = append(env, "CGO_ENABLED=1")
 	}
 	args = append(args,
-		path.Join("code", "client", "main.go"),
-		path.Join("code", "client", "connect.go"))
+		path.Join("code", "client", "main.go"))
 	cmd = exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

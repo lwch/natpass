@@ -1,9 +1,13 @@
+ARG APT_MIRROR=mirrors.ustc.edu.cn
+ARG LIBPNG_VERSION=1.6.37
+ARG GO_VERSION=1.17.3
+ARG GO_PROXY=https://goproxy.cn,direct
+
 # build libpng
 FROM debian:bullseye-slim as libpng
 
-ARG APT_MIRROR=mirrors.ustc.edu.cn
-ARG LIBPNG_VERSION=1.6.37
-ARG BUILD_VERSION=0.5.0
+ARG APT_MIRROR
+ARG LIBPNG_VERSION
 
 WORKDIR /build
 
@@ -25,9 +29,9 @@ RUN sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list && \
 
 FROM debian:bullseye-slim
 
-ARG APT_MIRROR=mirrors.ustc.edu.cn
-ARG GO_VERSION=1.17.2
-ARG GO_PROXY=https://goproxy.cn,direct
+ARG APT_MIRROR
+ARG GO_VERSION
+ARG GO_PROXY
 
 VOLUME /build
 WORKDIR /build

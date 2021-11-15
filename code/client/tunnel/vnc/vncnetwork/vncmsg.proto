@@ -37,8 +37,8 @@ message keyboard_data {
 }
 
 message scroll_data {
-    uint32 x = 1;
-    uint32 y = 2;
+    int32 x = 1;
+    int32 y = 2;
 }
 
 message vnc_msg {

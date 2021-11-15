@@ -53,6 +53,6 @@ message vnc_keyboard {
 }
 
 message vnc_scroll {
-    uint32 x = 1;
-    uint32 y = 2;
+    int32 x = 1;
+    int32 y = 2;
 }

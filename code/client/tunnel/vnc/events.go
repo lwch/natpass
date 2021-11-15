@@ -48,8 +48,8 @@ func (v *VNC) cadEvent(remote *pool.Conn) {
 func (v *VNC) scrollEvent(remote *pool.Conn, data []byte) {
 	var payload struct {
 		Payload struct {
-			X uint32 `json:"x"`
-			Y uint32 `json:"y"`
+			X int32 `json:"x"`
+			Y int32 `json:"y"`
 		} `json:"payload"`
 	}
 	err := json.Unmarshal(data, &payload)

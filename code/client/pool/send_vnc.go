@@ -137,7 +137,7 @@ func (conn *Conn) SendVNCCADEvent(to string, toIdx uint32, id string) {
 }
 
 // SendVNCScroll send vnc scroll event
-func (conn *Conn) SendVNCScroll(to string, toIdx uint32, id string, x, y uint32) {
+func (conn *Conn) SendVNCScroll(to string, toIdx uint32, id string, x, y int32) {
 	var msg network.Msg
 	msg.To = to
 	msg.ToIdx = toIdx

@@ -12,7 +12,7 @@ var page = {
         $('#vnc').contextmenu(page.right_click);
         $('#vnc').keydown(page.keydown);
         $('#vnc').keyup(page.keyup);
-        $('#vnc').on('mousewheel', page.wheel);
+        $('#vnc').mousewheel(page.wheel);
         $('#quality').change(page.ctrl);
         $('#show-cursor').change(page.ctrl);
         $('#cad').click(page.cad);
@@ -240,10 +240,10 @@ var page = {
         page.ws.send(JSON.stringify({
             action: 'scroll',
             payload: {
-                x: e.originalEvent.deltaX,
-                y: e.originalEvent.deltaY
+                x: parseInt(e.deltaX),
+                y: parseInt(e.deltaY)
             }
-        }))
+        }));
         return false;
     },
     canvas: undefined,

@@ -57,5 +57,5 @@ func runScroll(data *vncnetwork.ScrollData) {
 		return
 	}
 	defer detach()
-	robotgo.Scroll(int(data.X), int(data.Y))
+	robotgo.Scroll(int(data.X), int(data.Y), 1)
 }

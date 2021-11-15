@@ -51,3 +51,8 @@ message vnc_keyboard {
     // https://github.com/go-vgo/robotgo/blob/master/docs/keys.md
     string      key = 2;
 }
+
+message vnc_scroll {
+    uint32 x = 1;
+    uint32 y = 2;
+}

@@ -135,3 +135,22 @@ func (conn *Conn) SendVNCCADEvent(to string, toIdx uint32, id string) {
 	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
+
+// SendVNCScroll send vnc scroll event
+func (conn *Conn) SendVNCScroll(to string, toIdx uint32, id string, x, y uint32) {
+	var msg network.Msg
+	msg.To = to
+	msg.ToIdx = toIdx
+	msg.XType = network.Msg_vnc_scroll
+	msg.LinkId = id
+	msg.Payload = &network.Msg_Vscroll{
+		Vscroll: &network.VncScroll{
+			X: x,
+			Y: y,
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}

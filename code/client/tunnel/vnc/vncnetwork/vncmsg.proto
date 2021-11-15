@@ -36,6 +36,11 @@ message keyboard_data {
     string  key = 2;
 }
 
+message scroll_data {
+    uint32 x = 1;
+    uint32 y = 2;
+}
+
 message vnc_msg {
     enum type {
         capture_req    = 0;
@@ -43,6 +48,7 @@ message vnc_msg {
         mouse_event    = 2;
         keyboard_event = 3;
         set_cursor     = 4;
+        scroll_event   = 5;
     }
     type _type = 1;
     oneof payload {
@@ -50,5 +56,6 @@ message vnc_msg {
         mouse_data       mouse = 3;
         keyboard_data keyboard = 4;
         bool       show_cursor = 5;
+        scroll_data     scroll = 6;
     }
 }

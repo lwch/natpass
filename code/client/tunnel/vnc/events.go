@@ -44,3 +44,19 @@ func (v *VNC) keyboardEvent(remote *pool.Conn, data []byte) {
 func (v *VNC) cadEvent(remote *pool.Conn) {
 	remote.SendVNCCADEvent(v.link.target, v.link.targetIdx, v.link.id)
 }
+
+func (v *VNC) scrollEvent(remote *pool.Conn, data []byte) {
+	var payload struct {
+		Payload struct {
+			X int32 `json:"x"`
+			Y int32 `json:"y"`
+		} `json:"payload"`
+	}
+	err := json.Unmarshal(data, &payload)
+	if err != nil {
+		logging.Error("unmarshal: %v", err)
+		return
+	}
+	remote.SendVNCScroll(v.link.target, v.link.targetIdx, v.link.id,
+		payload.Payload.X, payload.Payload.Y)
+}

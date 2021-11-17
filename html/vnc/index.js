@@ -12,6 +12,7 @@ var page = {
         $('#vnc').contextmenu(page.right_click);
         $('#vnc').keydown(page.keydown);
         $('#vnc').keyup(page.keyup);
+        $('#vnc').mousewheel(page.wheel);
         $('#quality').change(page.ctrl);
         $('#show-cursor').change(page.ctrl);
         $('#cad').click(page.cad);
@@ -234,6 +235,16 @@ var page = {
     },
     fullscreen: function() {
         $('#vnc')[0].requestFullscreen();
+    },
+    wheel: function(e) {
+        page.ws.send(JSON.stringify({
+            action: 'scroll',
+            payload: {
+                x: parseInt(e.deltaX),
+                y: parseInt(e.deltaY)
+            }
+        }));
+        return false;
     },
     canvas: undefined,
     ctx: undefined,

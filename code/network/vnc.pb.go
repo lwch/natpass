@@ -415,6 +415,61 @@ func (x *VncKeyboard) GetKey() string {
 	return ""
 }
 
+type VncScroll struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	X int32 `protobuf:"varint,1,opt,name=x,proto3" json:"x,omitempty"`
+	Y int32 `protobuf:"varint,2,opt,name=y,proto3" json:"y,omitempty"`
+}
+
+func (x *VncScroll) Reset() {
+	*x = VncScroll{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_vnc_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *VncScroll) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VncScroll) ProtoMessage() {}
+
+func (x *VncScroll) ProtoReflect() protoreflect.Message {
+	mi := &file_vnc_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VncScroll.ProtoReflect.Descriptor instead.
+func (*VncScroll) Descriptor() ([]byte, []int) {
+	return file_vnc_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *VncScroll) GetX() int32 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *VncScroll) GetY() int32 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
 type VncImageInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -431,7 +486,7 @@ type VncImageInfo struct {
 func (x *VncImageInfo) Reset() {
 	*x = VncImageInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vnc_proto_msgTypes[4]
+		mi := &file_vnc_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -444,7 +499,7 @@ func (x *VncImageInfo) String() string {
 func (*VncImageInfo) ProtoMessage() {}
 
 func (x *VncImageInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_vnc_proto_msgTypes[4]
+	mi := &file_vnc_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -549,11 +604,14 @@ var file_vnc_proto_rawDesc = []byte{
 	0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x6e, 0x65, 0x74, 0x77,
 	0x6f, 0x72, 0x6b, 0x2e, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x04,
 	0x74, 0x79, 0x70, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x2a, 0x2c, 0x0a, 0x0a, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x12, 0x0c, 0x0a, 0x08, 0x75, 0x6e, 0x73, 0x65, 0x74, 0x5f, 0x73, 0x74,
-	0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x64, 0x6f, 0x77, 0x6e, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02,
-	0x75, 0x70, 0x10, 0x02, 0x42, 0x0c, 0x5a, 0x0a, 0x2e, 0x2f, 0x3b, 0x6e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x22, 0x28, 0x0a, 0x0a, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x63,
+	0x72, 0x6f, 0x6c, 0x6c, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
+	0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x01, 0x79,
+	0x2a, 0x2c, 0x0a, 0x0a, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0c,
+	0x0a, 0x08, 0x75, 0x6e, 0x73, 0x65, 0x74, 0x5f, 0x73, 0x74, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04,
+	0x64, 0x6f, 0x77, 0x6e, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x75, 0x70, 0x10, 0x02, 0x42, 0x0c,
+	0x5a, 0x0a, 0x2e, 0x2f, 0x3b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -569,7 +627,7 @@ func file_vnc_proto_rawDescGZIP() []byte {
 }
 
 var file_vnc_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_vnc_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_vnc_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_vnc_proto_goTypes = []interface{}{
 	(VncStatus)(0),        // 0: network.vnc_status
 	(VncImageEncoding)(0), // 1: network.vnc_image.encoding
@@ -578,10 +636,11 @@ var file_vnc_proto_goTypes = []interface{}{
 	(*VncImage)(nil),      // 4: network.vnc_image
 	(*VncMouse)(nil),      // 5: network.vnc_mouse
 	(*VncKeyboard)(nil),   // 6: network.vnc_keyboard
-	(*VncImageInfo)(nil),  // 7: network.vnc_image.info
+	(*VncScroll)(nil),     // 7: network.vnc_scroll
+	(*VncImageInfo)(nil),  // 8: network.vnc_image.info
 }
 var file_vnc_proto_depIdxs = []int32{
-	7, // 0: network.vnc_image._info:type_name -> network.vnc_image.info
+	8, // 0: network.vnc_image._info:type_name -> network.vnc_image.info
 	1, // 1: network.vnc_image.encode:type_name -> network.vnc_image.encoding
 	0, // 2: network.vnc_mouse.type:type_name -> network.vnc_status
 	2, // 3: network.vnc_mouse.btn:type_name -> network.vnc_mouse.button
@@ -648,6 +707,18 @@ func file_vnc_proto_init() {
 			}
 		}
 		file_vnc_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*VncScroll); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_vnc_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*VncImageInfo); i {
 			case 0:
 				return &v.state
@@ -666,7 +737,7 @@ func file_vnc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_vnc_proto_rawDesc,
 			NumEnums:      3,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

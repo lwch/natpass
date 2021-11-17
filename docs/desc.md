@@ -62,4 +62,4 @@ server端配置(10.0.1.1)：
 
 ## 软件架构
 
-TODO
+![架构图](imgs/architecture.jpg)

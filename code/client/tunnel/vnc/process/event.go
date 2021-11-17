@@ -65,3 +65,16 @@ func (p *Process) SetCursor(b bool) {
 	}
 	p.chWrite <- &msg
 }
+
+// ScrollEvent dispatch scroll event to child process
+func (p *Process) ScrollEvent(data *network.VncScroll) {
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_scroll_event
+	msg.Payload = &vncnetwork.VncMsg_Scroll{
+		Scroll: &vncnetwork.ScrollData{
+			X: data.GetX(),
+			Y: data.GetY(),
+		},
+	}
+	p.chWrite <- &msg
+}

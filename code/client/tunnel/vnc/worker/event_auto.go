@@ -49,3 +49,13 @@ func runKeyboard(data *vncnetwork.KeyboardData) {
 		robotgo.KeyToggle(data.Key, "up")
 	}
 }
+
+func runScroll(data *vncnetwork.ScrollData) {
+	detach, err := attachDesktop()
+	if err != nil {
+		logging.Error("attach desktop: %v", err)
+		return
+	}
+	defer detach()
+	robotgo.Scroll(int(data.X), int(data.Y), 1)
+}

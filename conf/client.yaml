@@ -5,5 +5,5 @@ dashboard: # web面板
   listen: 0.0.0.0 # 监听地址
   port: 8080      # 监听端口号
 #include conf.d/*.yaml
-tunnel: # tunnel列表
-  #include tunnel.d/*.yaml
+rules: # rule列表
+  #include rule.d/*.yaml

@@ -36,7 +36,7 @@ server端配置(10.0.1.1)：
       dir: /opt/natpass/logs # 路径
       size: 50M   # 单个文件大小
       rotate: 7   # 保留数量
-    tunnel:                         # 远端tunnel列表可为空
+    rules:                          # 远端rule列表可为空
       - name: rdp                   # 链路名称
         target: home                # 目标客户端ID
         type: tcp                   # 连接类型tcp或udp

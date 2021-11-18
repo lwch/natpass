@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel"
+	"natpass/code/client/rule"
 	"net/http"
 )
 
@@ -12,12 +12,12 @@ import (
 type Dashboard struct {
 	cfg     *global.Configure
 	pl      *pool.Pool
-	mgr     *tunnel.Mgr
+	mgr     *rule.Mgr
 	Version string
 }
 
 // New create dashboard object
-func New(cfg *global.Configure, pl *pool.Pool, mgr *tunnel.Mgr, version string) *Dashboard {
+func New(cfg *global.Configure, pl *pool.Pool, mgr *rule.Mgr, version string) *Dashboard {
 	return &Dashboard{
 		cfg:     cfg,
 		pl:      pl,
@@ -30,7 +30,7 @@ func New(cfg *global.Configure, pl *pool.Pool, mgr *tunnel.Mgr, version string) 
 func (db *Dashboard) ListenAndServe(addr string, port uint16) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/info", db.Info)
-	mux.HandleFunc("/api/tunnels", db.Tunnels)
+	mux.HandleFunc("/api/rules", db.Rules)
 	mux.HandleFunc("/", db.Render)
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", addr, port),

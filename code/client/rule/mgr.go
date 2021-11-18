@@ -1,4 +1,4 @@
-package tunnel
+package rule
 
 import (
 	"natpass/code/client/pool"
@@ -15,8 +15,8 @@ type Link interface {
 	GetPackets() (uint64, uint64)
 }
 
-// Tunnel tunnel interface
-type Tunnel interface {
+// Rule rule interface
+type Rule interface {
 	NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) Link
 	GetName() string
 	GetRemote() string
@@ -26,29 +26,29 @@ type Tunnel interface {
 	GetLinks() []Link
 }
 
-// Mgr tunnel manager
+// Mgr rule manager
 type Mgr struct {
 	sync.RWMutex
-	tunnels []Tunnel
+	rules []Rule
 }
 
-// New new tunnel manager
+// New new rule manager
 func New() *Mgr {
 	return &Mgr{}
 }
 
-// Add add tunnel
-func (mgr *Mgr) Add(tunnel Tunnel) {
+// Add add rule
+func (mgr *Mgr) Add(rule Rule) {
 	mgr.Lock()
 	defer mgr.Unlock()
-	mgr.tunnels = append(mgr.tunnels, tunnel)
+	mgr.rules = append(mgr.rules, rule)
 }
 
-// Get get tunnel by name
-func (mgr *Mgr) Get(name, remote string) Tunnel {
+// Get get rule by name
+func (mgr *Mgr) Get(name, remote string) Rule {
 	mgr.RLock()
 	defer mgr.RUnlock()
-	for _, t := range mgr.tunnels {
+	for _, t := range mgr.rules {
 		if t.GetName() == name && t.GetRemote() == remote {
 			return t
 		}
@@ -56,11 +56,11 @@ func (mgr *Mgr) Get(name, remote string) Tunnel {
 	return nil
 }
 
-// Range range tunnels
-func (mgr *Mgr) Range(fn func(Tunnel)) {
+// Range range rules
+func (mgr *Mgr) Range(fn func(Rule)) {
 	mgr.RLock()
 	defer mgr.RUnlock()
-	for _, t := range mgr.tunnels {
+	for _, t := range mgr.rules {
 		fn(t)
 	}
 }

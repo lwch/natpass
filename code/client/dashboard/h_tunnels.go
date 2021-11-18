@@ -2,12 +2,12 @@ package dashboard
 
 import (
 	"encoding/json"
-	"natpass/code/client/tunnel"
+	"natpass/code/client/rule"
 	"net/http"
 )
 
-// Tunnels get tunnels list
-func (db *Dashboard) Tunnels(w http.ResponseWriter, r *http.Request) {
+// Rules get rule list
+func (db *Dashboard) Rules(w http.ResponseWriter, r *http.Request) {
 	type link struct {
 		ID         string `json:"id"`
 		SendBytes  uint64 `json:"send_bytes"`
@@ -23,7 +23,7 @@ func (db *Dashboard) Tunnels(w http.ResponseWriter, r *http.Request) {
 		Links  []link `json:"links"`
 	}
 	var ret []item
-	db.mgr.Range(func(t tunnel.Tunnel) {
+	db.mgr.Range(func(t rule.Rule) {
 		var it item
 		it.Name = t.GetName()
 		it.Remote = t.GetRemote()

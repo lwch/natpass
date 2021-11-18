@@ -3,7 +3,7 @@ package process
 import (
 	"errors"
 	"fmt"
-	"natpass/code/client/tunnel/vnc/vncnetwork"
+	"natpass/code/client/rule/vnc/vncnetwork"
 	"natpass/code/utils"
 	"net"
 	"net/http"

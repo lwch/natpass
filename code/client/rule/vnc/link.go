@@ -5,7 +5,7 @@ import (
 	"image"
 	"image/jpeg"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel/vnc/process"
+	"natpass/code/client/rule/vnc/process"
 	"natpass/code/network"
 	"natpass/code/utils"
 	"time"

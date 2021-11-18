@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel"
+	"natpass/code/client/rule"
 	"net"
 	"net/http"
 	"sync"
@@ -17,12 +17,12 @@ import (
 type VNC struct {
 	sync.RWMutex
 	Name string
-	cfg  global.Tunnel
+	cfg  global.Rule
 	link *Link
 }
 
 // New new vnc
-func New(cfg global.Tunnel) *VNC {
+func New(cfg global.Rule) *VNC {
 	return &VNC{
 		Name: cfg.Name,
 		cfg:  cfg,
@@ -30,9 +30,9 @@ func New(cfg global.Tunnel) *VNC {
 }
 
 // NewLink new link
-func (v *VNC) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) tunnel.Link {
+func (v *VNC) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) rule.Link {
 	remoteConn.AddLink(id)
-	logging.Info("create link %s for tunnel %s on connection %d",
+	logging.Info("create link %s for rule %s on connection %d",
 		id, v.Name, remoteConn.Idx)
 	link := &Link{
 		parent:    v,
@@ -48,25 +48,25 @@ func (v *VNC) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, r
 	return link
 }
 
-// GetName get vnc tunnel name
+// GetName get vnc rule name
 func (v *VNC) GetName() string {
 	return v.Name
 }
 
-// GetTypeName get vnc tunnel type name
+// GetTypeName get vnc rule type name
 func (v *VNC) GetTypeName() string {
 	return "vnc"
 }
 
-// GetTarget get target of this tunnel
+// GetTarget get target of this rule
 func (v *VNC) GetTarget() string {
 	return v.cfg.Target
 }
 
-// GetLinks get tunnel links
-func (v *VNC) GetLinks() []tunnel.Link {
+// GetLinks get rule links
+func (v *VNC) GetLinks() []rule.Link {
 	if v.link != nil {
-		return []tunnel.Link{v.link}
+		return []rule.Link{v.link}
 	}
 	return nil
 }
@@ -85,7 +85,7 @@ func (v *VNC) GetPort() uint16 {
 func (v *VNC) Handle(pl *pool.Pool) {
 	defer func() {
 		if err := recover(); err != nil {
-			logging.Error("close shell tunnel: %s, err=%v", v.Name, err)
+			logging.Error("close shell: %s, err=%v", v.Name, err)
 		}
 	}()
 	pf := func(cb func(*pool.Pool, http.ResponseWriter, *http.Request)) http.HandlerFunc {

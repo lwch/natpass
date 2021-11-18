@@ -3,7 +3,7 @@
 
 package worker
 
-import "natpass/code/client/tunnel/vnc/vncnetwork"
+import "natpass/code/client/rule/vnc/vncnetwork"
 
 func runMouse(data *vncnetwork.MouseData) {
 }

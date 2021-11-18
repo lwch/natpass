@@ -1,7 +1,7 @@
 package process
 
 import (
-	"natpass/code/client/tunnel/vnc/vncnetwork"
+	"natpass/code/client/rule/vnc/vncnetwork"
 	"natpass/code/network"
 )
 

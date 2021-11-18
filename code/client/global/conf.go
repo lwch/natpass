@@ -2,6 +2,7 @@ package global
 
 import (
 	"crypto/md5"
+	"fmt"
 	"natpass/code/utils"
 	"time"
 
@@ -9,8 +10,8 @@ import (
 	"github.com/lwch/yaml"
 )
 
-// Tunnel tunnel config
-type Tunnel struct {
+// Rule rule config
+type Rule struct {
 	Name       string `yaml:"name"`
 	Target     string `yaml:"target"`
 	Type       string `yaml:"type"`
@@ -39,7 +40,7 @@ type Configure struct {
 	DashboardEnabled bool
 	DashboardListen  string
 	DashboardPort    uint16
-	Tunnels          []Tunnel
+	Rules            []Rule
 }
 
 // LoadConf load configure file
@@ -63,16 +64,16 @@ func LoadConf(dir string) *Configure {
 			Listen  string `yaml:"listen"`
 			Port    uint16 `yaml:"port"`
 		} `yaml:"dashboard"`
-		Tunnel []Tunnel `yaml:"tunnel"`
+		Rules []Rule `yaml:"rules"`
 	}
 	runtime.Assert(yaml.Decode(dir, &cfg))
-	for i, t := range cfg.Tunnel {
+	for i, t := range cfg.Rules {
 		switch t.Type {
-		case "tcp", "shell", "vnc":
+		case "shell", "vnc":
 		default:
-			t.Type = "udp"
+			panic(fmt.Sprintf("unsupported type: %s", t.Type))
 		}
-		cfg.Tunnel[i] = t
+		cfg.Rules[i] = t
 	}
 	if cfg.Link.Connections <= 0 {
 		cfg.Link.Connections = 3
@@ -96,6 +97,6 @@ func LoadConf(dir string) *Configure {
 		DashboardEnabled: cfg.Dashboard.Enabled,
 		DashboardListen:  cfg.Dashboard.Listen,
 		DashboardPort:    cfg.Dashboard.Port,
-		Tunnels:          cfg.Tunnel,
+		Rules:            cfg.Rules,
 	}
 }

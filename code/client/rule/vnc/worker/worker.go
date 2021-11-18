@@ -3,7 +3,7 @@ package worker
 import (
 	"image"
 	"image/jpeg"
-	"natpass/code/client/tunnel/vnc/vncnetwork"
+	"natpass/code/client/rule/vnc/vncnetwork"
 	"os"
 
 	"github.com/gorilla/websocket"

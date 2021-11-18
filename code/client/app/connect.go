@@ -1,60 +1,21 @@
 package app
 
 import (
-	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel"
-	"natpass/code/client/tunnel/reverse"
-	"natpass/code/client/tunnel/shell"
-	"natpass/code/client/tunnel/vnc"
+	"natpass/code/client/rule"
+	"natpass/code/client/rule/shell"
+	"natpass/code/client/rule/vnc"
 	"natpass/code/network"
-	"net"
-	"strconv"
 
 	"github.com/lwch/logging"
 )
 
-func (a *App) connect(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
-	req := msg.GetCreq()
-	// TODO: 创建tcp连接移到reverse包中实现
-	dial := "tcp"
-	if req.GetXType() == network.ConnectRequest_udp {
-		dial = "udp"
-	}
-	addr := req.GetCaddr()
-	link, err := net.Dial(dial, fmt.Sprintf("%s:%d", addr.GetAddr(), addr.GetPort()))
-	if err != nil {
-		logging.Error("connect to %s:%d failed, err=%v", addr.GetAddr(), addr.GetPort(), err)
-		conn.SendConnectError(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId(), err.Error())
-		return
-	}
-	host, pt, _ := net.SplitHostPort(link.LocalAddr().String())
-	port, _ := strconv.ParseUint(pt, 10, 16)
-	tn := mgr.Get(req.GetName(), msg.GetFrom())
-	if tn == nil {
-		tn = reverse.New(global.Tunnel{
-			Name:       req.GetName(),
-			Target:     msg.GetFrom(),
-			Type:       dial,
-			LocalAddr:  host,
-			LocalPort:  uint16(port),
-			RemoteAddr: addr.GetAddr(),
-			RemotePort: uint16(addr.GetPort()),
-		})
-		mgr.Add(tn)
-	}
-	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), link, conn).(*reverse.Link)
-	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
-	lk.Forward()
-	lk.OnWork <- struct{}{}
-}
-
-func (a *App) shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+func (a *App) shellCreate(mgr *rule.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.Get(create.GetName(), msg.GetFrom())
 	if tn == nil {
-		tn = shell.New(global.Tunnel{
+		tn = shell.New(global.Rule{
 			Name:   create.GetName(),
 			Target: msg.GetFrom(),
 			Type:   "shell",
@@ -74,11 +35,11 @@ func (a *App) shellCreate(mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
 	lk.Forward()
 }
 
-func (a *App) vncCreate(confDir string, mgr *tunnel.Mgr, conn *pool.Conn, msg *network.Msg) {
+func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *pool.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.Get(create.GetName(), msg.GetFrom())
 	if tn == nil {
-		tn = vnc.New(global.Tunnel{
+		tn = vnc.New(global.Rule{
 			Name:   create.GetName(),
 			Target: msg.GetFrom(),
 			Type:   "vnc",

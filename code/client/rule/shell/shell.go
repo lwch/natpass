@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel"
+	"natpass/code/client/rule"
 	"net"
 	"net/http"
 	"sync"
@@ -17,12 +17,12 @@ import (
 type Shell struct {
 	sync.RWMutex
 	Name  string
-	cfg   global.Tunnel
+	cfg   global.Rule
 	links map[string]*Link
 }
 
 // New new shell
-func New(cfg global.Tunnel) *Shell {
+func New(cfg global.Rule) *Shell {
 	return &Shell{
 		Name:  cfg.Name,
 		cfg:   cfg,
@@ -31,7 +31,7 @@ func New(cfg global.Tunnel) *Shell {
 }
 
 // NewLink new link
-func (shell *Shell) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) tunnel.Link {
+func (shell *Shell) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) rule.Link {
 	remoteConn.AddLink(id)
 	logging.Info("create link %s for shell %s on connection %d",
 		id, shell.Name, remoteConn.Idx)
@@ -48,24 +48,24 @@ func (shell *Shell) NewLink(id, remote string, remoteIdx uint32, localConn net.C
 	return link
 }
 
-// GetName get shell tunnel name
+// GetName get shell rule name
 func (shell *Shell) GetName() string {
 	return shell.Name
 }
 
-// GetTypeName get shell tunnel type name
+// GetTypeName get shell rule type name
 func (shell *Shell) GetTypeName() string {
 	return "shell"
 }
 
-// GetTarget get target of this tunnel
+// GetTarget get target of this rule
 func (shell *Shell) GetTarget() string {
 	return shell.cfg.Target
 }
 
-// GetLinks get tunnel links
-func (shell *Shell) GetLinks() []tunnel.Link {
-	ret := make([]tunnel.Link, 0, len(shell.links))
+// GetLinks get rule links
+func (shell *Shell) GetLinks() []rule.Link {
+	ret := make([]rule.Link, 0, len(shell.links))
 	shell.RLock()
 	for _, link := range shell.links {
 		ret = append(ret, link)
@@ -88,7 +88,7 @@ func (shell *Shell) GetPort() uint16 {
 func (shell *Shell) Handle(pl *pool.Pool) {
 	defer func() {
 		if err := recover(); err != nil {
-			logging.Error("close shell tunnel: %s, err=%v", shell.Name, err)
+			logging.Error("close shell: %s, err=%v", shell.Name, err)
 		}
 	}()
 	pf := func(cb func(*pool.Pool, http.ResponseWriter, *http.Request)) http.HandlerFunc {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"natpass/code/client/app"
 	"natpass/code/client/global"
-	"natpass/code/client/tunnel/vnc"
+	"natpass/code/client/rule/vnc"
 	"natpass/code/utils"
 	"os"
 	"path/filepath"

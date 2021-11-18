@@ -2,7 +2,7 @@ package vnc
 
 import (
 	"fmt"
-	"natpass/code/client/tunnel/vnc/worker"
+	"natpass/code/client/rule/vnc/worker"
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/runtime"

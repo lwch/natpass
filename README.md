@@ -10,7 +10,7 @@
 新一代主机管理工具，支持shell管理，支持远程桌面管理[实现原理](docs/desc.md)
 
 1. [如何部署](docs/startup.md)
-2. [隧道配置](docs/tunnel.md)
+2. [规则配置](docs/rules.md)
 
 功能与特性：
 

@@ -85,7 +85,7 @@ func (shell *Shell) remoteForward(id string, local *websocket.Conn) {
 			logging.Debug("remote read %d bytes: name=%s, id=%s",
 				len(msg.GetSdata().GetData()), shell.Name, id)
 		case network.Msg_disconnect:
-			logging.Info("shell %s on tunnel %s closed by remote",
+			logging.Info("shell %s by rule %s closed by remote",
 				link.id, link.parent.Name)
 			return
 		}

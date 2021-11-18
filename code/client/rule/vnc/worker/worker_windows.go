@@ -2,7 +2,7 @@ package worker
 
 import (
 	"fmt"
-	"natpass/code/client/tunnel/vnc/define"
+	"natpass/code/client/rule/vnc/define"
 	"runtime"
 	"syscall"
 

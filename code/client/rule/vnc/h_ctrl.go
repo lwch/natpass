@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-// Ctrl change vnc tunnel config
+// Ctrl change vnc rule config
 func (v *VNC) Ctrl(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	q := r.FormValue("quality")
 	s := r.FormValue("show_cursor")

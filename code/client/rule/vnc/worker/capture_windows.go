@@ -2,8 +2,8 @@ package worker
 
 import (
 	"errors"
-	"natpass/code/client/tunnel/vnc/define"
-	"natpass/code/client/tunnel/vnc/vncnetwork"
+	"natpass/code/client/rule/vnc/define"
+	"natpass/code/client/rule/vnc/vncnetwork"
 	"syscall"
 	"unsafe"
 

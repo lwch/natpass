@@ -4,7 +4,7 @@ import (
 	"natpass/code/client/dashboard"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	tunnel "natpass/code/client/rule"
+	"natpass/code/client/rule"
 	"natpass/code/client/rule/shell"
 	"natpass/code/client/rule/vnc"
 	"natpass/code/network"
@@ -52,7 +52,7 @@ func (a *App) run() {
 	defer logging.Flush()
 
 	pl := pool.New(a.cfg)
-	mgr := tunnel.New()
+	mgr := rule.New()
 
 	for _, t := range a.cfg.Rules {
 		switch t.Type {

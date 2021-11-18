@@ -1,7 +1,7 @@
 package process
 
 import (
-	"natpass/code/client/tunnel/vnc/define"
+	"natpass/code/client/rule/vnc/define"
 	"syscall"
 
 	"github.com/lwch/logging"

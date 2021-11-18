@@ -4,7 +4,7 @@
 package worker
 
 import (
-	"natpass/code/client/tunnel/vnc/vncnetwork"
+	"natpass/code/client/rule/vnc/vncnetwork"
 
 	"github.com/go-vgo/robotgo"
 	"github.com/lwch/logging"

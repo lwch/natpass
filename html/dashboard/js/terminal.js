@@ -11,14 +11,14 @@ var page = {
     },
     load: function(cb) {
         if (!cb) cb = function(){};
-        $.get('/api/tunnels', function(ret) {
+        $.get('/api/rules', function(ret) {
             $('#terms').empty();
-            $.each(ret, function(_, tunnel) {
-                if (tunnel.type != 'shell' &&
-                    tunnel.type != 'vnc') {
+            $.each(ret, function(_, rule) {
+                if (rule.type != 'shell' &&
+                    rule.type != 'vnc') {
                     return;
                 }
-                $('#terms').append($(`<option value="${tunnel.port}">${tunnel.name}</option>`));
+                $('#terms').append($(`<option value="${rule.port}">${rule.name}</option>`));
             });
             cb();
         });

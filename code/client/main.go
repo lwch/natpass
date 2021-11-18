@@ -38,7 +38,7 @@ func main() {
 	conf := flag.String("conf", "", "configure file path")
 	ver := flag.Bool("version", false, "show version info")
 	act := flag.String("action", "", "install or uninstall")
-	name := flag.String("name", "", "tunnel name")
+	name := flag.String("name", "", "rule name")
 	vport := flag.Uint("vport", 6155, "vnc worker listen port")
 	vcursor := flag.Bool("vcursor", false, "vnc show cursor")
 	flag.Parse()

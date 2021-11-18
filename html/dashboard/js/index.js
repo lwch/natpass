@@ -1,63 +1,63 @@
 var page = {
     init: function() {
-        $('#tunnel-type').change(page.render);
+        $('#rule-type').change(page.render);
         page.render();
         setInterval(page.render, 5000);
     },
     render: function() {
         page.render_cards();
-        page.render_tunnels();
+        page.render_rules();
     },
     render_cards: function() {
         $.get('/api/info', function(ret) {
             $('#cards').empty();
-            page.add_card('隧道总数', ret.tunnels);
+            page.add_card('规则总数', ret.rules);
             page.add_card('物理连接数', ret.physical_links);
             page.add_card('虚拟连接数', ret.virtual_links);
             page.add_card('终端会话', ret.sessions);
         });
     },
-    render_tunnels: function() {
-        $.get('/api/tunnels', function(ret) {
-            $('#tunnels tbody').empty();
-            var type = $('#tunnel-type').val();
-            $.each(ret, function(_, tunnel) {
-                if (type != 'all' && tunnel.type != type) {
+    render_rules: function() {
+        $.get('/api/rules', function(ret) {
+            $('#rules tbody').empty();
+            var type = $('#rule-type').val();
+            $.each(ret, function(_, rule) {
+                if (type != 'all' && rule.type != type) {
                     return;
                 }
                 var send_bytes = 0;
                 var send_packet = 0;
                 var recv_bytes = 0;
                 var recv_packet = 0;
-                $.each(tunnel.links, function(_, link) {
+                $.each(rule.links, function(_, link) {
                     send_bytes += link.send_bytes;
                     send_packet += link.send_packet;
                     recv_bytes += link.recv_bytes;
                     recv_packet += link.recv_packet;
                 });
                 var op = '';
-                switch (tunnel.type) {
+                switch (rule.type) {
                 case 'reverse':
                     op = `
-                    <a href="http://${location.hostname}:${tunnel.port}" target="_blank">http</a>
-                    <a href="https://${location.hostname}:${tunnel.port}" target="_blank">https</a>`;
+                    <a href="http://${location.hostname}:${rule.port}" target="_blank">http</a>
+                    <a href="https://${location.hostname}:${rule.port}" target="_blank">https</a>`;
                     break;
                 case 'shell':
                 case 'vnc':
-                    op = `<a href="http://${location.host}/terminal.html?name=${tunnel.name}" target="_blank">连接</a>`;
+                    op = `<a href="http://${location.host}/terminal.html?name=${rule.name}" target="_blank">连接</a>`;
                     break;
                 }
                 var str = `
                 <tr>
-                    <td>${tunnel.name}</td>
-                    <td>${tunnel.remote}</td>
-                    <td>${tunnel.type}</td>
-                    <td>${tunnel.links?tunnel.links.length:0}</td>
+                    <td>${rule.name}</td>
+                    <td>${rule.remote}</td>
+                    <td>${rule.type}</td>
+                    <td>${rule.links?rule.links.length:0}</td>
                     <td>${humanize.bytes(recv_bytes)}/${humanize.bytes(send_bytes)}</td>
                     <td>${recv_packet}/${send_packet}</td>
                     <td>${op}</td>
                 </tr>`;
-                $('#tunnels tbody').append($(str));
+                $('#rules tbody').append($(str));
             });
         });
     },

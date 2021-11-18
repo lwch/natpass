@@ -1,5 +1,6 @@
 var page = {
     init: function() {
+        $('#tunnel-type').change(page.render);
         page.render();
         setInterval(page.render, 5000);
     },
@@ -19,7 +20,11 @@ var page = {
     render_tunnels: function() {
         $.get('/api/tunnels', function(ret) {
             $('#tunnels tbody').empty();
+            var type = $('#tunnel-type').val();
             $.each(ret, function(_, tunnel) {
+                if (type != 'all' && tunnel.type != type) {
+                    return;
+                }
                 var send_bytes = 0;
                 var send_packet = 0;
                 var recv_bytes = 0;

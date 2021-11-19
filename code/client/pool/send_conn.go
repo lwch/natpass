@@ -9,26 +9,12 @@ import (
 )
 
 // SendConnectReq send connect request message
-func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
+func (conn *Conn) SendConnectReq(id string, cfg global.Rule) {
 	var msg network.Msg
 	msg.To = cfg.Target
 	msg.XType = network.Msg_connect_req
 	msg.LinkId = id
 	switch cfg.Type {
-	case "tcp":
-		msg.Payload = &network.Msg_Creq{
-			Creq: &network.ConnectRequest{
-				Name:  cfg.Name,
-				XType: network.ConnectRequest_tcp,
-				Payload: &network.ConnectRequest_Caddr{
-					Caddr: &network.ConnectAddr{
-						Addr: cfg.RemoteAddr,
-						Port: uint32(cfg.RemotePort),
-					},
-				},
-			},
-		}
-	case "udp":
 	case "shell":
 		msg.Payload = &network.Msg_Creq{
 			Creq: &network.ConnectRequest{
@@ -68,7 +54,7 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Tunnel) {
 }
 
 // SendConnectVnc send connect vnc request message
-func (conn *Conn) SendConnectVnc(id string, cfg global.Tunnel, quality uint64, showCursor bool) {
+func (conn *Conn) SendConnectVnc(id string, cfg global.Rule, quality uint64, showCursor bool) {
 	var msg network.Msg
 	msg.To = cfg.Target
 	msg.XType = network.Msg_connect_req

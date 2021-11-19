@@ -7,7 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/go-ole/go-ole v1.2.6 // indirect
-	github.com/go-vgo/robotgo v0.100.7
+	github.com/go-vgo/robotgo v0.100.8
 	github.com/gorilla/websocket v1.4.2
 	github.com/kardianos/service v1.2.0
 	github.com/kisielk/errcheck v1.6.0 // indirect
@@ -18,7 +18,7 @@ require (
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/sys v0.0.0-20211113001501-0c823b97ae02
+	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.7 // indirect
 	google.golang.org/protobuf v1.27.1

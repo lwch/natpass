@@ -4,10 +4,9 @@ import (
 	"natpass/code/client/dashboard"
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
-	"natpass/code/client/tunnel"
-	"natpass/code/client/tunnel/reverse"
-	"natpass/code/client/tunnel/shell"
-	"natpass/code/client/tunnel/vnc"
+	"natpass/code/client/rule"
+	"natpass/code/client/rule/shell"
+	"natpass/code/client/rule/vnc"
 	"natpass/code/network"
 	rt "runtime"
 	"time"
@@ -53,14 +52,10 @@ func (a *App) run() {
 	defer logging.Flush()
 
 	pl := pool.New(a.cfg)
-	mgr := tunnel.New()
+	mgr := rule.New()
 
-	for _, t := range a.cfg.Tunnels {
+	for _, t := range a.cfg.Rules {
 		switch t.Type {
-		case "tcp", "udp":
-			tn := reverse.New(t)
-			mgr.Add(tn)
-			go tn.Handle(pl)
 		case "shell":
 			sh := shell.New(t)
 			mgr.Add(sh)
@@ -89,8 +84,6 @@ func (a *App) run() {
 					switch msg.GetXType() {
 					case network.Msg_connect_req:
 						switch msg.GetCreq().GetXType() {
-						case network.ConnectRequest_tcp, network.ConnectRequest_udp:
-							a.connect(mgr, conn, msg)
 						case network.ConnectRequest_shell:
 							a.shellCreate(mgr, conn, msg)
 						case network.ConnectRequest_vnc:

@@ -3,6 +3,15 @@
 <script src="/js/index.js"></script>
 {{template "aside" .}}
 <script>aside.active_dashboard();</script>
+<style>
+#label-rule-type {
+    margin-right: 5px;
+}
+#rule-type {
+    width: 200px;
+    display: inline-block;
+}
+</style>
 <div class="content-wrapper">
     <div class="content-header">
         <div class="container-fluid">
@@ -23,10 +32,18 @@
             <div class="row"><div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">隧道列表</h3>
+                        <h3 class="card-title">终端列表</h3>
                     </div>
-                    <div class="card-body p-0">
-                        <table id="tunnels" class="table table-hover">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label id="label-rule-type" for="rule-type">类型:</label>
+                            <select id="rule-type" class="form-control">
+                                <option value="all">全部</option>
+                                <option value="shell">shell</option>
+                                <option value="vnc">vnc</option>
+                            </select>
+                        </div>
+                        <table id="rules" class="table table-hover">
                             <thead><tr>
                                 <th>名称</th>
                                 <th style="width:200px">对端</th>
@@ -34,7 +51,7 @@
                                 <th style="width:120px">虚拟连接数</th>
                                 <th style="width:200px">接收/发送（字节数）</th>
                                 <th style="width:200px">接收/发送（数据包）</th>
-                                <th style="width:200px">操作</th>
+                                <th style="width:120px">操作</th>
                             </tr></thead>
                             <tbody></tbody>
                         </table>
@@ -43,7 +60,7 @@
                 </div>
                 <!-- card -->
             </div></div>
-            <!-- 隧道列表 -->
+            <!-- 终端列表 -->
         </div>
         <!-- container -->
     </section>

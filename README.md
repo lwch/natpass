@@ -7,10 +7,10 @@
 [![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/lwch/natpass)
 [![QQ群711086098](https://img.shields.io/badge/QQ%E7%BE%A4-711086098-success)](https://jq.qq.com/?_wv=1027&k=6Fz2vkVE)
 
-新一代NAT内网穿透工具，支持tcp隧道、shell隧道，[实现原理](docs/desc.md)
+新一代主机管理工具，支持shell管理，支持远程桌面管理[实现原理](docs/desc.md)
 
 1. [如何部署](docs/startup.md)
-2. [隧道配置](docs/tunnel.md)
+2. [规则配置](docs/rules.md)
 
 功能与特性：
 
@@ -19,11 +19,10 @@
 3. 支持多路异步IO
 4. 支持虚拟链路层
 5. 支持链路和终端会话监控
-6. 支持tcp协议反向代理
-7. 支持web shell
-8. 支持web vnc
-9. 支持多种操作系统
-10. protobuf数据编码
+6. 支持web shell
+7. 支持web vnc
+8. 支持多种操作系统
+9. protobuf数据编码
 
 ## 效果图
 
@@ -51,29 +50,15 @@ windows11远程桌面
 
 ![win11-vnc](docs/imgs/vnc_win11.png)
 
-## iperf3压测对比
-
-使用相同参数，iperf3压测1分钟
-
-    # natpass10路复用，读写均为1s超时
-    [ ID] Interval           Transfer     Bitrate         Retr
-    [  5]   0.00-60.00  sec  70.0 MBytes  9.79 Mbits/sec   22             sender
-    [  5]   0.00-60.02  sec  57.9 MBytes  8.10 Mbits/sec                  receiver
-
-    # frp10路复用stcp，tls
-    [ ID] Interval           Transfer     Bitrate         Retr
-    [  5]   0.00-60.00  sec  66.2 MBytes  9.26 Mbits/sec   31             sender
-    [  5]   0.00-60.10  sec  57.7 MBytes  8.05 Mbits/sec                  receiver
-
 ## TODO
 
 1. ~~支持include的yaml配置文件~~
 2. ~~通用的connect、connect_response、disconnect消息~~
-3. ~~所有隧道的dashboard页面~~
+3. ~~dashboard页面~~
 4. 文件传输
 5. ~web远程桌面~
 6. ~~流量监控统计页面，server还是client?~~
-7. web端管理tunnel
+7. web端管理规则
 
 ## 免责声明
 

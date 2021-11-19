@@ -118,7 +118,7 @@ func main() {
 func bindata() {
 	cmd := exec.Command("go", "run", "contrib/bindata/main.go",
 		"-pkg", "shell",
-		"-o", "code/client/tunnel/shell/assets.go",
+		"-o", "code/client/rule/shell/assets.go",
 		"-prefix", "html/shell",
 		"html/shell/...")
 	cmd.Stdout = os.Stdout
@@ -127,7 +127,7 @@ func bindata() {
 
 	cmd = exec.Command("go", "run", "contrib/bindata/main.go",
 		"-pkg", "vnc",
-		"-o", "code/client/tunnel/vnc/assets.go",
+		"-o", "code/client/rule/vnc/assets.go",
 		"-prefix", "html/vnc",
 		"html/vnc/...")
 	cmd.Stdout = os.Stdout

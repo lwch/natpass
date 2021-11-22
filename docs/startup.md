@@ -29,7 +29,7 @@
 3. 修改conf.d/conn.yaml配置文件，修改*secret*密钥，该密钥必须与服务器端保持一致
 4. 使用以下命令将np-cli注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份（建议使用nobody身份启动）
 
-        sudo ./np-cli -conf server.yaml -action install -user nobody
+        sudo ./np-cli -conf client.yaml -action install -user nobody
 5. 将该服务设置为系统启动项，并启动服务
 
         sudo systemctl enable np-cli
@@ -43,7 +43,7 @@
 4. 修改rule.d目录下的规则配置文件，[rule配置方法](rules.md)
 5. 使用以下命令将np-cli注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份（建议使用nobody身份启动）
 
-        sudo ./np-cli -conf server.yaml -action install -user nobody
+        sudo ./np-cli -conf client.yaml -action install -user nobody
 6. 将该服务设置为系统启动项，并启动服务
 
         sudo systemctl enable np-cli

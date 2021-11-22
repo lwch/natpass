@@ -59,6 +59,11 @@ windows11远程桌面
 5. ~web远程桌面~
 6. ~~流量监控统计页面，server还是client?~~
 7. web端管理规则
+8. 支持录屏
+
+## stars
+
+![stars](https://starchart.cc/lwch/natpass.svg)
 
 ## 免责声明
 

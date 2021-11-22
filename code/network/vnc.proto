@@ -67,7 +67,7 @@ message vnc_clipboard {
     bool   set = 1;
     type _type = 2;
     oneof payload {
-        bytes data = 10; // text data
+        string data = 10; // text data
         // TODO
     }
 }

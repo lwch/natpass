@@ -67,4 +67,21 @@ func runClipboard(data *vncnetwork.ClipboardData) {
 		return
 	}
 	defer detach()
+	if data.GetSet() {
+		setClipboard(data)
+	} else {
+		getClipboard()
+	}
+}
+
+func setClipboard(data *vncnetwork.ClipboardData) {
+	switch data.GetXType() {
+	case vncnetwork.ClipboardData_file:
+	case vncnetwork.ClipboardData_image:
+	case vncnetwork.ClipboardData_text:
+		robotgo.WriteAll(data.GetData())
+	}
+}
+
+func getClipboard() {
 }

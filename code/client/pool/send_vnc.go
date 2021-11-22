@@ -167,7 +167,7 @@ func (conn *Conn) SendVNCClipboardSet(to string, toIdx uint32, id, data string) 
 			Set:   true,
 			XType: network.VncClipboard_text,
 			Payload: &network.VncClipboard_Data{
-				Data: []byte(data),
+				Data: data,
 			},
 		},
 	}

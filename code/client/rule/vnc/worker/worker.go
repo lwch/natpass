@@ -73,7 +73,7 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 		case vncnetwork.VncMsg_scroll_event:
 			runScroll(msg.GetScroll())
 		case vncnetwork.VncMsg_clipboard_event:
-			runClipboard(msg.GetClipboard())
+			runClipboard(conn, msg.GetClipboard())
 		}
 	}
 }

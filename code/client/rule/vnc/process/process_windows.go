@@ -95,6 +95,7 @@ func createWorker(name, confDir string, tk windows.Token, showCursor bool) (*Pro
 	var p Process
 	p.chWrite = make(chan *vncnetwork.VncMsg)
 	p.chImage = make(chan *vncnetwork.ImageData)
+	p.chClipboard = make(chan *vncnetwork.ClipboardData)
 	port, err := p.listenAndServe()
 	if err != nil {
 		return nil, err
@@ -131,6 +132,10 @@ func (p *Process) Close() {
 	if p.chImage != nil {
 		close(p.chImage)
 		p.chImage = nil
+	}
+	if p.chClipboard != nil {
+		close(p.chClipboard)
+		p.chClipboard = nil
 	}
 	if p.chWrite != nil {
 		close(p.chWrite)

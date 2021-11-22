@@ -13,6 +13,7 @@
     float: right;
 }
 #cad,
+#clipboard,
 #info {
     float: right;
     margin-right: 5px;
@@ -29,4 +30,12 @@ label, span {
 #fullscreen {
     cursor: pointer;
     font-size: 38px;
+}
+
+#dlg-clipboard textarea {
+    resize: vertical;
+    min-height: 300px;
+}
+#dlg-clipboard #row-data {
+    margin-top: 10px;
 }

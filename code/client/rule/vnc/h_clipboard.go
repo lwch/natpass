@@ -16,6 +16,12 @@ func (v *VNC) Clipboard(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 }
 
 func (v *VNC) getClipboard(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+	if v.link == nil {
+		http.NotFound(w, r)
+		return
+	}
+	conn := pool.Get(v.link.id)
+	conn.SendVNCClipboardData(v.link.target, v.link.targetIdx, v.link.id, false, "")
 }
 
 func (v *VNC) setClipboard(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
@@ -25,6 +31,6 @@ func (v *VNC) setClipboard(pool *pool.Pool, w http.ResponseWriter, r *http.Reque
 		return
 	}
 	conn := pool.Get(v.link.id)
-	conn.SendVNCClipboardSet(v.link.target, v.link.targetIdx, v.link.id, data)
+	conn.SendVNCClipboardData(v.link.target, v.link.targetIdx, v.link.id, true, data)
 	fmt.Fprint(w, "ok")
 }

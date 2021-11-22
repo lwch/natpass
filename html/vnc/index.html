@@ -14,6 +14,7 @@
         <script src="/jquery-mousewheel/jquery.mousewheel.min.js"></script>
         <link rel="stylesheet" href="/index.css" />
         <script src="common.js"></script>
+        <script src="/clipboard_dialog.js"></script>
         <script src="/index.js"></script>
     </head>
     <body>
@@ -32,11 +33,37 @@
                 </div>&nbsp;&nbsp;
                 <i id="fullscreen" class="fas fa-expand"></i>
                 <button id="cad" type="button" class="btn btn-primary">ctrl+alt+del</button>
+                <button id="clipboard" type="button" class="btn btn-default">剪贴板</button>
                 <span id="info">fps: 0, bandwidth: 0 B/s</span>
                 <span id="closed" style="display: none;">连接已断开</span>
             </div>
             <!-- header -->
             <canvas id="vnc" tabindex="1"></canvas>
         </div>
+        <div id="dlg-clipboard" class="modal fade">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">剪贴板</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row"><div class="col-12">
+                            <button id="set-clipboard" type="button" class="btn btn-primary">设置剪贴板</button>
+                            <button id="get-clipboard" type="button" class="btn btn-default">读取剪贴板</button>
+                        </div></div>
+                        <div id="row-data" class="row"><div class="col-12">
+                            <textarea class="form-control"></textarea>
+                        </div></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- dlg-clipboard -->
     </body>
 </html>

@@ -16,6 +16,7 @@ var page = {
         $('#quality').change(page.ctrl);
         $('#show-cursor').change(page.ctrl);
         $('#cad').click(page.cad);
+        $('#clipboard').click(clipboard_dialog.modal);
         $('#fullscreen').click(page.fullscreen);
         // connect
         page.connect();

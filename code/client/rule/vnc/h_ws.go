@@ -71,6 +71,8 @@ func (v *VNC) remoteRead(ctx context.Context, ch <-chan *network.Msg, local *web
 			data, err := decodeImage(msg.GetVimg())
 			runtime.Assert(err)
 			replyImage(local, msg.GetVimg(), data, len(msg.GetVimg().GetData()))
+		case network.Msg_vnc_clipboard:
+			v.chClipboard <- msg.GetVclipboard()
 		default:
 			logging.Error("on message: %s", msg.GetXType().String())
 			return

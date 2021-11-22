@@ -22,6 +22,8 @@ func (v *VNC) getClipboard(pool *pool.Pool, w http.ResponseWriter, r *http.Reque
 	}
 	conn := pool.Get(v.link.id)
 	conn.SendVNCClipboardData(v.link.target, v.link.targetIdx, v.link.id, false, "")
+	data := <-v.chClipboard
+	fmt.Fprint(w, data.GetData())
 }
 
 func (v *VNC) setClipboard(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {

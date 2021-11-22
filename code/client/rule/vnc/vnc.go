@@ -5,6 +5,7 @@ import (
 	"natpass/code/client/global"
 	"natpass/code/client/pool"
 	"natpass/code/client/rule"
+	"natpass/code/network"
 	"net"
 	"net/http"
 	"sync"
@@ -16,16 +17,18 @@ import (
 // VNC vnc handler
 type VNC struct {
 	sync.RWMutex
-	Name string
-	cfg  global.Rule
-	link *Link
+	Name        string
+	cfg         global.Rule
+	link        *Link
+	chClipboard chan *network.VncClipboard
 }
 
 // New new vnc
 func New(cfg global.Rule) *VNC {
 	return &VNC{
-		Name: cfg.Name,
-		cfg:  cfg,
+		Name:        cfg.Name,
+		cfg:         cfg,
+		chClipboard: make(chan *network.VncClipboard),
 	}
 }
 

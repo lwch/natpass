@@ -59,3 +59,12 @@ func runScroll(data *vncnetwork.ScrollData) {
 	defer detach()
 	robotgo.Scroll(int(data.X), int(data.Y), 1)
 }
+
+func runClipboard(data *vncnetwork.ClipboardData) {
+	detach, err := attachDesktop()
+	if err != nil {
+		logging.Error("attach desktop: %v", err)
+		return
+	}
+	defer detach()
+}

@@ -13,3 +13,6 @@ func runKeyboard(data *vncnetwork.KeyboardData) {
 
 func runScroll(data *vncnetwork.ScrollData) {
 }
+
+func runClipboard(data *vncnetwork.ClipboardData) {
+}

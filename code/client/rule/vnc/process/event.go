@@ -78,3 +78,33 @@ func (p *Process) ScrollEvent(data *network.VncScroll) {
 	}
 	p.chWrite <- &msg
 }
+
+// ClipboardEvent dispatch clipboard event to child process
+func (p *Process) ClipboardEvent(data *network.VncClipboard) {
+	dup := func(data []byte) []byte {
+		ret := make([]byte, len(data))
+		copy(ret, data)
+		return ret
+	}
+	t := vncnetwork.ClipboardData_unset_type
+	var payload vncnetwork.ClipboardData_Data
+	switch data.GetXType() {
+	case network.VncClipboard_file:
+		t = vncnetwork.ClipboardData_file
+	case network.VncClipboard_image:
+		t = vncnetwork.ClipboardData_image
+	case network.VncClipboard_text:
+		t = vncnetwork.ClipboardData_text
+		payload.Data = dup(data.GetData())
+	}
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_clipboard_event
+	msg.Payload = &vncnetwork.VncMsg_Clipboard{
+		Clipboard: &vncnetwork.ClipboardData{
+			Set:     data.GetSet(),
+			XType:   t,
+			Payload: &payload,
+		},
+	}
+	p.chWrite <- &msg
+}

@@ -170,6 +170,58 @@ func (VncMouseButton) EnumDescriptor() ([]byte, []int) {
 	return file_vnc_proto_rawDescGZIP(), []int{2, 0}
 }
 
+type VncClipboardType int32
+
+const (
+	VncClipboard_unset_type VncClipboardType = 0
+	VncClipboard_text       VncClipboardType = 1
+	VncClipboard_image      VncClipboardType = 2
+	VncClipboard_file       VncClipboardType = 3
+)
+
+// Enum value maps for VncClipboardType.
+var (
+	VncClipboardType_name = map[int32]string{
+		0: "unset_type",
+		1: "text",
+		2: "image",
+		3: "file",
+	}
+	VncClipboardType_value = map[string]int32{
+		"unset_type": 0,
+		"text":       1,
+		"image":      2,
+		"file":       3,
+	}
+)
+
+func (x VncClipboardType) Enum() *VncClipboardType {
+	p := new(VncClipboardType)
+	*p = x
+	return p
+}
+
+func (x VncClipboardType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VncClipboardType) Descriptor() protoreflect.EnumDescriptor {
+	return file_vnc_proto_enumTypes[3].Descriptor()
+}
+
+func (VncClipboardType) Type() protoreflect.EnumType {
+	return &file_vnc_proto_enumTypes[3]
+}
+
+func (x VncClipboardType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VncClipboardType.Descriptor instead.
+func (VncClipboardType) EnumDescriptor() ([]byte, []int) {
+	return file_vnc_proto_rawDescGZIP(), []int{5, 0}
+}
+
 type VncControl struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -470,6 +522,88 @@ func (x *VncScroll) GetY() int32 {
 	return 0
 }
 
+type VncClipboard struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Set   bool             `protobuf:"varint,1,opt,name=set,proto3" json:"set,omitempty"`
+	XType VncClipboardType `protobuf:"varint,2,opt,name=_type,json=Type,proto3,enum=network.VncClipboardType" json:"_type,omitempty"`
+	// Types that are assignable to Payload:
+	//	*VncClipboard_Data
+	Payload isVncClipboard_Payload `protobuf_oneof:"payload"`
+}
+
+func (x *VncClipboard) Reset() {
+	*x = VncClipboard{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_vnc_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *VncClipboard) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VncClipboard) ProtoMessage() {}
+
+func (x *VncClipboard) ProtoReflect() protoreflect.Message {
+	mi := &file_vnc_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VncClipboard.ProtoReflect.Descriptor instead.
+func (*VncClipboard) Descriptor() ([]byte, []int) {
+	return file_vnc_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *VncClipboard) GetSet() bool {
+	if x != nil {
+		return x.Set
+	}
+	return false
+}
+
+func (x *VncClipboard) GetXType() VncClipboardType {
+	if x != nil {
+		return x.XType
+	}
+	return VncClipboard_unset_type
+}
+
+func (m *VncClipboard) GetPayload() isVncClipboard_Payload {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+func (x *VncClipboard) GetData() []byte {
+	if x, ok := x.GetPayload().(*VncClipboard_Data); ok {
+		return x.Data
+	}
+	return nil
+}
+
+type isVncClipboard_Payload interface {
+	isVncClipboard_Payload()
+}
+
+type VncClipboard_Data struct {
+	Data []byte `protobuf:"bytes,10,opt,name=data,proto3,oneof"` // text data
+}
+
+func (*VncClipboard_Data) isVncClipboard_Payload() {}
+
 type VncImageInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -486,7 +620,7 @@ type VncImageInfo struct {
 func (x *VncImageInfo) Reset() {
 	*x = VncImageInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_vnc_proto_msgTypes[5]
+		mi := &file_vnc_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -499,7 +633,7 @@ func (x *VncImageInfo) String() string {
 func (*VncImageInfo) ProtoMessage() {}
 
 func (x *VncImageInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_vnc_proto_msgTypes[5]
+	mi := &file_vnc_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -607,11 +741,22 @@ var file_vnc_proto_rawDesc = []byte{
 	0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x22, 0x28, 0x0a, 0x0a, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x63,
 	0x72, 0x6f, 0x6c, 0x6c, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
 	0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x01, 0x79,
-	0x2a, 0x2c, 0x0a, 0x0a, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0c,
-	0x0a, 0x08, 0x75, 0x6e, 0x73, 0x65, 0x74, 0x5f, 0x73, 0x74, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04,
-	0x64, 0x6f, 0x77, 0x6e, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x75, 0x70, 0x10, 0x02, 0x42, 0x0c,
-	0x5a, 0x0a, 0x2e, 0x2f, 0x3b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0xab, 0x01, 0x0a, 0x0d, 0x76, 0x6e, 0x63, 0x5f, 0x63, 0x6c, 0x69, 0x70, 0x62, 0x6f, 0x61,
+	0x72, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x73, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x03, 0x73, 0x65, 0x74, 0x12, 0x30, 0x0a, 0x05, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x76, 0x6e,
+	0x63, 0x5f, 0x63, 0x6c, 0x69, 0x70, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x2e, 0x74, 0x79, 0x70, 0x65,
+	0x52, 0x04, 0x54, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x0a,
+	0x20, 0x01, 0x28, 0x0c, 0x48, 0x00, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x35, 0x0a, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x0a, 0x75, 0x6e, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79,
+	0x70, 0x65, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x10, 0x01, 0x12, 0x09,
+	0x0a, 0x05, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x66, 0x69, 0x6c,
+	0x65, 0x10, 0x03, 0x42, 0x09, 0x0a, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x2a, 0x2c,
+	0x0a, 0x0a, 0x76, 0x6e, 0x63, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x0c, 0x0a, 0x08,
+	0x75, 0x6e, 0x73, 0x65, 0x74, 0x5f, 0x73, 0x74, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x64, 0x6f,
+	0x77, 0x6e, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x75, 0x70, 0x10, 0x02, 0x42, 0x0c, 0x5a, 0x0a,
+	0x2e, 0x2f, 0x3b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -626,30 +771,33 @@ func file_vnc_proto_rawDescGZIP() []byte {
 	return file_vnc_proto_rawDescData
 }
 
-var file_vnc_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_vnc_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_vnc_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_vnc_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_vnc_proto_goTypes = []interface{}{
 	(VncStatus)(0),        // 0: network.vnc_status
 	(VncImageEncoding)(0), // 1: network.vnc_image.encoding
 	(VncMouseButton)(0),   // 2: network.vnc_mouse.button
-	(*VncControl)(nil),    // 3: network.vnc_control
-	(*VncImage)(nil),      // 4: network.vnc_image
-	(*VncMouse)(nil),      // 5: network.vnc_mouse
-	(*VncKeyboard)(nil),   // 6: network.vnc_keyboard
-	(*VncScroll)(nil),     // 7: network.vnc_scroll
-	(*VncImageInfo)(nil),  // 8: network.vnc_image.info
+	(VncClipboardType)(0), // 3: network.vnc_clipboard.type
+	(*VncControl)(nil),    // 4: network.vnc_control
+	(*VncImage)(nil),      // 5: network.vnc_image
+	(*VncMouse)(nil),      // 6: network.vnc_mouse
+	(*VncKeyboard)(nil),   // 7: network.vnc_keyboard
+	(*VncScroll)(nil),     // 8: network.vnc_scroll
+	(*VncClipboard)(nil),  // 9: network.vnc_clipboard
+	(*VncImageInfo)(nil),  // 10: network.vnc_image.info
 }
 var file_vnc_proto_depIdxs = []int32{
-	8, // 0: network.vnc_image._info:type_name -> network.vnc_image.info
-	1, // 1: network.vnc_image.encode:type_name -> network.vnc_image.encoding
-	0, // 2: network.vnc_mouse.type:type_name -> network.vnc_status
-	2, // 3: network.vnc_mouse.btn:type_name -> network.vnc_mouse.button
-	0, // 4: network.vnc_keyboard.type:type_name -> network.vnc_status
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	10, // 0: network.vnc_image._info:type_name -> network.vnc_image.info
+	1,  // 1: network.vnc_image.encode:type_name -> network.vnc_image.encoding
+	0,  // 2: network.vnc_mouse.type:type_name -> network.vnc_status
+	2,  // 3: network.vnc_mouse.btn:type_name -> network.vnc_mouse.button
+	0,  // 4: network.vnc_keyboard.type:type_name -> network.vnc_status
+	3,  // 5: network.vnc_clipboard._type:type_name -> network.vnc_clipboard.type
+	6,  // [6:6] is the sub-list for method output_type
+	6,  // [6:6] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_vnc_proto_init() }
@@ -719,6 +867,18 @@ func file_vnc_proto_init() {
 			}
 		}
 		file_vnc_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*VncClipboard); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_vnc_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*VncImageInfo); i {
 			case 0:
 				return &v.state
@@ -731,13 +891,16 @@ func file_vnc_proto_init() {
 			}
 		}
 	}
+	file_vnc_proto_msgTypes[5].OneofWrappers = []interface{}{
+		(*VncClipboard_Data)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_vnc_proto_rawDesc,
-			NumEnums:      3,
-			NumMessages:   6,
+			NumEnums:      4,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

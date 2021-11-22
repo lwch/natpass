@@ -56,3 +56,18 @@ message vnc_scroll {
     int32 x = 1;
     int32 y = 2;
 }
+
+message vnc_clipboard {
+    enum type {
+        unset_type = 0;
+        text       = 1;
+        image      = 2;
+        file       = 3;
+    }
+    bool   set = 1;
+    type _type = 2;
+    oneof payload {
+        bytes data = 10; // text data
+        // TODO
+    }
+}

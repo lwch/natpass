@@ -19,10 +19,19 @@
 3. 支持多路异步IO
 4. 支持虚拟链路层
 5. 支持链路和终端会话监控
-6. 支持web shell
-7. 支持web vnc
-8. 支持多种操作系统
-9. protobuf数据编码
+6. protobuf数据编码
+7. 支持web shell
+  - linux和mac系统支持创建pty设备和颜色输出
+  - windows系统支持powershell
+8. 支持web vnc
+  - 支持基本的键盘鼠标操作
+  - 支持全屏显示
+  - 支持滚动
+  - 支持远程剪贴板设置与读取
+9. 支持多种操作系统
+  - [x] linux
+  - [x] windows
+  - [x] macos
 
 ## 效果图
 

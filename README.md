@@ -59,6 +59,10 @@ windows11远程桌面
 
 ![win11-vnc](docs/imgs/vnc_win11.png)
 
+windows读取剪贴板内容
+
+![vnc-clipboard](docs/imgs/vnc_clipboard.png)
+
 ## TODO
 
 1. ~~支持include的yaml配置文件~~

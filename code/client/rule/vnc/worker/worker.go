@@ -72,6 +72,8 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 			worker.showCursor = msg.GetShowCursor()
 		case vncnetwork.VncMsg_scroll_event:
 			runScroll(msg.GetScroll())
+		case vncnetwork.VncMsg_clipboard_event:
+			runClipboard(conn, msg.GetClipboard())
 		}
 	}
 }

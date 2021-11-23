@@ -154,3 +154,25 @@ func (conn *Conn) SendVNCScroll(to string, toIdx uint32, id string, x, y int32) 
 	case <-time.After(conn.parent.cfg.WriteTimeout):
 	}
 }
+
+// SendVNCClipboardData send vnc clipboard data
+func (conn *Conn) SendVNCClipboardData(to string, toIdx uint32, id string, set bool, data string) {
+	var msg network.Msg
+	msg.To = to
+	msg.ToIdx = toIdx
+	msg.XType = network.Msg_vnc_clipboard
+	msg.LinkId = id
+	msg.Payload = &network.Msg_Vclipboard{
+		Vclipboard: &network.VncClipboard{
+			Set:   set,
+			XType: network.VncClipboard_text,
+			Payload: &network.VncClipboard_Data{
+				Data: data,
+			},
+		},
+	}
+	select {
+	case conn.write <- &msg:
+	case <-time.After(conn.parent.cfg.WriteTimeout):
+	}
+}

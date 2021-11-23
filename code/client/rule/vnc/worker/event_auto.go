@@ -7,7 +7,9 @@ import (
 	"natpass/code/client/rule/vnc/vncnetwork"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
+	"google.golang.org/protobuf/proto"
 )
 
 func runMouse(data *vncnetwork.MouseData) {
@@ -58,4 +60,44 @@ func runScroll(data *vncnetwork.ScrollData) {
 	}
 	defer detach()
 	robotgo.Scroll(int(data.X), int(data.Y), 1)
+}
+
+func runClipboard(conn *websocket.Conn, data *vncnetwork.ClipboardData) {
+	detach, err := attachDesktop()
+	if err != nil {
+		logging.Error("attach desktop: %v", err)
+		return
+	}
+	defer detach()
+	if data.GetSet() {
+		setClipboard(data)
+	} else {
+		getClipboard(conn)
+	}
+}
+
+func setClipboard(data *vncnetwork.ClipboardData) {
+	switch data.GetXType() {
+	case vncnetwork.ClipboardData_file:
+	case vncnetwork.ClipboardData_image:
+	case vncnetwork.ClipboardData_text:
+		robotgo.WriteAll(data.GetData())
+	}
+}
+
+func getClipboard(conn *websocket.Conn) {
+	data, _ := robotgo.ReadAll()
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_clipboard_event
+	msg.Payload = &vncnetwork.VncMsg_Clipboard{
+		Clipboard: &vncnetwork.ClipboardData{
+			Set:   true,
+			XType: vncnetwork.ClipboardData_text,
+			Payload: &vncnetwork.ClipboardData_Data{
+				Data: data,
+			},
+		},
+	}
+	enc, _ := proto.Marshal(&msg)
+	conn.WriteMessage(websocket.BinaryMessage, enc)
 }

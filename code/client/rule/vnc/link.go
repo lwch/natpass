@@ -109,6 +109,13 @@ func (link *Link) remoteRead() {
 			link.ps.CADEvent()
 		case network.Msg_vnc_scroll:
 			link.ps.ScrollEvent(msg.GetVscroll())
+		case network.Msg_vnc_clipboard:
+			if msg.GetVclipboard().GetSet() {
+				link.ps.SetClipboard(msg.GetVclipboard())
+			} else {
+				data := link.ps.GetClipboard()
+				link.remote.SendVNCClipboardData(link.target, link.targetIdx, link.id, true, data)
+			}
 		case network.Msg_disconnect:
 			logging.Info("link %s disconnected", link.id)
 			return

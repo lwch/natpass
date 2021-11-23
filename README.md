@@ -19,10 +19,19 @@
 3. 支持多路异步IO
 4. 支持虚拟链路层
 5. 支持链路和终端会话监控
-6. 支持web shell
-7. 支持web vnc
-8. 支持多种操作系统
-9. protobuf数据编码
+6. protobuf数据编码
+7. 支持web shell
+   - linux和mac系统支持创建pty设备和颜色输出
+   - windows系统支持powershell
+8. 支持web vnc
+   - 支持基本的键盘鼠标操作
+   - 支持全屏显示
+   - 支持滚动
+   - 支持远程剪贴板设置与读取
+9. 支持多种操作系统
+   - [x] linux
+   - [x] windows
+   - [x] macos
 
 ## 效果图
 
@@ -50,6 +59,10 @@ windows11远程桌面
 
 ![win11-vnc](docs/imgs/vnc_win11.png)
 
+windows读取剪贴板内容
+
+![vnc-clipboard](docs/imgs/vnc_clipboard.png)
+
 ## TODO
 
 1. ~~支持include的yaml配置文件~~
@@ -73,3 +86,7 @@ windows11远程桌面
 2. 软件使用者使用该软件造成的任何损失均与软件作者无关，
    一切后果由使用者自己负责
 3. 严禁用于一切商业用途，包括但不限于提供云桌面、云主机等
+
+## 贡献代码
+
+为了更好的发展，我们鼓励大家为natpass项目做出贡献及提出建议，项目的地址为[https://github.com/lwch/natpass](https://github.com/lwch/natpass)，因此在gitee上提交的pr将不被接受，请大家将pr提交到github的同名项目中。

@@ -25,12 +25,13 @@ message msg {
         shell_resize = 10;
         shell_data   = 11;
         // vnc
-        vnc_ctrl     = 20;
-        vnc_image    = 21;
-        vnc_mouse    = 22;
-        vnc_keyboard = 23;
-        vnc_cad      = 24; // ctrl+alt+del
-        vnc_scroll   = 25;
+        vnc_ctrl      = 20;
+        vnc_image     = 21;
+        vnc_mouse     = 22;
+        vnc_keyboard  = 23;
+        vnc_cad       = 24; // ctrl+alt+del
+        vnc_scroll    = 25;
+        vnc_clipboard = 26;
     }
     type      _type = 1;
     string     from = 2;
@@ -47,10 +48,11 @@ message msg {
         shell_resize  sresize = 20;
         shell_data      sdata = 21;
         // vnc
-        vnc_control  vctrl = 30;
-        vnc_image     vimg = 31;
-        vnc_mouse   vmouse = 32;
-        vnc_keyboard  vkbd = 33;
-        vnc_scroll vscroll = 34;
+        vnc_control        vctrl = 30;
+        vnc_image           vimg = 31;
+        vnc_mouse         vmouse = 32;
+        vnc_keyboard        vkbd = 33;
+        vnc_scroll       vscroll = 34;
+        vnc_clipboard vclipboard = 35;
     }
 }

@@ -22,10 +22,11 @@ const (
 
 // Process process
 type Process struct {
-	pid     int
-	srv     *http.Server
-	chWrite chan *vncnetwork.VncMsg
-	chImage chan *vncnetwork.ImageData
+	pid         int
+	srv         *http.Server
+	chWrite     chan *vncnetwork.VncMsg
+	chImage     chan *vncnetwork.ImageData
+	chClipboard chan *vncnetwork.ClipboardData
 }
 
 func (p *Process) listenAndServe() (uint16, error) {
@@ -80,6 +81,8 @@ func (p *Process) ws(w http.ResponseWriter, r *http.Request) {
 			switch msg.GetXType() {
 			case vncnetwork.VncMsg_capture_data:
 				p.chImage <- msg.GetData()
+			case vncnetwork.VncMsg_clipboard_event:
+				p.chClipboard <- msg.GetClipboard()
 			default:
 			}
 		}

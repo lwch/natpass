@@ -86,3 +86,7 @@ windows读取剪贴板内容
 2. 软件使用者使用该软件造成的任何损失均与软件作者无关，
    一切后果由使用者自己负责
 3. 严禁用于一切商业用途，包括但不限于提供云桌面、云主机等
+
+## 贡献代码
+
+为了更好的发展，我们鼓励大家为natpass项目做出贡献及提出建议，项目的地址为[https://github.com/lwch/natpass](https://github.com/lwch/natpass)，因此在gitee上提交的pr将不被接受，请大家将pr提交到github的同名项目中。

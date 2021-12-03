@@ -9,31 +9,23 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
+	"github.com/lwch/screenshot"
 	"google.golang.org/protobuf/proto"
 )
 
-type desktopInfo struct {
-	bits   int
-	width  int
-	height int
-}
-
 // Worker worker object
 type Worker struct {
-	workerOsBased
-	info       desktopInfo
-	showCursor bool
+	cli *screenshot.Client
 }
 
 // NewWorker create worker
 func NewWorker(showCursor bool) *Worker {
-	worker := &Worker{
-		showCursor: showCursor,
-	}
-	err := worker.init()
+	worker := &Worker{}
+	cli, err := screenshot.New()
 	if err != nil {
 		return nil
 	}
+	worker.cli = cli
 	return worker
 }
 
@@ -69,7 +61,7 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 		case vncnetwork.VncMsg_keyboard_event:
 			runKeyboard(msg.GetKeyboard())
 		case vncnetwork.VncMsg_set_cursor:
-			worker.showCursor = msg.GetShowCursor()
+			worker.cli.ShowCursor(msg.GetShowCursor())
 		case vncnetwork.VncMsg_scroll_event:
 			runScroll(msg.GetScroll())
 		case vncnetwork.VncMsg_clipboard_event:

@@ -1,6 +1,6 @@
 ARG APT_MIRROR=mirrors.ustc.edu.cn
 ARG LIBPNG_VERSION=1.6.37
-ARG GO_VERSION=1.17.3
+ARG GO_VERSION=1.17.4
 ARG GO_PROXY=https://goproxy.cn,direct
 
 # build libpng

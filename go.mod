@@ -13,7 +13,7 @@ require (
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/lwch/logging v0.0.0-20211115073745-0db19179db17
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
-	github.com/lwch/screenshot v0.0.0-20211203082920-a8d796a056e9
+	github.com/lwch/screenshot v0.0.0-20211203091306-92e4d6644b74
 	github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789
 	github.com/shirou/gopsutil v3.21.10+incompatible // indirect
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect

@@ -68,3 +68,8 @@
 # v0.7.1
 
 1. vnc页面支持远程设置或读取剪贴板（仅支持文本内容）
+
+# v0.7.2
+
+1. 截屏库统一抽取到https://github.com/lwch/screenshot
+2. 修正windows下的错误日志显示格式问题

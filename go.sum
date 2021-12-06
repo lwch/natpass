@@ -30,8 +30,8 @@ github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc h1:QHC/AggBsu39IWcbzj
 github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
-github.com/lwch/screenshot v0.0.0-20211206074704-72c7a81cbfa6 h1:eq1GDNMrn61K/uJoMYXFb2ffSnZyB9H3YPDwNhEDmng=
-github.com/lwch/screenshot v0.0.0-20211206074704-72c7a81cbfa6/go.mod h1:53CAW8vbtggX17xhPbPmJX9UKpP3+Ry/lBwS6uxpJQc=
+github.com/lwch/screenshot v0.0.0-20211206075302-bec6f267cb31 h1:RDxPXv4MOTOaIxXqZb805ycSJRYH2iY0O+azLclEyuk=
+github.com/lwch/screenshot v0.0.0-20211206075302-bec6f267cb31/go.mod h1:53CAW8vbtggX17xhPbPmJX9UKpP3+Ry/lBwS6uxpJQc=
 github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789 h1:Z9jucdBfDaTXBT+jxyOw08op3DYpr9lEZJkTbVJ3bmU=
 github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789/go.mod h1:Dz0eixDQvioB5pqCXGQJ6sTJetbS6TCHegLuRh2Bw2U=
 github.com/lxn/win v0.0.0-20210218163916-a377121e959e h1:H+t6A/QJMbhCSEH5rAuRxh+CtW96g0Or0Fxa9IKr4uc=

@@ -12,7 +12,7 @@ require (
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
-	github.com/lwch/screenshot v0.0.0-20211206075302-bec6f267cb31
+	github.com/lwch/screenshot v0.0.0-20211206103848-76650b4ecab9
 	github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect

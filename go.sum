@@ -32,8 +32,8 @@ github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5B
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/screenshot v0.0.0-20211206075302-bec6f267cb31 h1:RDxPXv4MOTOaIxXqZb805ycSJRYH2iY0O+azLclEyuk=
 github.com/lwch/screenshot v0.0.0-20211206075302-bec6f267cb31/go.mod h1:53CAW8vbtggX17xhPbPmJX9UKpP3+Ry/lBwS6uxpJQc=
-github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789 h1:Z9jucdBfDaTXBT+jxyOw08op3DYpr9lEZJkTbVJ3bmU=
-github.com/lwch/yaml v0.0.0-20211009070949-2d4c64e2b789/go.mod h1:Dz0eixDQvioB5pqCXGQJ6sTJetbS6TCHegLuRh2Bw2U=
+github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26 h1:sR3nbPhdfstDxYLp7c1EnsKH3z8+u+wgnhC3AI9/qf0=
+github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26/go.mod h1:Dz0eixDQvioB5pqCXGQJ6sTJetbS6TCHegLuRh2Bw2U=
 github.com/lxn/win v0.0.0-20210218163916-a377121e959e h1:H+t6A/QJMbhCSEH5rAuRxh+CtW96g0Or0Fxa9IKr4uc=
 github.com/lxn/win v0.0.0-20210218163916-a377121e959e/go.mod h1:KxxjdtRkfNoYDCUP5ryK7XJJNTnpC8atvtmTheChOtk=
 github.com/otiai10/curr v0.0.0-20150429015615-9b4961190c95/go.mod h1:9qAhocn7zKJG+0mI8eUu6xqkFDYS2kb2saOteoSB3cE=

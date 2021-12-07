@@ -28,10 +28,10 @@ github.com/kisielk/errcheck v1.6.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI
 github.com/lwch/logging v0.0.0-20211115073745-0db19179db17/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc h1:QHC/AggBsu39IWcbzjgIc2ApNXuWhZhD1ieCkFgWfeM=
 github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
+github.com/lwch/rdesktop v0.0.0-20211207101551-b892a4a5e2b5 h1:RF5uIUO37p6WVgqd3mrkPLYNvJCBHs9sOpBsbTYdzO4=
+github.com/lwch/rdesktop v0.0.0-20211207101551-b892a4a5e2b5/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
-github.com/lwch/screenshot v0.0.0-20211206103848-76650b4ecab9 h1:p6QARj6O5STLXui/6obRLiu5Rt5hoOR6hkO4qTnH+Gw=
-github.com/lwch/screenshot v0.0.0-20211206103848-76650b4ecab9/go.mod h1:53CAW8vbtggX17xhPbPmJX9UKpP3+Ry/lBwS6uxpJQc=
 github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26 h1:sR3nbPhdfstDxYLp7c1EnsKH3z8+u+wgnhC3AI9/qf0=
 github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26/go.mod h1:Dz0eixDQvioB5pqCXGQJ6sTJetbS6TCHegLuRh2Bw2U=
 github.com/lxn/win v0.0.0-20210218163916-a377121e959e h1:H+t6A/QJMbhCSEH5rAuRxh+CtW96g0Or0Fxa9IKr4uc=

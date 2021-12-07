@@ -8,20 +8,20 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
+	"github.com/lwch/rdesktop"
 	"github.com/lwch/runtime"
-	"github.com/lwch/screenshot"
 	"google.golang.org/protobuf/proto"
 )
 
 // Worker worker object
 type Worker struct {
-	cli *screenshot.Client
+	cli *rdesktop.Client
 }
 
 // NewWorker create worker
 func NewWorker(showCursor bool) *Worker {
 	worker := &Worker{}
-	cli, err := screenshot.New()
+	cli, err := rdesktop.New()
 	if err != nil {
 		return nil
 	}

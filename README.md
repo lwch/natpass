@@ -59,6 +59,18 @@ windows11远程桌面
 
 ![win11-vnc](docs/imgs/vnc_win11.png)
 
+ubuntu远程桌面
+
+![ubuntu-vnc](docs/imgs/vnc_ubuntu.png)
+
+fedora远程桌面
+
+![fedora-vnc](docs/imgs/vnc_fedora.png)
+
+deepin远程桌面
+
+![deepin-vnc](docs/imgs/vnc_deepin.png)
+
 windows读取剪贴板内容
 
 ![vnc-clipboard](docs/imgs/vnc_clipboard.png)

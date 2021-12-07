@@ -1,20 +1,15 @@
 package process
 
 import (
-	"errors"
 	"fmt"
-	"image"
-	"image/jpeg"
 	"natpass/code/client/rule/vnc/define"
 	"natpass/code/client/rule/vnc/vncnetwork"
 	"os"
 	"strings"
 	"syscall"
-	"time"
 	"unicode/utf16"
 	"unsafe"
 
-	"github.com/lwch/logging"
 	"golang.org/x/sys/windows"
 )
 

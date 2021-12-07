@@ -38,6 +38,7 @@ WORKDIR /build
 
 RUN sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list && \
    sed -i "s|security.debian.org|$APT_MIRROR|g" /etc/apt/sources.list && \
+   dpkg --add-architecture i386 && \
    apt-get update && apt-get upgrade -y && \
    apt-get install -y gcc libc6-dev && \
    apt-get install -y libx11-dev xorg-dev libxtst-dev libpng++-dev && \
@@ -48,6 +49,10 @@ RUN sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list && \
    apt-get install -y gcc-mingw-w64 && \
    apt-get install -y libz-mingw-w64-dev && \
    apt-get install -y curl git && \
+   apt-get update && \
+   apt-get install -y libx11-dev:i386 libxtst-dev:i386 libpng-dev:i386 && \
+   apt-get install -y xcb:i386 libxcb-xkb-dev:i386 x11-xkb-utils:i386 libx11-xcb-dev:i386 libxkbcommon-x11-dev:i386 && \
+   apt-get install -y libxkbcommon-dev:i386 && \
    curl -L https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz|tar -xz -C /usr/local && \
    cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 

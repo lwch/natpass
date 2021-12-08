@@ -76,4 +76,4 @@
 3. 修正windows下的配置文件include问题
 4. 支持linux远程桌面
 
-**注：linux受控端需使用np-cli.vnc程序进行启动，且目前无法以systemd等方式运行**
+**注：linux受控端需使用np-cli.vnc程序进行启动，且目前无法以systemd等系统服务方式运行**

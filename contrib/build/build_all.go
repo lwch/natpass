@@ -161,6 +161,8 @@ func build(t target) {
 	runtime.Assert(err)
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
+	err = copyFile("docs/startup.md", path.Join(buildDir, "startup.md"))
+	runtime.Assert(err)
 
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
@@ -198,6 +200,27 @@ func build(t target) {
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
 	runtime.Assert(cmd.Run())
+
+	if t.os == "linux" && !strings.Contains(t.arch, "arm") {
+		ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
+			"-X 'main.gitReversion=" + gitReversion() + "' " +
+			"-X 'main.buildTime=" + buildTime() + "' " +
+			"-X 'main.version=" + version + "'"
+		logging.Info("build client.vnc...")
+		env := append(os.Environ(),
+			fmt.Sprintf("GOOS=%s", t.os),
+			fmt.Sprintf("GOARCH=%s", t.arch))
+		args := []string{"build", "-o", path.Join(buildDir, "np-cli.vnc"), "-ldflags", ldflags}
+		args = append(args, "-tags", "vnc")
+		env = append(env, "CGO_ENABLED=1")
+		args = append(args,
+			path.Join("code", "client", "main.go"))
+		cmd = exec.Command("go", args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Env = env
+		runtime.Assert(cmd.Run())
+	}
 
 	logging.Info("packing...")
 	pack(buildDir, path.Join(releaseDir, "natpass_"+version+"_"+t.os+"_"+t.arch+t.packExt))

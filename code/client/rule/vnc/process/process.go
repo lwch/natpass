@@ -3,12 +3,15 @@ package process
 import (
 	"errors"
 	"fmt"
+	"image"
+	"image/jpeg"
 	"natpass/code/client/rule/vnc/vncnetwork"
 	"natpass/code/utils"
 	"net"
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
@@ -110,5 +113,63 @@ func (p *Process) kill() {
 	ps, _ := os.FindProcess(p.pid)
 	if ps != nil {
 		ps.Kill()
+	}
+}
+
+// Close close process
+func (p *Process) Close() {
+	if p.srv != nil {
+		p.srv.Close()
+	}
+	if p.chImage != nil {
+		close(p.chImage)
+		p.chImage = nil
+	}
+	if p.chClipboard != nil {
+		close(p.chClipboard)
+		p.chClipboard = nil
+	}
+	if p.chWrite != nil {
+		close(p.chWrite)
+		p.chWrite = nil
+	}
+	p.kill()
+}
+
+// Capture capture desktop image
+func (p *Process) Capture(timeout time.Duration) (*image.RGBA, error) {
+	var msg vncnetwork.VncMsg
+	msg.XType = vncnetwork.VncMsg_capture_req
+	p.chWrite <- &msg
+	trans := func(data *vncnetwork.ImageData) *image.RGBA {
+		img := image.NewRGBA(image.Rect(0, 0, int(data.GetWidth()), int(data.GetHeight())))
+		copy(img.Pix, data.GetData())
+		// dumpImage(img)
+		return img
+	}
+	if timeout > 0 {
+		select {
+		case data := <-p.chImage:
+			return trans(data), nil
+		case <-time.After(timeout):
+			return nil, errors.New("timeout")
+		}
+	} else {
+		data := <-p.chImage
+		return trans(data), nil
+	}
+}
+
+func dumpImage(img image.Image) {
+	f, err := os.Create(`C:\Users\lwch\Pictures\debug.jpeg`)
+	if err != nil {
+		logging.Error("debug: %v", err)
+		return
+	}
+	defer f.Close()
+	err = jpeg.Encode(f, img, nil)
+	if err != nil {
+		logging.Error("encode: %v", err)
+		return
 	}
 }

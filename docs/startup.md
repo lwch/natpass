@@ -20,7 +20,7 @@
         sudo systemctl enable np-svr
         sudo systemctl start np-svr
 
-## 远端部署
+## 受控端部署
 
 1. 在远端机器上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. 修改client.yaml配置文件，设置*id*为remote，设置*server*地址，并删除以下配置
@@ -35,7 +35,11 @@
         sudo systemctl enable np-cli
         sudo systemctl start np-cli
 
-## 本地部署
+**注：当受控端为linux操作系统时，请使用np-cli.vnc程序进行启动，暂不支持系统服务方式启动，手工启动命令如下**
+
+        ./np-cli -conf client.yaml
+
+## 控制端部署
 
 1. 在本地机器上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. 修改client.yaml配置文件，设置*id*为local，设置*server*地址

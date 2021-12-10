@@ -67,6 +67,9 @@
 
         sudo systemctl enable np-cli
         sudo systemctl start np-cli
+9. 在以上操作成功后即可在浏览器中通过client.yaml中配置的端口号进行访问，默认地址：
+
+        http://127.0.0.1:8080
 
 ## 注册系统服务
 

@@ -9,10 +9,10 @@
 
 1. 在服务器上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. 修改server.yaml配置文件，设置*key*和*crt*参数到你的证书所在路径
-3. 修改conf.d/conn.yaml配置文件，修改*secret*密钥，建议使用以下命令生成随机16位密钥
+3. 修改common.yaml配置文件，修改*secret*密钥，建议使用以下命令生成随机16位密钥
 
         tr -dc A-Za-z0-9 < /dev/urandom|dd bs=16 count=1 2>/dev/null
-4. 修改conf.d/log.yaml配置文件，将log目录设置为一个绝对路径
+4. 修改common.yaml配置文件，将log目录设置为一个绝对路径
 5. 使用以下命令将np-svr注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份（建议使用nobody身份启动）
 
         sudo ./np-svr -conf server.yaml -action install -user nobody
@@ -31,8 +31,8 @@
 2. 修改client.yaml配置文件，设置*id*为remote，设置*server*地址，并删除以下配置
 
         #include rule.d/*.yaml
-3. 修改conf.d/conn.yaml配置文件，修改*secret*密钥，该密钥必须与服务器端保持一致
-4. 修改conf.d/log.yaml配置文件，将log目录设置为一个绝对路径
+3. 修改common.yaml配置文件，修改*secret*密钥，该密钥必须与服务器端保持一致
+4. 修改common.yaml配置文件，将log目录设置为一个绝对路径
 5. 使用以下命令将np-cli注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份（建议使用nobody身份启动）
 
         sudo ./np-cli -conf client.yaml -action install -user nobody
@@ -53,8 +53,8 @@
 
 1. 在本地控制机上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. 修改client.yaml配置文件，设置*id*为local，设置*server*地址
-3. 修改conf.d/conn.yaml配置文件，修改*secret*密钥，该密钥必须与服务器端保持一致
-4. 修改conf.d/log.yaml配置文件，将log目录设置为一个绝对路径
+3. 修改common.yaml配置文件，修改*secret*密钥，该密钥必须与服务器端保持一致
+4. 修改common.yaml配置文件，将log目录设置为一个绝对路径
 5. 修改rule.d目录下的规则配置文件，[rule配置方法](rules.md)
 6. 使用以下命令将np-cli注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份（建议使用nobody身份启动）
 

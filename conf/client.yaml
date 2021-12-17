@@ -4,6 +4,6 @@ dashboard: # web面板
   enabled: true   # 是否开放dashboard
   listen: 0.0.0.0 # 监听地址
   port: 8080      # 监听端口号
-#include conf.d/*.yaml
+#include common.yaml
 rules: # rule列表
   #include rule.d/*.yaml

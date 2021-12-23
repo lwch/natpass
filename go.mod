@@ -11,7 +11,7 @@ require (
 	github.com/kardianos/service v1.2.0
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc
-	github.com/lwch/rdesktop v0.0.0-20211217064159-72c95371f19d
+	github.com/lwch/rdesktop v0.0.0-20211217105819-32436b28a4b2
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
 	github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect

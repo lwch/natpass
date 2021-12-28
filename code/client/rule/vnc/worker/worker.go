@@ -57,15 +57,15 @@ func (worker *Worker) Do(conn *websocket.Conn) {
 			enc, _ := proto.Marshal(&msg)
 			conn.WriteMessage(websocket.BinaryMessage, enc)
 		case vncnetwork.VncMsg_mouse_event:
-			runMouse(msg.GetMouse())
+			worker.runMouse(msg.GetMouse())
 		case vncnetwork.VncMsg_keyboard_event:
-			runKeyboard(msg.GetKeyboard())
+			worker.runKeyboard(msg.GetKeyboard())
 		case vncnetwork.VncMsg_set_cursor:
 			worker.cli.ShowCursor(msg.GetShowCursor())
 		case vncnetwork.VncMsg_scroll_event:
-			runScroll(msg.GetScroll())
+			worker.runScroll(msg.GetScroll())
 		case vncnetwork.VncMsg_clipboard_event:
-			runClipboard(conn, msg.GetClipboard())
+			worker.runClipboard(conn, msg.GetClipboard())
 		}
 	}
 }

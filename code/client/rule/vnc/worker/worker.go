@@ -23,6 +23,7 @@ func NewWorker(showCursor bool) *Worker {
 	worker := &Worker{}
 	cli, err := rdesktop.New()
 	if err != nil {
+		logging.Error("create rdesktop: %v", err)
 		return nil
 	}
 	worker.cli = cli

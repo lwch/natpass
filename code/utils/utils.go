@@ -8,6 +8,7 @@ import (
 	"github.com/lwch/runtime"
 )
 
+// BuildLogDir mkdir for log and chown
 func BuildLogDir(dir, u string) {
 	runtime.Assert(os.MkdirAll(dir, 0755))
 	if len(u) > 0 {

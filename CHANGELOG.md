@@ -81,6 +81,6 @@
 # v0.7.3
 
 1. vnc支持\键
-2. 全面迁移到https://github.com/lwch/rdesktop，并去除robotgo库的依赖
+2. 全面迁移到[https://github.com/lwch/rdesktop](https://github.com/lwch/rdesktop)，并去除robotgo库的依赖
 3. linux下统一到同一个可执行文件，并支持systemd方式启动
 4. 简化部署流程

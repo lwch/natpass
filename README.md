@@ -86,6 +86,12 @@ windows读取剪贴板内容
 7. web端管理规则
 8. 支持录屏
 
+## 编译
+
+1. 由于html/dashboard等目录下引用第三方库时使用软连接的方式进行处理，
+   因此在windows环境下进行编译时需要将这些软连接的目录进行手工替换，
+   第三方库的代码都在上级目录下可找到。
+
 ## stars
 
 ![stars](https://starchart.cc/lwch/natpass.svg)

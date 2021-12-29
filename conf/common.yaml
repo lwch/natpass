@@ -4,6 +4,6 @@ link:
   read_timeout:  1s # 读取数据包超时时间
   write_timeout: 1s # 发送数据包超时时间
 log:
-  dir: ./logs # 路径
+  dir: ./logs # 路径，相对于可执行文件所在目录的相对路径
   size: 50M   # 单个文件大小
   rotate: 7   # 保留数量

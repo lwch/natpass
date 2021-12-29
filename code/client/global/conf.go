@@ -84,7 +84,7 @@ func LoadConf(dir string) *Configure {
 	if cfg.Link.WriteTimeout <= 0 {
 		cfg.Link.WriteTimeout = 5 * time.Second
 	}
-	if filepath.IsAbs(cfg.Log.Dir) {
+	if !filepath.IsAbs(cfg.Log.Dir) {
 		dir, err := os.Executable()
 		runtime.Assert(err)
 		cfg.Log.Dir = filepath.Join(filepath.Dir(dir), cfg.Log.Dir)

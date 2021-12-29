@@ -44,7 +44,7 @@ func LoadConf(dir string) *Configure {
 		} `yaml:"tls"`
 	}
 	runtime.Assert(yaml.Decode(dir, &cfg))
-	if filepath.IsAbs(cfg.Log.Dir) {
+	if !filepath.IsAbs(cfg.Log.Dir) {
 		dir, err := os.Executable()
 		runtime.Assert(err)
 		cfg.Log.Dir = filepath.Join(filepath.Dir(dir), cfg.Log.Dir)

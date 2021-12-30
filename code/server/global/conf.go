@@ -3,6 +3,8 @@ package global
 import (
 	"crypto/md5"
 	"natpass/code/utils"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/lwch/runtime"
@@ -42,6 +44,11 @@ func LoadConf(dir string) *Configure {
 		} `yaml:"tls"`
 	}
 	runtime.Assert(yaml.Decode(dir, &cfg))
+	if !filepath.IsAbs(cfg.Log.Dir) {
+		dir, err := os.Executable()
+		runtime.Assert(err)
+		cfg.Log.Dir = filepath.Join(filepath.Dir(dir), cfg.Log.Dir)
+	}
 	return &Configure{
 		Listen:       cfg.Listen,
 		Enc:          md5.Sum([]byte(cfg.Secret)),

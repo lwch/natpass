@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"natpass/code/server/global"
 	"natpass/code/server/handler"
+	"natpass/code/utils"
 	"net"
 	"os"
 	"path/filepath"
@@ -102,6 +103,7 @@ func main() {
 	switch *act {
 	case "install":
 		runtime.Assert(sv.Install())
+		utils.BuildLogDir(cfg.LogDir, *user)
 	case "uninstall":
 		runtime.Assert(sv.Uninstall())
 	default:

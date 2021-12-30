@@ -201,6 +201,8 @@ var page = {
             key = '[';
         } else if (e.which == 221) {
             key = ']';
+        } else if (e.which == 220) {
+            key = '\\';
         } else if (e.which == 186) {
             key = ';';
         } else if (e.which == 222) {

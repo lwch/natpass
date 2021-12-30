@@ -1,5 +1,5 @@
 listen: 6154 # 监听端口号
-#include conf.d/*.yaml
+#include common.yaml
 tls:
   key: /dir/to/tls/key/file # tls密钥
   crt: /dir/to/tls/crt/file # tls证书

@@ -76,4 +76,11 @@
 3. 修正windows下的配置文件include问题
 4. 支持linux远程桌面
 
-**注：linux受控端需使用np-cli.vnc程序进行启动，且目前无法以systemd等方式运行**
+**注：linux受控端需使用np-cli.vnc程序进行启动，且目前无法以systemd等系统服务方式运行**
+
+# v0.7.3
+
+1. vnc支持\键
+2. 全面迁移到[https://github.com/lwch/rdesktop](https://github.com/lwch/rdesktop)，并去除robotgo库的依赖
+3. linux下统一到同一个可执行文件，并支持systemd方式启动
+4. 简化部署流程

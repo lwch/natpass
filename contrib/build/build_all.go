@@ -167,8 +167,8 @@ func build(t target) {
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
 		"-X 'main.buildTime=" + buildTime() + "' " +
-		"-X 'main.version=" + version + "' " +
-		"--extldflags '-static -fpic -lssp'"
+		"-X 'main.version=" + version + "' "
+	// "--extldflags '-static -fpic -lssp'"
 
 	logging.Info("build server...")
 	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
@@ -190,7 +190,8 @@ func build(t target) {
 		fmt.Sprintf("CXX=%s", t.cxx))
 	args := []string{"build", "-o", path.Join(buildDir, "np-cli"+t.ext), "-ldflags", ldflags}
 	if t.os == "windows" && !strings.Contains(t.arch, "arm") {
-		args = append(args, "-tags", "vnc")
+		env = append(env, "CGO_ENABLED=1")
+	} else if t.os == "linux" && !strings.Contains(t.arch, "arm") {
 		env = append(env, "CGO_ENABLED=1")
 	}
 	args = append(args,
@@ -200,27 +201,6 @@ func build(t target) {
 	cmd.Stderr = os.Stderr
 	cmd.Env = env
 	runtime.Assert(cmd.Run())
-
-	if t.os == "linux" && !strings.Contains(t.arch, "arm") {
-		ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
-			"-X 'main.gitReversion=" + gitReversion() + "' " +
-			"-X 'main.buildTime=" + buildTime() + "' " +
-			"-X 'main.version=" + version + "'"
-		logging.Info("build client.vnc...")
-		env := append(os.Environ(),
-			fmt.Sprintf("GOOS=%s", t.os),
-			fmt.Sprintf("GOARCH=%s", t.arch))
-		args := []string{"build", "-o", path.Join(buildDir, "np-cli.vnc"), "-ldflags", ldflags}
-		args = append(args, "-tags", "vnc")
-		env = append(env, "CGO_ENABLED=1")
-		args = append(args,
-			path.Join("code", "client", "main.go"))
-		cmd = exec.Command("go", args...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Env = env
-		runtime.Assert(cmd.Run())
-	}
 
 	logging.Info("packing...")
 	pack(buildDir, path.Join(releaseDir, "natpass_"+version+"_"+t.os+"_"+t.arch+t.packExt))

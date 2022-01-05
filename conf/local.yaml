@@ -1,5 +1,6 @@
-id: this               # 客户端ID
+id: local              # 客户端ID
 server: 127.0.0.1:6154 # 服务器地址
+ssl: false             # 是否使用tls加密连接
 dashboard: # web面板
   enabled: true   # 是否开放dashboard
   listen: 0.0.0.0 # 监听地址

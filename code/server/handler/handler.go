@@ -2,12 +2,12 @@ package handler
 
 import (
 	"bytes"
-	"natpass/code/network"
-	"natpass/code/server/global"
 	"net"
 	"sync"
 	"time"
 
+	"github.com/jkstack/natpass/code/network"
+	"github.com/jkstack/natpass/code/server/global"
 	"github.com/lwch/logging"
 )
 

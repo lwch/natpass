@@ -2,11 +2,11 @@ package shell
 
 import (
 	"fmt"
-	"natpass/code/client/pool"
-	"natpass/code/network"
 	"net/http"
 	"time"
 
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )

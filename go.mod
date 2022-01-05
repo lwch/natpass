@@ -1,4 +1,4 @@
-module natpass
+module github.com/jkstack/natpass
 
 go 1.16
 
@@ -10,7 +10,7 @@ require (
 	github.com/kardianos/service v1.2.0
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc
-	github.com/lwch/rdesktop v0.0.0-20211229040606-1ab25b15434c
+	github.com/lwch/rdesktop v1.0.0
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
 	github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect

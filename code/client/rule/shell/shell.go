@@ -2,13 +2,13 @@ package shell
 
 import (
 	"fmt"
-	"natpass/code/client/global"
-	"natpass/code/client/pool"
-	"natpass/code/client/rule"
 	"net"
 	"net/http"
 	"sync"
 
+	"github.com/jkstack/natpass/code/client/global"
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/rule"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )

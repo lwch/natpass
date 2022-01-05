@@ -1,9 +1,10 @@
 package rule
 
 import (
-	"natpass/code/client/pool"
 	"net"
 	"sync"
+
+	"github.com/jkstack/natpass/code/client/pool"
 )
 
 // Link link interface

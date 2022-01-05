@@ -1,9 +1,9 @@
 package pool
 
 import (
-	"natpass/code/network"
 	"time"
 
+	"github.com/jkstack/natpass/code/network"
 	"google.golang.org/protobuf/proto"
 )
 

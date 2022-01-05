@@ -4,14 +4,14 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"natpass/code/server/global"
-	"natpass/code/server/handler"
-	"natpass/code/utils"
 	"net"
 	"os"
 	"path/filepath"
 	rt "runtime"
 
+	"github.com/jkstack/natpass/code/server/global"
+	"github.com/jkstack/natpass/code/server/handler"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
@@ -45,13 +45,20 @@ func (a *app) run() {
 	logging.SetSizeRotate(a.cfg.LogDir, "np-svr", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
 	defer logging.Flush()
 
-	cert, err := tls.LoadX509KeyPair(a.cfg.TLSCrt, a.cfg.TLSKey)
-	runtime.Assert(err)
-	l, err := tls.Listen("tcp", fmt.Sprintf(":%d", a.cfg.Listen), &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	})
-	runtime.Assert(err)
-	logging.Info("listen on %d", a.cfg.Listen)
+	var l net.Listener
+	if len(a.cfg.TLSCrt) > 0 && len(a.cfg.TLSKey) > 0 {
+		cert, err := tls.LoadX509KeyPair(a.cfg.TLSCrt, a.cfg.TLSKey)
+		runtime.Assert(err)
+		l, err = tls.Listen("tcp", fmt.Sprintf(":%d", a.cfg.Listen), &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		})
+		runtime.Assert(err)
+		logging.Info("listen on %d", a.cfg.Listen)
+	} else {
+		var err error
+		l, err = net.Listen("tcp", fmt.Sprintf(":%d", a.cfg.Listen))
+		runtime.Assert(err)
+	}
 
 	run(a.cfg, l)
 }

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
-	"natpass/code/client/rule/vnc/vncnetwork"
-	"natpass/code/utils"
 	"net"
 	"net/http"
 	"os"
@@ -14,6 +12,8 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
 	"google.golang.org/protobuf/proto"
 )

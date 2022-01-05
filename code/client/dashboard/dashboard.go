@@ -2,10 +2,11 @@ package dashboard
 
 import (
 	"fmt"
-	"natpass/code/client/global"
-	"natpass/code/client/pool"
-	"natpass/code/client/rule"
 	"net/http"
+
+	"github.com/jkstack/natpass/code/client/global"
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/rule"
 )
 
 // Dashboard dashboard object

@@ -2,8 +2,9 @@ package dashboard
 
 import (
 	"encoding/json"
-	"natpass/code/client/rule"
 	"net/http"
+
+	"github.com/jkstack/natpass/code/client/rule"
 )
 
 // Info information data

@@ -2,8 +2,8 @@ package vnc
 
 import (
 	"encoding/json"
-	"natpass/code/client/pool"
 
+	"github.com/jkstack/natpass/code/client/pool"
 	"github.com/lwch/logging"
 )
 

@@ -3,10 +3,10 @@ package worker
 import (
 	"image"
 	"image/jpeg"
-	"natpass/code/client/rule/vnc/vncnetwork"
 	"os"
 
 	"github.com/gorilla/websocket"
+	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
 	"github.com/lwch/logging"
 	"github.com/lwch/rdesktop"
 	"github.com/lwch/runtime"

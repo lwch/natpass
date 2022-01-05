@@ -1,4 +1,4 @@
-id: this               # 客户端ID
+id: local              # 客户端ID
 server: 127.0.0.1:6154 # 服务器地址
 ssl: false             # 是否使用tls加密连接
 dashboard: # web面板
@@ -7,4 +7,3 @@ dashboard: # web面板
   port: 8080      # 监听端口号
 #include common.yaml
 rules: # rule列表
-  #include rule.d/*.yaml

@@ -161,14 +161,16 @@ func build(t target) {
 	runtime.Assert(err)
 	err = copyFile("CHANGELOG.md", path.Join(buildDir, "CHANGELOG.md"))
 	runtime.Assert(err)
-	err = copyFile("docs/startup.md", path.Join(buildDir, "startup.md"))
+	runtime.Assert(os.MkdirAll(path.Join(buildDir, "docs"), 0755))
+	err = copyFile("docs/startup.md", path.Join(buildDir, "docs", "startup.md"))
+	runtime.Assert(err)
+	err = copyFile("docs/rules.md", path.Join(buildDir, "docs", "rules.md"))
 	runtime.Assert(err)
 
 	ldflags := "-X 'main.gitHash=" + gitHash() + "' " +
 		"-X 'main.gitReversion=" + gitReversion() + "' " +
 		"-X 'main.buildTime=" + buildTime() + "' " +
 		"-X 'main.version=" + version + "' "
-	// "--extldflags '-static -fpic -lssp'"
 
 	logging.Info("build server...")
 	cmd := exec.Command("go", "build", "-o", path.Join(buildDir, "np-svr"+t.ext),
@@ -193,6 +195,8 @@ func build(t target) {
 		env = append(env, "CGO_ENABLED=1")
 	} else if t.os == "linux" && !strings.Contains(t.arch, "arm") {
 		env = append(env, "CGO_ENABLED=1")
+	} else {
+		env = append(env, "CGO_ENABLED=0")
 	}
 	args = append(args,
 		path.Join("code", "client", "main.go"))

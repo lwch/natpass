@@ -1,0 +1,7 @@
+id: remote             # 客户端ID
+server: 127.0.0.1:6154 # 服务器地址
+ssl: false             # 是否使用tls加密连接
+dashboard: # web面板
+  enabled: false # 是否开放dashboard
+#include common.yaml
+rules: # rule列表

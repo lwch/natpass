@@ -20,6 +20,7 @@
 1. 在受控端机器上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. （可选）修改remote.yaml配置文件，修改*server*地址
 3. 使用以下命令将np-cli注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份
+
         sudo ./np-cli -conf remote.yaml -action install -user `whoami`
 4. 启动服务
 

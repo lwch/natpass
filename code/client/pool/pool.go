@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"natpass/code/client/global"
 	"natpass/code/network"
+	"net"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -78,7 +79,13 @@ func (p *Pool) connect(idx uint32) *network.Conn {
 			logging.Error("connect error: %v", err)
 		}
 	}()
-	conn, err := tls.Dial("tcp", p.cfg.Server, nil)
+	var conn net.Conn
+	var err error
+	if p.cfg.UseSSL {
+		conn, err = tls.Dial("tcp", p.cfg.Server, nil)
+	} else {
+		conn, err = net.Dial("tcp", p.cfg.Server)
+	}
 	runtime.Assert(err)
 	c := network.NewConn(conn)
 	err = p.writeHandshake(c, p.cfg, idx)

@@ -84,3 +84,7 @@
 2. 全面迁移到[https://github.com/lwch/rdesktop](https://github.com/lwch/rdesktop)，并去除robotgo库的依赖
 3. linux下统一到同一个可执行文件，并支持systemd方式启动
 4. 简化部署流程
+
+# v0.8.0
+
+1. 支持非tls加密连接

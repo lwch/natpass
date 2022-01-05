@@ -30,7 +30,7 @@
 
 1. 在本地控制机上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. （可选）修改local.yaml配置文件，修改*server*地址
-3. 修改rule.d目录下的规则配置文件，[rule配置方法](rules.md)
+3. （可选）修改rule.d目录下的规则配置文件，[rule配置方法](rules.md)
 4. 使用以下命令将np-cli注册为系统服务，其中-conf参数后跟配置文件所在路径，-user参数后为程序启动身份（建议使用nobody身份启动）
 
         sudo ./np-cli -conf local.yaml -action install -user nobody

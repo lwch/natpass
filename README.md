@@ -94,7 +94,7 @@ windows读取剪贴板内容
 
 ## stars
 
-![stars](https://starchart.cc/lwch/natpass.svg)
+![stars](https://starchart.cc/jkstack/natpass.svg)
 
 ## 免责声明
 
@@ -107,4 +107,4 @@ windows读取剪贴板内容
 
 ## 贡献代码
 
-为了更好的发展，我们鼓励大家为natpass项目做出贡献及提出建议，项目的地址为[https://github.com/lwch/natpass](https://github.com/lwch/natpass)，因此在gitee上提交的pr将不被接受，请大家将pr提交到github的同名项目中。
+为了更好的发展，我们鼓励大家为natpass项目做出贡献及提出建议，项目的地址为[https://github.com/jkstack/natpass](https://github.com/jkstack/natpass)，因此在gitee上提交的pr将不被接受，请大家将pr提交到github的同名项目中。

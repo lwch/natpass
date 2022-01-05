@@ -2,12 +2,12 @@ package pool
 
 import (
 	"context"
-	"natpass/code/network"
-	"natpass/code/utils"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/jkstack/natpass/code/network"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
 )
 

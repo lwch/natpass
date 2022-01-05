@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"natpass/code/network"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
 )
 

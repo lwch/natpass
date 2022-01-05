@@ -3,11 +3,11 @@ package global
 import (
 	"crypto/md5"
 	"fmt"
-	"natpass/code/utils"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/runtime"
 	"github.com/lwch/yaml"
 )

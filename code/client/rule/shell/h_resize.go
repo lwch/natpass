@@ -2,9 +2,10 @@ package shell
 
 import (
 	"fmt"
-	"natpass/code/client/pool"
 	"net/http"
 	"strconv"
+
+	"github.com/jkstack/natpass/code/client/pool"
 )
 
 // Resize resize terminal

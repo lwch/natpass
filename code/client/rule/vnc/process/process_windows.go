@@ -2,14 +2,14 @@ package process
 
 import (
 	"fmt"
-	"natpass/code/client/rule/vnc/define"
-	"natpass/code/client/rule/vnc/vncnetwork"
 	"os"
 	"strings"
 	"syscall"
 	"unicode/utf16"
 	"unsafe"
 
+	"github.com/jkstack/natpass/code/client/rule/vnc/define"
+	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
 	"golang.org/x/sys/windows"
 )
 

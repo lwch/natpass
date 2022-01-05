@@ -2,9 +2,10 @@ package vnc
 
 import (
 	"fmt"
-	"natpass/code/client/pool"
 	"net/http"
 	"strconv"
+
+	"github.com/jkstack/natpass/code/client/pool"
 )
 
 // Ctrl change vnc rule config

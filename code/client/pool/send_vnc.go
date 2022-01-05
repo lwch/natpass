@@ -2,8 +2,9 @@ package pool
 
 import (
 	"image"
-	"natpass/code/network"
 	"time"
+
+	"github.com/jkstack/natpass/code/network"
 )
 
 // SendVNCImage send vnc image data

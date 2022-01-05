@@ -2,8 +2,9 @@ package vnc
 
 import (
 	"fmt"
-	"natpass/code/client/pool"
 	"net/http"
+
+	"github.com/jkstack/natpass/code/client/pool"
 )
 
 // Clipboard get/set clipboard

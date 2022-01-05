@@ -3,16 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"natpass/code/client/app"
-	"natpass/code/client/global"
-	"natpass/code/client/rule/vnc"
-	"natpass/code/utils"
 	"os"
 	"path/filepath"
 	rt "runtime"
 
 	_ "net/http/pprof"
 
+	"github.com/jkstack/natpass/code/client/app"
+	"github.com/jkstack/natpass/code/client/global"
+	"github.com/jkstack/natpass/code/client/rule/vnc"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"

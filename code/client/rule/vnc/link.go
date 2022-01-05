@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"image"
 	"image/jpeg"
-	"natpass/code/client/pool"
-	"natpass/code/client/rule/vnc/process"
-	"natpass/code/network"
-	"natpass/code/utils"
 	"time"
 
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/rule/vnc/process"
+	"github.com/jkstack/natpass/code/network"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
 )
 

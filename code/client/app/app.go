@@ -1,16 +1,16 @@
 package app
 
 import (
-	"natpass/code/client/dashboard"
-	"natpass/code/client/global"
-	"natpass/code/client/pool"
-	"natpass/code/client/rule"
-	"natpass/code/client/rule/shell"
-	"natpass/code/client/rule/vnc"
-	"natpass/code/network"
 	rt "runtime"
 	"time"
 
+	"github.com/jkstack/natpass/code/client/dashboard"
+	"github.com/jkstack/natpass/code/client/global"
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/rule"
+	"github.com/jkstack/natpass/code/client/rule/shell"
+	"github.com/jkstack/natpass/code/client/rule/vnc"
+	"github.com/jkstack/natpass/code/network"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"

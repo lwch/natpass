@@ -2,14 +2,14 @@ package vnc
 
 import (
 	"fmt"
-	"natpass/code/client/global"
-	"natpass/code/client/pool"
-	"natpass/code/client/rule"
-	"natpass/code/network"
 	"net"
 	"net/http"
 	"sync"
 
+	"github.com/jkstack/natpass/code/client/global"
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/rule"
+	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )

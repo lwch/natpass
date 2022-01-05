@@ -9,15 +9,15 @@ import (
 	"image"
 	"image/draw"
 	"image/jpeg"
-	"natpass/code/client/pool"
-	"natpass/code/network"
-	"natpass/code/utils"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/network"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )

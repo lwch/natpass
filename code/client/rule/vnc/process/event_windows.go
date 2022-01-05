@@ -1,9 +1,9 @@
 package process
 
 import (
-	"natpass/code/client/rule/vnc/define"
 	"syscall"
 
+	"github.com/jkstack/natpass/code/client/rule/vnc/define"
 	"github.com/lwch/logging"
 )
 

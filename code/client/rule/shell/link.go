@@ -2,11 +2,11 @@ package shell
 
 import (
 	"io"
-	"natpass/code/client/pool"
-	"natpass/code/network"
-	"natpass/code/utils"
 	"os"
 
+	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/network"
+	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"google.golang.org/protobuf/proto"

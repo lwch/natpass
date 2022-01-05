@@ -2,9 +2,10 @@ package process
 
 import (
 	"fmt"
-	"natpass/code/client/rule/vnc/vncnetwork"
 	"os"
 	"os/exec"
+
+	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
 )
 
 // CreateWorker create worker process

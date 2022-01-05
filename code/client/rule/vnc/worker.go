@@ -2,9 +2,9 @@ package vnc
 
 import (
 	"fmt"
-	"natpass/code/client/rule/vnc/worker"
 
 	"github.com/gorilla/websocket"
+	"github.com/jkstack/natpass/code/client/rule/vnc/worker"
 	"github.com/lwch/runtime"
 )
 

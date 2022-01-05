@@ -2,13 +2,13 @@ package pool
 
 import (
 	"crypto/tls"
-	"natpass/code/client/global"
-	"natpass/code/network"
 	"net"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/jkstack/natpass/code/client/global"
+	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )

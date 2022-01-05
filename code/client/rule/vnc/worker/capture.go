@@ -2,8 +2,8 @@ package worker
 
 import (
 	"fmt"
-	"natpass/code/client/rule/vnc/vncnetwork"
 
+	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
 	"github.com/lwch/logging"
 )
 

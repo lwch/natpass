@@ -1,4 +1,4 @@
-module natpass
+module github.com/jkstack/natpass
 
 go 1.16
 

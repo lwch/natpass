@@ -2,10 +2,10 @@ package worker
 
 import (
 	"fmt"
-	"natpass/code/client/rule/vnc/define"
 	"runtime"
 	"syscall"
 
+	"github.com/jkstack/natpass/code/client/rule/vnc/define"
 	"golang.org/x/sys/windows"
 )
 

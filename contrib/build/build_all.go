@@ -83,7 +83,7 @@ var targets = []target{
 	{
 		os:   "windows",
 		arch: "arm",
-		cc:   "x86_64-w64-mingw32-gcc", cxx: "x86_64-w64-mingw32-g++",
+		cc:   "i686-w64-mingw32-gcc", cxx: "i686-w64-mingw32-g++",
 		ext: ".exe", packExt: ".zip",
 	},
 	{

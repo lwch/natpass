@@ -21,10 +21,10 @@ message connect_vnc {
 
 message connect_request {
     enum type {
-        tcp   = 0;
-        udp   = 1;
-        shell = 2;
-        vnc   = 3;
+        tcp   = 0; // tcp reverse proxy
+        udp   = 1; // udp reverse proxy
+        shell = 2; // shell
+        vnc   = 3; // vnc
     }
     string name = 1; // rule name
     type  _type = 2; // rule type

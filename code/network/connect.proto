@@ -26,12 +26,12 @@ message connect_request {
         shell = 2;
         vnc   = 3;
     }
-    string name = 1;
-    type  _type = 2;
+    string name = 1; // rule name
+    type  _type = 2; // rule type
     oneof payload {
-        connect_addr   caddr = 10;
-        connect_shell cshell = 11;
-        connect_vnc     cvnc = 12;
+        connect_addr   caddr = 10; // for reverse proxy
+        connect_shell cshell = 11; // for shell
+        connect_vnc     cvnc = 12; // for vnc
     }
 }
 

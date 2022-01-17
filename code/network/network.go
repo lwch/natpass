@@ -64,8 +64,6 @@ func (c *Conn) ReadMessage(timeout time.Duration) (*Msg, uint16, error) {
 
 // WriteMessage write message with timeout
 func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
-	c.lockWrite.Lock()
-	defer c.lockWrite.Unlock()
 	data, err := proto.Marshal(m)
 	if err != nil {
 		return err
@@ -77,6 +75,8 @@ func (c *Conn) WriteMessage(m *Msg, timeout time.Duration) error {
 	binary.BigEndian.PutUint16(buf, uint16(len(data)))
 	binary.BigEndian.PutUint32(buf[2:], crc32.ChecksumIEEE(data))
 	copy(buf[len(c.sizeRead):], data)
+	c.lockWrite.Lock()
+	defer c.lockWrite.Unlock()
 	c.c.SetWriteDeadline(time.Now().Add(timeout))
 	_, err = io.Copy(c.c, bytes.NewReader(buf))
 	return err

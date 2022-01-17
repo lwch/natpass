@@ -25,6 +25,7 @@ message connect_request {
         udp   = 1; // udp reverse proxy
         shell = 2; // shell
         vnc   = 3; // vnc
+        bench = 4; // benchmark
     }
     string name = 1; // rule name
     type  _type = 2; // rule type

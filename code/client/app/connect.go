@@ -65,3 +65,12 @@ func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *pool.Conn, msg *net
 	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
 }
+
+func (a *App) benchCreate(confDir string, mgr *rule.Mgr, conn *pool.Conn, msg *network.Msg) {
+	create := msg.GetCreq()
+	logging.Info("create link %s for bench rule [%s] from %s-%d to %s-%d",
+		msg.GetLinkId(), create.GetName(),
+		msg.GetFrom(), msg.GetFromIdx(),
+		a.cfg.ID, conn.GetIdx())
+	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
+}

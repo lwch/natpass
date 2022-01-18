@@ -8,6 +8,7 @@ import (
 	"github.com/jkstack/natpass/code/client/global"
 	"github.com/jkstack/natpass/code/client/pool"
 	"github.com/jkstack/natpass/code/client/rule"
+	"github.com/jkstack/natpass/code/client/rule/bench"
 	"github.com/jkstack/natpass/code/client/rule/shell"
 	"github.com/jkstack/natpass/code/client/rule/vnc"
 	"github.com/jkstack/natpass/code/network"
@@ -64,6 +65,10 @@ func (a *App) run() {
 			v := vnc.New(t)
 			mgr.Add(v)
 			go v.Handle(pl)
+		case "bench":
+			b := bench.New(t)
+			mgr.Add(b)
+			go b.Handle(pl)
 		}
 	}
 
@@ -88,6 +93,8 @@ func (a *App) run() {
 							a.shellCreate(mgr, conn, msg)
 						case network.ConnectRequest_vnc:
 							a.vncCreate(a.confDir, mgr, conn, msg)
+						case network.ConnectRequest_bench:
+							a.benchCreate(a.confDir, mgr, conn, msg)
 						}
 					default:
 						linkID = msg.GetLinkId()

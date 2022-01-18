@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	rt "runtime"
 
-	_ "net/http/pprof"
-
 	"github.com/jkstack/natpass/code/client/app"
 	"github.com/jkstack/natpass/code/client/global"
 	"github.com/jkstack/natpass/code/client/rule/vnc"

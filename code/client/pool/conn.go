@@ -55,7 +55,7 @@ func (conn *Conn) AddLink(id string) {
 	logging.Info("add link %s from %d", id, conn.Idx)
 	conn.Lock()
 	if _, ok := conn.read[id]; !ok {
-		conn.read[id] = make(chan *network.Msg)
+		conn.read[id] = make(chan *network.Msg, 10)
 	}
 	conn.Unlock()
 }
@@ -116,6 +116,8 @@ func (conn *Conn) loopRead(cancel context.CancelFunc) {
 		if msg.GetXType() == network.Msg_keepalive {
 			continue
 		}
+		logging.Debug("read message %s(%s) from %s-%d",
+			msg.GetXType().String(), msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx())
 		linkID := msg.GetLinkId()
 		conn.RLock()
 		ch := conn.read[linkID]
@@ -180,4 +182,9 @@ func (conn *Conn) keepalive(ctx context.Context) {
 			conn.SendKeepalive()
 		}
 	}
+}
+
+// GetIdx get connection index
+func (conn *Conn) GetIdx() uint32 {
+	return conn.Idx
 }

@@ -146,7 +146,14 @@ func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg, 
 		return
 	}
 	h.msgHook(msg, from, cli, size)
-	cli.writeMessage(msg)
+	err := cli.writeMessage(msg)
+	if err != nil {
+		logging.Error("write message %s from %s-%d to %s-%d: %v",
+			msg.GetXType().String(),
+			msg.GetFrom(), msg.GetFromIdx(),
+			msg.GetTo(), msg.GetToIdx(),
+			err)
+	}
 }
 
 func (h *Handler) addLink(name, id string, t network.ConnectRequestType, from, to *client) {

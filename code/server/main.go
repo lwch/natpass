@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	rt "runtime"
 
+	_ "net/http/pprof"
+
 	"github.com/jkstack/natpass/code/server/global"
 	"github.com/jkstack/natpass/code/server/handler"
 	"github.com/jkstack/natpass/code/utils"
@@ -44,6 +46,10 @@ func (a *app) Start(s service.Service) error {
 func (a *app) run() {
 	logging.SetSizeRotate(a.cfg.LogDir, "np-svr", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
 	defer logging.Flush()
+
+	// go func() {
+	// 	http.ListenAndServe(":7878", nil)
+	// }()
 
 	var l net.Listener
 	if len(a.cfg.TLSCrt) > 0 && len(a.cfg.TLSKey) > 0 {

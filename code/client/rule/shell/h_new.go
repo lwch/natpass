@@ -25,6 +25,7 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 	conn.SendConnectReq(id, shell.cfg)
 	ch := conn.ChanRead(id)
 	timeout := time.After(conn.ReadTimeout)
+	var repMsg *network.Msg
 	for {
 		var msg *network.Msg
 		select {
@@ -47,8 +48,12 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 			http.Error(w, rep.GetMsg(), http.StatusBadGateway)
 			return
 		}
+		repMsg = msg
 		break
 	}
-	logging.Info("new shell: name=%s, id=%s", shell.Name, id)
+	logging.Info("create link %s for shell rule [%s] from %s-%d to %s-%d",
+		link.GetID(), shell.cfg.Name,
+		repMsg.GetTo(), repMsg.GetToIdx(),
+		repMsg.GetFrom(), repMsg.GetFromIdx())
 	fmt.Fprint(w, id)
 }

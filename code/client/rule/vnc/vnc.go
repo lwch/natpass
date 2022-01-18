@@ -35,8 +35,6 @@ func New(cfg global.Rule) *VNC {
 // NewLink new link
 func (v *VNC) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) rule.Link {
 	remoteConn.AddLink(id)
-	logging.Info("create link %s for rule %s on connection %d",
-		id, v.Name, remoteConn.Idx)
 	link := &Link{
 		parent:    v,
 		id:        id,

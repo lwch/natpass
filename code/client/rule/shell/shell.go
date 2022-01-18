@@ -33,8 +33,6 @@ func New(cfg global.Rule) *Shell {
 // NewLink new link
 func (shell *Shell) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) rule.Link {
 	remoteConn.AddLink(id)
-	logging.Info("create link %s for shell %s on connection %d",
-		id, shell.Name, remoteConn.Idx)
 	link := &Link{
 		parent:    shell,
 		id:        id,

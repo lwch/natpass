@@ -71,7 +71,7 @@ func LoadConf(dir string) *Configure {
 	runtime.Assert(yaml.Decode(dir, &cfg))
 	for i, t := range cfg.Rules {
 		switch t.Type {
-		case "shell", "vnc":
+		case "shell", "vnc", "bench":
 		default:
 			panic(fmt.Sprintf("unsupported type: %s", t.Type))
 		}

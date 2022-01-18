@@ -24,6 +24,10 @@ func (a *App) shellCreate(mgr *rule.Mgr, conn *pool.Conn, msg *network.Msg) {
 		mgr.Add(tn)
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), nil, conn).(*shell.Link)
+	logging.Info("create link %s for shell rule [%s] from %s-%d to %s-%d",
+		msg.GetLinkId(), create.GetName(),
+		msg.GetFrom(), msg.GetFromIdx(),
+		a.cfg.ID, conn.GetIdx())
 	err := lk.Exec()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
@@ -47,6 +51,10 @@ func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *pool.Conn, msg *net
 		mgr.Add(tn)
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), msg.GetFromIdx(), nil, conn).(*vnc.Link)
+	logging.Info("create link %s for vnc rule [%s] from %s-%d to %s-%d",
+		msg.GetLinkId(), create.GetName(),
+		msg.GetFrom(), msg.GetFromIdx(),
+		a.cfg.ID, conn.GetIdx())
 	lk.SetQuality(create.GetCvnc().GetQuality())
 	err := lk.Fork(confDir)
 	if err != nil {
@@ -56,4 +64,13 @@ func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *pool.Conn, msg *net
 	}
 	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 	lk.Forward()
+}
+
+func (a *App) benchCreate(confDir string, mgr *rule.Mgr, conn *pool.Conn, msg *network.Msg) {
+	create := msg.GetCreq()
+	logging.Info("create link %s for bench rule [%s] from %s-%d to %s-%d",
+		msg.GetLinkId(), create.GetName(),
+		msg.GetFrom(), msg.GetFromIdx(),
+		a.cfg.ID, conn.GetIdx())
+	conn.SendConnectOK(msg.GetFrom(), msg.GetFromIdx(), msg.GetLinkId())
 }

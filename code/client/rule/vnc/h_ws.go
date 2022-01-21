@@ -15,7 +15,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/network"
 	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
@@ -25,13 +25,8 @@ import (
 var upgrader = websocket.Upgrader{}
 
 // WS websocket handler
-func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+func (v *VNC) WS(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/ws/")
-	conn := pool.Get(id)
-	if conn == nil {
-		http.NotFound(w, r)
-		return
-	}
 	local, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -39,7 +34,7 @@ func (v *VNC) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 	}
 	defer local.Close()
 	ch := conn.ChanRead(id)
-	defer conn.SendDisconnect(v.link.target, v.link.targetIdx, v.link.id)
+	defer conn.SendDisconnect(v.link.target, v.link.id)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
@@ -80,7 +75,7 @@ func (v *VNC) remoteRead(ctx context.Context, ch <-chan *network.Msg, local *web
 	}
 }
 
-func (v *VNC) localRead(ctx context.Context, local *websocket.Conn, remote *pool.Conn) {
+func (v *VNC) localRead(ctx context.Context, local *websocket.Conn, remote *conn.Conn) {
 	defer utils.Recover("localRead")
 	for {
 		select {

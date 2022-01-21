@@ -1,4 +1,4 @@
-package pool
+package conn
 
 import (
 	"time"
@@ -8,7 +8,7 @@ import (
 )
 
 // SendShellData send shell data
-func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte) uint64 {
+func (conn *Conn) SendShellData(to string, id string, data []byte) uint64 {
 	dup := func(data []byte) []byte {
 		ret := make([]byte, len(data))
 		copy(ret, data)
@@ -16,7 +16,6 @@ func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte)
 	}
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_shell_data
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Sdata{
@@ -28,16 +27,15 @@ func (conn *Conn) SendShellData(to string, toIdx uint32, id string, data []byte)
 	case conn.write <- &msg:
 		data, _ := proto.Marshal(&msg)
 		return uint64(len(data))
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 		return 0
 	}
 }
 
 // SendShellResize send shell resize
-func (conn *Conn) SendShellResize(to string, toIdx uint32, id string, rows, cols uint32) {
+func (conn *Conn) SendShellResize(to string, id string, rows, cols uint32) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_shell_resize
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Sresize{
@@ -48,6 +46,6 @@ func (conn *Conn) SendShellResize(to string, toIdx uint32, id string, rows, cols
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }

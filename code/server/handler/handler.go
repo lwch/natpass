@@ -22,7 +22,7 @@ func (link *link) close() {
 		if cli == nil {
 			return
 		}
-		cli.closeLink(link.id)
+		cli.sendClose(link.id)
 	}
 	close(link.endPoints[0])
 	close(link.endPoints[1])
@@ -30,20 +30,20 @@ func (link *link) close() {
 
 // Handler handler
 type Handler struct {
-	cfg         *global.Configure
-	lockClients sync.RWMutex
-	clients     map[string]*clients // client id => client
-	lockLinks   sync.RWMutex
-	links       map[string]link // link id => endpoints
+	cfg       *global.Configure
+	clis      *clients
+	lockLinks sync.RWMutex
+	links     map[string]link // link id => endpoints
 }
 
 // New create handler
 func New(cfg *global.Configure) *Handler {
-	return &Handler{
-		cfg:     cfg,
-		clients: make(map[string]*clients),
-		links:   make(map[string]link),
+	h := &Handler{
+		cfg:   cfg,
+		links: make(map[string]link),
 	}
+	h.clis = newClients(h)
+	return h
 }
 
 // Handle main loop
@@ -59,7 +59,7 @@ func (h *Handler) Handle(conn net.Conn) {
 	}()
 	var err error
 	for i := 0; i < 10; i++ {
-		id, idx, err = h.readHandshake(c)
+		id, err = h.readHandshake(c)
 		if err != nil {
 			if err == errInvalidHandshake {
 				logging.Error("invalid handshake from %s", c.RemoteAddr().String())
@@ -75,83 +75,61 @@ func (h *Handler) Handle(conn net.Conn) {
 	}
 	logging.Info("%s-%d connected", id, idx)
 
-	clients := h.tryGetClients(id)
-	cli := clients.new(idx, c)
+	cli := h.clis.new(id, c)
 
-	defer h.closeClient(cli)
+	defer cli.close()
 	go cli.keepalive()
 
 	cli.run()
 }
 
-func (h *Handler) tryGetClients(id string) *clients {
-	h.lockClients.Lock()
-	defer h.lockClients.Unlock()
-	clients := h.clients[id]
-	if clients != nil {
-		return clients
-	}
-	clients = newClients(h, id)
-	h.clients[id] = clients
-	return clients
-}
-
 // readHandshake read handshake message and compare secret encoded from md5
-func (h *Handler) readHandshake(c *network.Conn) (string, uint32, error) {
+func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 	msg, _, err := c.ReadMessage(5 * time.Second)
 	if err != nil {
-		return "", 0, err
+		return "", err
 	}
 	if msg.GetXType() != network.Msg_handshake {
-		return "", 0, errNotHandshake
+		return "", errNotHandshake
 	}
 	n := bytes.Compare(msg.GetHsp().GetEnc(), h.cfg.Enc[:])
 	if n != 0 {
-		return "", 0, errInvalidHandshake
+		return "", errInvalidHandshake
 	}
-	return msg.GetFrom(), msg.GetFromIdx(), nil
+	return msg.GetFrom(), nil
 }
 
-func (h *Handler) getClient(linkID, to string, toIdx uint32) *client {
+func (h *Handler) getClient(linkID, to string) *client {
 	h.lockLinks.RLock()
 	link := h.links[linkID]
 	h.lockLinks.RUnlock()
 
-	if link.endPoints[0] != nil && link.endPoints[0].is(to, toIdx) {
+	if link.endPoints[0] != nil && link.endPoints[0].id == to {
 		return link.endPoints[0]
 	}
-	if link.endPoints[1] != nil && link.endPoints[1].is(to, toIdx) {
+	if link.endPoints[1] != nil && link.endPoints[1].id == to {
 		return link.endPoints[1]
 	}
 
-	h.lockClients.RLock()
-	clients := h.clients[to]
-	h.lockClients.RUnlock()
-
-	if clients == nil {
-		return nil
-	}
-	return clients.next()
+	return h.clis.lookup(to)
 }
 
 func (h *Handler) onMessage(from *client, conn *network.Conn, msg *network.Msg, size uint16) {
 	to := msg.GetTo()
-	toIdx := msg.GetToIdx()
 	if msg.GetXType() == network.Msg_keepalive {
 		return
 	}
-	cli := h.getClient(msg.GetLinkId(), to, toIdx)
+	cli := h.getClient(msg.GetLinkId(), to)
 	if cli == nil {
-		logging.Error("client %s-%d not found", to, toIdx)
+		logging.Error("client %s not found", to)
 		return
 	}
 	h.msgHook(msg, from, cli, size)
 	err := cli.writeMessage(msg)
 	if err != nil {
-		logging.Error("write message %s from %s-%d to %s-%d: %v",
+		logging.Error("write message %s from %s to %s: %v",
 			msg.GetXType().String(),
-			msg.GetFrom(), msg.GetFromIdx(),
-			msg.GetTo(), msg.GetToIdx(),
+			msg.GetFrom(), msg.GetTo(),
 			err)
 	}
 }
@@ -171,8 +149,8 @@ func (h *Handler) addLink(name, id string, t network.ConnectRequestType, from, t
 	h.lockLinks.Lock()
 	h.links[id] = link
 	h.lockLinks.Unlock()
-	logging.Info("add link %s name %s from %s-%d to %s-%d",
-		id, name, from.parent.id, from.idx, to.parent.id, to.idx)
+	logging.Info("add link %s name %s from %s to %s",
+		id, name, from.id, to.id)
 }
 
 func (h *Handler) removeLink(id string, from, to *client) {
@@ -185,17 +163,17 @@ func (h *Handler) removeLink(id string, from, to *client) {
 	h.lockLinks.Lock()
 	delete(h.links, id)
 	h.lockLinks.Unlock()
-	logging.Info("remove link %s from %s-%d to %s-%d",
-		id, from.parent.id, from.idx, to.parent.id, to.idx)
+	logging.Info("remove link %s from %s to %s",
+		id, from.id, to.id)
 }
 
 func (h *Handler) responseLink(id string, ok bool, msg string, from, to *client) {
 	if ok {
-		logging.Info("link %s from %s-%d to %s-%d connect successed",
-			id, from.parent.id, from.idx, to.parent.id, to.idx)
+		logging.Info("link %s from %s to %s connect successed",
+			id, from.id, to.id)
 	} else {
-		logging.Info("link %s from %s-%d to %s-%d connect failed, %s",
-			id, from.parent.id, from.idx, to.parent.id, to.idx, msg)
+		logging.Info("link %s from %s to %s connect failed, %s",
+			id, from.id, to.id, msg)
 		// TODO: remove link?
 	}
 }
@@ -216,48 +194,31 @@ func (h *Handler) msgHook(msg *network.Msg, from, to *client, size uint16) {
 	// forward data
 	case network.Msg_forward:
 		data := msg.GetXData()
-		logging.Debug("link %s forward %d bytes from %s-%d to %s-%d",
-			msg.GetLinkId(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
+		logging.Debug("link %s forward %d bytes from %s to %s",
+			msg.GetLinkId(), len(data.GetData()), from.id, to.id)
 	case network.Msg_shell_data:
 		data := msg.GetSdata()
-		logging.Debug("shell %s forward %d bytes from %s-%d to %s-%d",
-			msg.GetLinkId(), len(data.GetData()), from.parent.id, from.idx, to.parent.id, to.idx)
+		logging.Debug("shell %s forward %d bytes from %s to %s",
+			msg.GetLinkId(), len(data.GetData()), from.id, to.id)
 	// shell
 	case network.Msg_shell_resize:
 		data := msg.GetSresize()
-		logging.Info("shell %s from %s-%d to %s-%d resize to (%d,%d)",
-			msg.GetLinkId(), from.parent.id, from.idx, to.parent.id, to.idx,
+		logging.Info("shell %s from %s to %s resize to (%d,%d)",
+			msg.GetLinkId(), from.id, to.id,
 			data.GetRows(), data.GetCols())
 	}
-	msg.From = from.parent.id
-	msg.FromIdx = from.idx
-	msg.To = to.parent.id
-	msg.ToIdx = to.idx
-	logging.Debug("forward %d bytes on link %s from %s-%d to %s-%d", size, msg.GetLinkId(),
-		from.parent.id, from.idx, to.parent.id, to.idx)
+	msg.From = from.id
+	msg.To = to.id
+	logging.Debug("forward %d bytes on link %s from %s to %s", size, msg.GetLinkId(),
+		from.id, to.id)
 }
 
-func (h *Handler) closeClient(cli *client) {
-	links := cli.getLinks()
-	for _, t := range links {
-		h.lockLinks.RLock()
-		link := h.links[t]
-		h.lockLinks.RUnlock()
-		link.close()
-		h.lockLinks.Lock()
-		delete(h.links, t)
-		h.lockLinks.Unlock()
-	}
-	h.lockClients.RLock()
-	clients := h.clients[cli.parent.id]
-	h.lockClients.RUnlock()
-	if clients != nil {
-		clients.close(cli.idx)
-	}
-}
-
-func (h *Handler) removeClients(id string) {
-	h.lockClients.Lock()
-	delete(h.clients, id)
-	h.lockClients.Unlock()
+func (h *Handler) closeLink(id string) {
+	h.lockLinks.RLock()
+	link := h.links[id]
+	h.lockLinks.RUnlock()
+	link.close()
+	h.lockLinks.Lock()
+	delete(h.links, id)
+	h.lockLinks.Unlock()
 }

@@ -5,24 +5,24 @@ import (
 	"net/http"
 	"net/http/pprof"
 
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/pool"
 	"github.com/jkstack/natpass/code/client/rule"
 )
 
 // Dashboard dashboard object
 type Dashboard struct {
 	cfg     *global.Configure
-	pl      *pool.Pool
+	conn    *conn.Conn
 	mgr     *rule.Mgr
 	Version string
 }
 
 // New create dashboard object
-func New(cfg *global.Configure, pl *pool.Pool, mgr *rule.Mgr, version string) *Dashboard {
+func New(cfg *global.Configure, conn *conn.Conn, mgr *rule.Mgr, version string) *Dashboard {
 	return &Dashboard{
 		cfg:     cfg,
-		pl:      pl,
+		conn:    conn,
 		mgr:     mgr,
 		Version: version,
 	}

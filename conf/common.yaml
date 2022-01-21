@@ -1,6 +1,5 @@
 secret: 0123456789  # 预共享密钥，否则握手失败
 link:
-  connections:   3  # 连接数，仅client有效
   read_timeout:  1s # 读取数据包超时时间
   write_timeout: 1s # 发送数据包超时时间
 log:

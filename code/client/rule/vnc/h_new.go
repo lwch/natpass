@@ -6,14 +6,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
 
 // New new vnc
-func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+func (v *VNC) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	if v.link != nil {
 		v.link.close()
 	}
@@ -34,17 +34,13 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	conn := pool.Get(id)
 	if v.link != nil {
-		old := pool.Get(v.link.id)
-		if old != nil {
-			old.SendDisconnect(v.link.target, v.link.targetIdx, v.link.id)
-		}
+		conn.SendDisconnect(v.link.target, v.link.id)
 	}
 	conn.SendConnectVnc(id, v.cfg, quality, showCursor)
-	v.link = v.NewLink(id, v.cfg.Target, 0, nil, conn).(*Link)
+	v.link = v.NewLink(id, v.cfg.Target, nil, conn).(*Link)
 	ch := conn.ChanRead(id)
-	timeout := time.After(conn.ReadTimeout)
+	timeout := time.After(v.readTimeout)
 	for {
 		var msg *network.Msg
 		select {
@@ -54,10 +50,9 @@ func (v *VNC) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "timeout", http.StatusBadGateway)
 			return
 		}
-		v.link.SetTargetIdx(msg.GetFromIdx())
 		if msg.GetXType() != network.Msg_connect_rep {
 			conn.Reset(id, msg)
-			time.Sleep(conn.ReadTimeout / 10)
+			time.Sleep(v.readTimeout / 10)
 			continue
 		}
 		rep := msg.GetCrep()

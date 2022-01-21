@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
 )
 
 // New new shell
-func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+func (shell *Shell) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	id, err := runtime.UUID(16, "0123456789abcdef")
 	if err != nil {
 		logging.Error("failed to generate link_id for shell: %s, err=%v",
@@ -20,11 +20,10 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	conn := pool.Get(id)
-	link := shell.NewLink(id, shell.cfg.Target, 0, nil, conn).(*Link)
+	link := shell.NewLink(id, shell.cfg.Target, nil, conn).(*Link)
 	conn.SendConnectReq(id, shell.cfg)
 	ch := conn.ChanRead(id)
-	timeout := time.After(conn.ReadTimeout)
+	timeout := time.After(shell.readTimeout)
 	var repMsg *network.Msg
 	for {
 		var msg *network.Msg
@@ -35,10 +34,9 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 			http.Error(w, "timeout", http.StatusBadGateway)
 			return
 		}
-		link.SetTargetIdx(msg.GetFromIdx())
 		if msg.GetXType() != network.Msg_connect_rep {
 			conn.Reset(id, msg)
-			time.Sleep(conn.ReadTimeout / 10)
+			time.Sleep(shell.readTimeout / 10)
 			continue
 		}
 		rep := msg.GetCrep()
@@ -51,9 +49,8 @@ func (shell *Shell) New(pool *pool.Pool, w http.ResponseWriter, r *http.Request)
 		repMsg = msg
 		break
 	}
-	logging.Info("create link %s for shell rule [%s] from %s-%d to %s-%d",
+	logging.Info("create link %s for shell rule [%s] from %s to %s",
 		link.GetID(), shell.cfg.Name,
-		repMsg.GetTo(), repMsg.GetToIdx(),
-		repMsg.GetFrom(), repMsg.GetFromIdx())
+		repMsg.GetTo(), repMsg.GetFrom())
 	fmt.Fprint(w, id)
 }

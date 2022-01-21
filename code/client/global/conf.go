@@ -52,7 +52,6 @@ func LoadConf(dir string) *Configure {
 		Secret string `yaml:"secret"`
 		SSL    bool   `yaml:"ssl"`
 		Link   struct {
-			Connections  int           `yaml:"connections"`
 			ReadTimeout  time.Duration `yaml:"read_timeout"`
 			WriteTimeout time.Duration `yaml:"write_timeout"`
 		} `yaml:"link"`
@@ -77,9 +76,6 @@ func LoadConf(dir string) *Configure {
 		}
 		cfg.Rules[i] = t
 	}
-	if cfg.Link.Connections <= 0 {
-		cfg.Link.Connections = 3
-	}
 	if cfg.Link.ReadTimeout <= 0 {
 		cfg.Link.ReadTimeout = 5 * time.Second
 	}
@@ -96,7 +92,6 @@ func LoadConf(dir string) *Configure {
 		Server:           cfg.Server,
 		UseSSL:           cfg.SSL,
 		Enc:              md5.Sum([]byte(cfg.Secret)),
-		Links:            cfg.Link.Connections,
 		ReadTimeout:      cfg.Link.ReadTimeout,
 		WriteTimeout:     cfg.Link.WriteTimeout,
 		LogDir:           cfg.Log.Dir,

@@ -1,4 +1,4 @@
-package pool
+package conn
 
 import (
 	"image"
@@ -8,7 +8,7 @@ import (
 )
 
 // SendVNCImage send vnc image data
-func (conn *Conn) SendVNCImage(to string, toIdx uint32, id string, screen, rect image.Rectangle,
+func (conn *Conn) SendVNCImage(to string, id string, screen, rect image.Rectangle,
 	encode network.VncImageEncoding, data []byte) {
 	dup := func(data []byte) []byte {
 		ret := make([]byte, len(data))
@@ -17,7 +17,6 @@ func (conn *Conn) SendVNCImage(to string, toIdx uint32, id string, screen, rect 
 	}
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_image
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vimg{
@@ -36,15 +35,14 @@ func (conn *Conn) SendVNCImage(to string, toIdx uint32, id string, screen, rect 
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendVNCCtrl send vnc config
-func (conn *Conn) SendVNCCtrl(to string, toIdx uint32, id string, quality uint64, showCursor bool) {
+func (conn *Conn) SendVNCCtrl(to string, id string, quality uint64, showCursor bool) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_ctrl
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vctrl{
@@ -55,12 +53,12 @@ func (conn *Conn) SendVNCCtrl(to string, toIdx uint32, id string, quality uint64
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendVNCMouse send vnc mouse event
-func (conn *Conn) SendVNCMouse(to string, toIdx uint32, id string,
+func (conn *Conn) SendVNCMouse(to string, id string,
 	button, status string, x, y int) {
 	t := network.VncStatus_unset_st
 	switch status {
@@ -80,7 +78,6 @@ func (conn *Conn) SendVNCMouse(to string, toIdx uint32, id string,
 	}
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_mouse
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vmouse{
@@ -93,12 +90,12 @@ func (conn *Conn) SendVNCMouse(to string, toIdx uint32, id string,
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendVNCKeyboard send vnc keyboard event
-func (conn *Conn) SendVNCKeyboard(to string, toIdx uint32, id string,
+func (conn *Conn) SendVNCKeyboard(to string, id string,
 	status, key string) {
 	t := network.VncStatus_unset_st
 	switch status {
@@ -109,7 +106,6 @@ func (conn *Conn) SendVNCKeyboard(to string, toIdx uint32, id string,
 	}
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_keyboard
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vkbd{
@@ -120,28 +116,26 @@ func (conn *Conn) SendVNCKeyboard(to string, toIdx uint32, id string,
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendVNCCADEvent send vnc keyboard event
-func (conn *Conn) SendVNCCADEvent(to string, toIdx uint32, id string) {
+func (conn *Conn) SendVNCCADEvent(to string, id string) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_cad
 	msg.LinkId = id
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendVNCScroll send vnc scroll event
-func (conn *Conn) SendVNCScroll(to string, toIdx uint32, id string, x, y int32) {
+func (conn *Conn) SendVNCScroll(to string, id string, x, y int32) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_scroll
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vscroll{
@@ -152,15 +146,14 @@ func (conn *Conn) SendVNCScroll(to string, toIdx uint32, id string, x, y int32) 
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendVNCClipboardData send vnc clipboard data
-func (conn *Conn) SendVNCClipboardData(to string, toIdx uint32, id string, set bool, data string) {
+func (conn *Conn) SendVNCClipboardData(to string, id string, set bool, data string) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_vnc_clipboard
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Vclipboard{
@@ -174,6 +167,6 @@ func (conn *Conn) SendVNCClipboardData(to string, toIdx uint32, id string, set b
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 )
 
 // Link link interface
@@ -18,7 +18,7 @@ type Link interface {
 
 // Rule rule interface
 type Rule interface {
-	NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) Link
+	NewLink(id, remote string, localConn net.Conn, remoteConn *conn.Conn) Link
 	GetName() string
 	GetRemote() string
 	GetPort() uint16

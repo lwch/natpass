@@ -16,7 +16,7 @@ func (db *Dashboard) Info(w http.ResponseWriter, r *http.Request) {
 		Session       int `json:"sessions"`
 	}
 	ret.Rules = len(db.cfg.Rules)
-	ret.PhysicalLinks = db.pl.Size()
+	ret.PhysicalLinks = 0 // TODO
 	db.mgr.Range(func(t rule.Rule) {
 		n := len(t.GetLinks())
 		ret.VirtualLinks += n

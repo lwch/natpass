@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/network"
 	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
@@ -14,11 +14,10 @@ import (
 
 // Link shell link
 type Link struct {
-	parent    *Shell
-	id        string // link id
-	target    string // target id
-	targetIdx uint32 // target idx
-	remote    *pool.Conn
+	parent *Shell
+	id     string // link id
+	target string // target id
+	remote *conn.Conn
 	// in remote
 	pid    int
 	stdin  io.WriteCloser
@@ -45,11 +44,6 @@ func (link *Link) GetPackets() (uint64, uint64) {
 	return link.recvPacket, link.sendPacket
 }
 
-// SetTargetIdx set link remote index
-func (link *Link) SetTargetIdx(idx uint32) {
-	link.targetIdx = idx
-}
-
 // Close close link
 func (link *Link) Close() {
 	link.onClose()
@@ -57,7 +51,7 @@ func (link *Link) Close() {
 	if err == nil {
 		p.Kill()
 	}
-	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
+	link.remote.SendDisconnect(link.target, link.id)
 	link.parent.remove(link.id)
 }
 
@@ -79,7 +73,6 @@ func (link *Link) remoteRead() {
 		data, _ := proto.Marshal(msg)
 		link.recvBytes += uint64(len(data))
 		link.recvPacket++
-		link.targetIdx = msg.GetFromIdx()
 		switch msg.GetXType() {
 		case network.Msg_shell_resize:
 			size := msg.GetSresize()
@@ -125,7 +118,7 @@ func (link *Link) localRead() {
 		}
 		logging.Debug("link %s on shell %s read from local %d bytes",
 			link.id, link.parent.Name, n)
-		send := link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+		send := link.remote.SendShellData(link.target, link.id, data)
 		link.sendBytes += send
 		link.sendPacket++
 	}
@@ -133,12 +126,12 @@ func (link *Link) localRead() {
 
 // SendData send data
 func (link *Link) SendData(data []byte) {
-	send := link.remote.SendShellData(link.target, link.targetIdx, link.id, data)
+	send := link.remote.SendShellData(link.target, link.id, data)
 	link.sendBytes += send
 	link.sendPacket++
 }
 
 // SendResize send resize message
 func (link *Link) SendResize(rows, cols uint32) {
-	link.remote.SendShellResize(link.target, link.targetIdx, link.id, rows, cols)
+	link.remote.SendShellResize(link.target, link.id, rows, cols)
 }

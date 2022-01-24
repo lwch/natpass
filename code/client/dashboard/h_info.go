@@ -10,17 +10,16 @@ import (
 // Info information data
 func (db *Dashboard) Info(w http.ResponseWriter, r *http.Request) {
 	var ret struct {
-		Rules         int `json:"rules"`
-		PhysicalLinks int `json:"physical_links"`
-		VirtualLinks  int `json:"virtual_links"`
-		Session       int `json:"sessions"`
+		Rules        int `json:"rules"`
+		VirtualLinks int `json:"virtual_links"`
+		Session      int `json:"sessions"`
 	}
 	ret.Rules = len(db.cfg.Rules)
-	ret.PhysicalLinks = 0 // TODO
 	db.mgr.Range(func(t rule.Rule) {
 		n := len(t.GetLinks())
 		ret.VirtualLinks += n
-		if t.GetTypeName() == "shell" {
+		if t.GetTypeName() == "shell" ||
+			t.GetTypeName() == "vnc" {
 			ret.Session += n
 		}
 	})

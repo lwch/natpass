@@ -31,20 +31,24 @@ func (cs *clients) new(id string, conn *network.Conn) *client {
 	cs.Lock()
 	if c, ok := cs.data[id]; ok {
 		c.close()
+		delete(cs.data, id)
 	}
 	cs.data[id] = cli
 	cs.Unlock()
 	return cli
 }
 
-func (cs *clients) remove(id string) {
-	cs.Lock()
-	delete(cs.data, id)
-	cs.Unlock()
-}
-
 func (cs *clients) lookup(id string) *client {
 	cs.RLock()
 	defer cs.RUnlock()
 	return cs.data[id]
+}
+
+func (cs *clients) close(id string) {
+	cs.Lock()
+	if c, ok := cs.data[id]; ok {
+		c.close()
+		delete(cs.data, id)
+	}
+	cs.Unlock()
 }

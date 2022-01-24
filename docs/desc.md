@@ -1,6 +1,6 @@
 # 实现原理
 
-基于tls链接，protobuf进行数据传输，下面举例远程连接服务器集群内的某台主机
+支持tls链接，protobuf进行数据传输，下面举例远程连接服务器集群内的某台主机
 
 ![shell](imgs/example.jpg)
 

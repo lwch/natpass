@@ -1,4 +1,4 @@
-package pool
+package conn
 
 import (
 	"time"
@@ -56,7 +56,7 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Rule) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
@@ -87,15 +87,29 @@ func (conn *Conn) SendConnectVnc(id string, cfg global.Rule, quality uint64, sho
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
+	}
+}
+
+// SendDisconnect send disconnect message
+func (conn *Conn) SendDisconnect(to string, id string) uint64 {
+	var msg network.Msg
+	msg.To = to
+	msg.XType = network.Msg_disconnect
+	msg.LinkId = id
+	select {
+	case conn.write <- &msg:
+		data, _ := proto.Marshal(&msg)
+		return uint64(len(data))
+	case <-time.After(conn.cfg.WriteTimeout):
+		return 0
 	}
 }
 
 // SendConnectError send connect error response message
-func (conn *Conn) SendConnectError(to string, toIdx uint32, id, info string) {
+func (conn *Conn) SendConnectError(to string, id, info string) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_connect_rep
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Crep{
@@ -106,15 +120,14 @@ func (conn *Conn) SendConnectError(to string, toIdx uint32, id, info string) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }
 
 // SendConnectOK send connect success response message
-func (conn *Conn) SendConnectOK(to string, toIdx uint32, id string) {
+func (conn *Conn) SendConnectOK(to string, id string) {
 	var msg network.Msg
 	msg.To = to
-	msg.ToIdx = toIdx
 	msg.XType = network.Msg_connect_rep
 	msg.LinkId = id
 	msg.Payload = &network.Msg_Crep{
@@ -124,22 +137,6 @@ func (conn *Conn) SendConnectOK(to string, toIdx uint32, id string) {
 	}
 	select {
 	case conn.write <- &msg:
-	case <-time.After(conn.parent.cfg.WriteTimeout):
-	}
-}
-
-// SendDisconnect send disconnect message
-func (conn *Conn) SendDisconnect(to string, toIdx uint32, id string) uint64 {
-	var msg network.Msg
-	msg.To = to
-	msg.ToIdx = toIdx
-	msg.XType = network.Msg_disconnect
-	msg.LinkId = id
-	select {
-	case conn.write <- &msg:
-		data, _ := proto.Marshal(&msg)
-		return uint64(len(data))
-	case <-time.After(conn.parent.cfg.WriteTimeout):
-		return 0
+	case <-time.After(conn.cfg.WriteTimeout):
 	}
 }

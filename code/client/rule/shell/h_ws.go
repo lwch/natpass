@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/network"
 	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
@@ -16,7 +16,7 @@ import (
 var upgrader = websocket.Upgrader{}
 
 // WS websocket for forward data
-func (shell *Shell) WS(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+func (shell *Shell) WS(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/ws/")
 
 	local, err := upgrader.Upgrade(w, r, nil)

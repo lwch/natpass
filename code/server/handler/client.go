@@ -11,15 +11,27 @@ import (
 
 type client struct {
 	sync.RWMutex
+	id      string
 	parent  *clients
-	idx     uint32
 	conn    *network.Conn
 	updated time.Time
 	links   map[string]struct{} // link id => struct{}
 }
 
+func (c *client) close() {
+	for _, link := range c.getLinks() {
+		c.parent.parent.closeLink(link)
+		c.Lock()
+		delete(c.links, link)
+		c.Unlock()
+	}
+	c.conn.Close()
+	c.parent.remove(c.id)
+	logging.Info("client %s connection closed", c.id)
+}
+
 func (c *client) run() {
-	defer c.parent.parent.closeClient(c)
+	defer c.close()
 	for {
 		if time.Since(c.updated).Seconds() > 600 {
 			links := make([]string, 0, len(c.links))
@@ -28,7 +40,7 @@ func (c *client) run() {
 				links = append(links, id)
 			}
 			c.RUnlock()
-			logging.Info("%s-%d is not keepalived, links: %v", c.parent.id, c.idx, links)
+			logging.Info("%s is not keepalived, links: %v", c.id, links)
 			return
 		}
 		msg, size, err := c.conn.ReadMessage(c.parent.parent.cfg.ReadTimeout)
@@ -36,7 +48,7 @@ func (c *client) run() {
 			if strings.Contains(err.Error(), "i/o timeout") {
 				continue
 			}
-			logging.Error("read message from %s-%d: %v", c.parent.id, c.idx, err)
+			logging.Error("read message from %s: %v", c.id, err)
 			return
 		}
 		c.updated = time.Now()
@@ -70,11 +82,10 @@ func (c *client) getLinks() []string {
 	return ret
 }
 
-func (c *client) closeLink(id string) {
+func (c *client) sendClose(id string) {
 	var msg network.Msg
 	msg.From = "server"
-	msg.To = c.parent.id
-	msg.ToIdx = c.idx
+	msg.To = c.id
 	msg.XType = network.Msg_disconnect
 	msg.LinkId = id
 	c.conn.WriteMessage(&msg, c.parent.parent.cfg.WriteTimeout)
@@ -83,15 +94,10 @@ func (c *client) closeLink(id string) {
 	c.Unlock()
 }
 
-func (c *client) is(id string, idx uint32) bool {
-	return c.parent.id == id && c.idx == idx
-}
-
 func (c *client) keepalive() {
 	var msg network.Msg
 	msg.From = "server"
-	msg.To = c.parent.id
-	msg.ToIdx = c.idx
+	msg.To = c.id
 	msg.XType = network.Msg_keepalive
 	for {
 		time.Sleep(10 * time.Second)

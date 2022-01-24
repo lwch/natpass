@@ -2,11 +2,10 @@ package app
 
 import (
 	rt "runtime"
-	"time"
 
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/client/dashboard"
 	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/pool"
 	"github.com/jkstack/natpass/code/client/rule"
 	"github.com/jkstack/natpass/code/client/rule/bench"
 	"github.com/jkstack/natpass/code/client/rule/shell"
@@ -22,6 +21,7 @@ type App struct {
 	confDir string
 	cfg     *global.Configure
 	version string
+	conn    *conn.Conn
 }
 
 // New create application
@@ -52,67 +52,53 @@ func (a *App) run() {
 	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, stdout)
 	defer logging.Flush()
 
-	pl := pool.New(a.cfg)
+	a.conn = conn.New(a.cfg)
 	mgr := rule.New()
 
 	for _, t := range a.cfg.Rules {
 		switch t.Type {
 		case "shell":
-			sh := shell.New(t)
+			sh := shell.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
 			mgr.Add(sh)
-			go sh.Handle(pl)
+			go sh.Handle(a.conn)
 		case "vnc":
-			v := vnc.New(t)
+			v := vnc.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
 			mgr.Add(v)
-			go v.Handle(pl)
+			go v.Handle(a.conn)
 		case "bench":
 			b := bench.New(t)
 			mgr.Add(b)
-			go b.Handle(pl)
+			go b.Handle(a.conn)
 		}
 	}
 
-	for i := 0; i < a.cfg.Links-pl.Size(); i++ {
-		go func() {
-			for {
-				conn := pl.Get()
-				if conn == nil {
-					time.Sleep(time.Second)
-					continue
+	go func() {
+		for {
+			msg := <-a.conn.ChanUnknown()
+			var linkID string
+			switch msg.GetXType() {
+			case network.Msg_connect_req:
+				switch msg.GetCreq().GetXType() {
+				case network.ConnectRequest_shell:
+					a.shellCreate(mgr, a.conn, msg)
+				case network.ConnectRequest_vnc:
+					a.vncCreate(a.confDir, mgr, a.conn, msg)
+				case network.ConnectRequest_bench:
+					a.benchCreate(a.confDir, mgr, a.conn, msg)
 				}
-				for {
-					msg := <-conn.ChanUnknown()
-					if msg == nil {
-						break
-					}
-					var linkID string
-					switch msg.GetXType() {
-					case network.Msg_connect_req:
-						switch msg.GetCreq().GetXType() {
-						case network.ConnectRequest_shell:
-							a.shellCreate(mgr, conn, msg)
-						case network.ConnectRequest_vnc:
-							a.vncCreate(a.confDir, mgr, conn, msg)
-						case network.ConnectRequest_bench:
-							a.benchCreate(a.confDir, mgr, conn, msg)
-						}
-					default:
-						linkID = msg.GetLinkId()
-					}
-					if len(linkID) > 0 {
-						logging.Error("link of %s on connection %d not found, type=%s",
-							linkID, conn.Idx, msg.GetXType().String())
-						continue
-					}
-				}
-				logging.Info("connection %s-%d exited", a.cfg.ID, conn.Idx)
-				time.Sleep(time.Second)
+			default:
+				linkID = msg.GetLinkId()
 			}
-		}()
-	}
+			if len(linkID) > 0 {
+				logging.Error("link of %s not found, type=%s",
+					linkID, msg.GetXType().String())
+				continue
+			}
+		}
+	}()
 
 	if a.cfg.DashboardEnabled {
-		db := dashboard.New(a.cfg, pl, mgr, a.version)
+		db := dashboard.New(a.cfg, a.conn, mgr, a.version)
 		runtime.Assert(db.ListenAndServe(a.cfg.DashboardListen, a.cfg.DashboardPort))
 	} else {
 		select {}

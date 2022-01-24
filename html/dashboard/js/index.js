@@ -12,7 +12,6 @@ var page = {
         $.get('/api/info', function(ret) {
             $('#cards').empty();
             page.add_card('规则总数', ret.rules);
-            page.add_card('物理连接数', ret.physical_links);
             page.add_card('虚拟连接数', ret.virtual_links);
             page.add_card('终端会话', ret.sessions);
         });

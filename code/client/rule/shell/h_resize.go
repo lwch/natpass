@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 )
 
 // Resize resize terminal
-func (shell *Shell) Resize(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+func (shell *Shell) Resize(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	rows := r.FormValue("rows")
 	cols := r.FormValue("cols")

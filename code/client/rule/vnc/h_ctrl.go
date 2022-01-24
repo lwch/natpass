@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 )
 
 // Ctrl change vnc rule config
-func (v *VNC) Ctrl(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
+func (v *VNC) Ctrl(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	q := r.FormValue("quality")
 	s := r.FormValue("show_cursor")
 	quality, err := strconv.ParseUint(q, 10, 32)
@@ -24,7 +24,6 @@ func (v *VNC) Ctrl(pool *pool.Pool, w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	conn := pool.Get(v.link.id)
-	conn.SendVNCCtrl(v.link.target, v.link.targetIdx, v.link.id, quality, showCursor)
+	conn.SendVNCCtrl(v.link.target, v.link.id, quality, showCursor)
 	fmt.Fprint(w, "ok")
 }

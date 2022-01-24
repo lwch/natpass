@@ -5,8 +5,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/pool"
 	"github.com/jkstack/natpass/code/client/rule"
 	"github.com/lwch/logging"
 	"github.com/lwch/runtime"
@@ -47,7 +47,7 @@ func New(cfg global.Rule) *Bench {
 }
 
 // NewLink new link
-func (bench *Bench) NewLink(id, remote string, remoteIdx uint32, localConn net.Conn, remoteConn *pool.Conn) rule.Link {
+func (bench *Bench) NewLink(id, remote string, localConn net.Conn, remoteConn *conn.Conn) rule.Link {
 	return &Link{id: id}
 }
 
@@ -82,7 +82,7 @@ func (bench *Bench) GetPort() uint16 {
 }
 
 // Handle handle shell
-func (bench *Bench) Handle(pl *pool.Pool) {
+func (bench *Bench) Handle(conn *conn.Conn) {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("close shell: %s, err=%v", bench.Name, err)
@@ -90,7 +90,7 @@ func (bench *Bench) Handle(pl *pool.Pool) {
 	}()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		bench.http(pl, w, r)
+		bench.http(conn, w, r)
 	})
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", bench.cfg.LocalAddr, bench.cfg.LocalPort),

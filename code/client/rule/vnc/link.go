@@ -6,7 +6,7 @@ import (
 	"image/jpeg"
 	"time"
 
-	"github.com/jkstack/natpass/code/client/pool"
+	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/jkstack/natpass/code/client/rule/vnc/process"
 	"github.com/jkstack/natpass/code/network"
 	"github.com/jkstack/natpass/code/utils"
@@ -20,11 +20,10 @@ const (
 
 // Link vnc link
 type Link struct {
-	parent    *VNC
-	id        string // link id
-	target    string // target id
-	targetIdx uint32 // target idx
-	remote    *pool.Conn
+	parent *VNC
+	id     string // link id
+	target string // target id
+	remote *conn.Conn
 	// vnc
 	ps         *process.Process
 	quality    uint32
@@ -52,11 +51,6 @@ func (link *Link) GetBytes() (uint64, uint64) {
 // GetPackets get send and recv packets
 func (link *Link) GetPackets() (uint64, uint64) {
 	return link.recvPacket, link.sendPacket
-}
-
-// SetTargetIdx set link remote index
-func (link *Link) SetTargetIdx(idx uint32) {
-	link.targetIdx = idx
 }
 
 // SetQuality transfer quality
@@ -114,7 +108,7 @@ func (link *Link) remoteRead() {
 				link.ps.SetClipboard(msg.GetVclipboard())
 			} else {
 				data := link.ps.GetClipboard()
-				link.remote.SendVNCClipboardData(link.target, link.targetIdx, link.id, true, data)
+				link.remote.SendVNCClipboardData(link.target, link.id, true, data)
 			}
 		case network.Msg_disconnect:
 			logging.Info("link %s disconnected", link.id)
@@ -162,7 +156,7 @@ func (link *Link) close() {
 	if link.ps != nil {
 		link.ps.Close()
 	}
-	link.remote.SendDisconnect(link.target, link.targetIdx, link.id)
+	link.remote.SendDisconnect(link.target, link.id)
 }
 
 func cut(src *image.RGBA, rect image.Rectangle) *image.RGBA {
@@ -195,17 +189,17 @@ func (link *Link) sendAll(img *image.RGBA) {
 			rect := image.Rect(x, y, x+width, y+height)
 			next := cut(img, rect)
 			if link.quality == 100 {
-				link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+				link.remote.SendVNCImage(link.target, link.id,
 					screen, rect, network.VncImage_raw, next.Pix)
 				continue
 			}
 			buf.Reset()
 			err := jpeg.Encode(&buf, next, &jpeg.Options{Quality: int(link.quality)})
 			if err == nil {
-				link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+				link.remote.SendVNCImage(link.target, link.id,
 					screen, rect, network.VncImage_jpeg, buf.Bytes())
 			} else {
-				link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+				link.remote.SendVNCImage(link.target, link.id,
 					screen, rect, network.VncImage_raw, next.Pix)
 			}
 		}
@@ -219,17 +213,17 @@ func (link *Link) sendDiff(img *image.RGBA) {
 	for _, block := range blocks {
 		next := cut(img, block)
 		if link.quality == 100 {
-			link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+			link.remote.SendVNCImage(link.target, link.id,
 				screen, block, network.VncImage_raw, next.Pix)
 			continue
 		}
 		buf.Reset()
 		err := jpeg.Encode(&buf, next, &jpeg.Options{Quality: int(link.quality)})
 		if err == nil {
-			link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+			link.remote.SendVNCImage(link.target, link.id,
 				screen, block, network.VncImage_jpeg, buf.Bytes())
 		} else {
-			link.remote.SendVNCImage(link.target, link.targetIdx, link.id,
+			link.remote.SendVNCImage(link.target, link.id,
 				screen, block, network.VncImage_raw, next.Pix)
 		}
 	}

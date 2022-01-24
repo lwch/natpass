@@ -77,6 +77,15 @@ windows读取剪贴板内容
 
 ![vnc-clipboard](docs/imgs/vnc_clipboard.png)
 
+## 性能
+
+在vmware环境下创建4C2G（AMD Ryzen 7 4800U with Radeon Graphics）测试环境，并进行all in one部署server、remote端和local端，使用bench规则进行压测，结果如下：
+
+![bench](docs/imgs/bench.png)
+
+1. 压测结果仅包含local端发起连接到remote端收到连接并返回成功的整个过程
+2. 实验结果表明，在4C2G环境下可达到上万+的qps，且p99和p100均在60ms以下
+
 ## TODO
 
 1. ~~支持include的yaml配置文件~~

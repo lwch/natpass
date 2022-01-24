@@ -84,6 +84,7 @@ func (conn *Conn) loopRead() {
 				if timeout >= 60 {
 					logging.Error("too many timeout times")
 					conn.conn = conn.connect()
+					timeout = 0
 					continue
 				}
 				continue

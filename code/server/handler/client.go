@@ -26,12 +26,11 @@ func (c *client) close() {
 		c.Unlock()
 	}
 	c.conn.Close()
-	c.parent.remove(c.id)
 	logging.Info("client %s connection closed", c.id)
 }
 
 func (c *client) run() {
-	defer c.close()
+	defer c.parent.close(c.id)
 	for {
 		if time.Since(c.updated).Seconds() > 600 {
 			links := make([]string, 0, len(c.links))

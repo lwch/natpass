@@ -76,7 +76,7 @@ func (h *Handler) Handle(conn net.Conn) {
 
 	cli := h.clis.new(id, c)
 
-	defer cli.close()
+	defer h.clis.close(id)
 	go cli.keepalive()
 
 	cli.run()

@@ -50,7 +50,6 @@ func New(cfg *global.Configure) *Handler {
 func (h *Handler) Handle(conn net.Conn) {
 	c := network.NewConn(conn)
 	var id string
-	var idx uint32
 	defer func() {
 		if len(id) > 0 {
 			logging.Info("%s disconnected", id)
@@ -73,7 +72,7 @@ func (h *Handler) Handle(conn net.Conn) {
 	if err != nil {
 		return
 	}
-	logging.Info("%s-%d connected", id, idx)
+	logging.Info("%s connected", id)
 
 	cli := h.clis.new(id, c)
 

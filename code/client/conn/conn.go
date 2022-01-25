@@ -22,6 +22,8 @@ type Conn struct {
 	read        map[string]chan *network.Msg // link id => channel
 	unknownRead chan *network.Msg            // read message without link
 	write       chan *network.Msg
+	lockDrop    sync.RWMutex
+	drop        map[string]time.Time
 }
 
 // New new connection
@@ -31,11 +33,13 @@ func New(cfg *global.Configure) *Conn {
 		read:        make(map[string]chan *network.Msg),
 		unknownRead: make(chan *network.Msg, 1024),
 		write:       make(chan *network.Msg, 1024),
+		drop:        make(map[string]time.Time),
 	}
 	conn.conn = conn.connect()
 	go conn.loopRead()
 	go conn.loopWrite()
 	go conn.keepalive()
+	go conn.checkDrop()
 	return conn
 }
 
@@ -100,6 +104,12 @@ func (conn *Conn) loopRead() {
 		logging.Debug("read message %s(%s) from %s",
 			msg.GetXType().String(), msg.GetLinkId(), msg.GetFrom())
 		linkID := msg.GetLinkId()
+		conn.lockDrop.RLock()
+		_, drop := conn.drop[linkID]
+		conn.lockDrop.RUnlock()
+		if drop {
+			continue
+		}
 		conn.RLock()
 		ch := conn.read[linkID]
 		conn.RUnlock()
@@ -110,6 +120,9 @@ func (conn *Conn) loopRead() {
 		case ch <- msg:
 		case <-time.After(conn.cfg.ReadTimeout):
 			logging.Error("drop message: %s", msg.GetXType().String())
+			conn.lockDrop.Lock()
+			conn.drop[msg.GetLinkId()] = time.Now().Add(time.Minute)
+			conn.lockDrop.Unlock()
 		}
 	}
 }
@@ -165,4 +178,25 @@ func (conn *Conn) ChanRead(id string) <-chan *network.Msg {
 // ChanUnknown get channel of unknown link id
 func (conn *Conn) ChanUnknown() <-chan *network.Msg {
 	return conn.unknownRead
+}
+
+func (conn *Conn) checkDrop() {
+	for {
+		time.Sleep(time.Second)
+
+		drops := make([]string, 0, len(conn.drop))
+		conn.lockDrop.RLock()
+		for k, t := range conn.drop {
+			if time.Now().After(t) {
+				drops = append(drops, k)
+			}
+		}
+		conn.lockDrop.RUnlock()
+
+		conn.lockDrop.Lock()
+		for _, id := range drops {
+			delete(conn.drop, id)
+		}
+		conn.lockDrop.Unlock()
+	}
 }

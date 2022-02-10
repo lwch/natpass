@@ -47,6 +47,7 @@ func (conn *Conn) connect() *network.Conn {
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Error("connect error: %v", err)
+			panic(err)
 		}
 	}()
 	var dial net.Conn

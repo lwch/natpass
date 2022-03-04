@@ -1,6 +1,6 @@
 ARG APT_MIRROR=mirrors.ustc.edu.cn
 ARG LIBPNG_VERSION=1.6.37
-ARG GO_VERSION=1.17.7
+ARG GO_VERSION=1.17.8
 ARG GO_PROXY=https://goproxy.cn,direct
 
 FROM debian:stable-slim

@@ -49,7 +49,14 @@ func (a *App) run() {
 	if rt.GOOS == "windows" {
 		stdout = false
 	}
-	logging.SetSizeRotate(a.cfg.LogDir, "np-cli", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, stdout)
+	logging.SetSizeRotate(logging.SizeRotateConfig{
+		Dir:         a.cfg.LogDir,
+		Name:        "np-cli",
+		Size:        int64(a.cfg.LogSize.Bytes()),
+		Rotate:      a.cfg.LogRotate,
+		WriteStdout: stdout,
+		WriteFile:   true,
+	})
 	defer logging.Flush()
 
 	a.conn = conn.New(a.cfg)

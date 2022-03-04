@@ -9,12 +9,12 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/kardianos/service v1.2.1
 	github.com/kisielk/errcheck v1.6.0 // indirect
-	github.com/lwch/logging v0.0.0-20211203094902-ecb971ed7cdc
+	github.com/lwch/logging v0.0.0-20220302104951-353502dbb90d
 	github.com/lwch/rdesktop v1.0.0
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
 	github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/sys v0.0.0-20220224003255-dbe011f71a99
+	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.9 // indirect
 	google.golang.org/protobuf v1.27.1

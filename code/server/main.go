@@ -44,7 +44,14 @@ func (a *app) Start(s service.Service) error {
 }
 
 func (a *app) run() {
-	logging.SetSizeRotate(a.cfg.LogDir, "np-svr", int(a.cfg.LogSize.Bytes()), a.cfg.LogRotate, true)
+	logging.SetSizeRotate(logging.SizeRotateConfig{
+		Dir:         a.cfg.LogDir,
+		Name:        "np-svr",
+		Size:        int64(a.cfg.LogSize.Bytes()),
+		Rotate:      a.cfg.LogRotate,
+		WriteStdout: true,
+		WriteFile:   true,
+	})
 	defer logging.Flush()
 
 	// go func() {

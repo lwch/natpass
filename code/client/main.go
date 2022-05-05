@@ -84,7 +84,14 @@ func main() {
 		// go func() {
 		// 	http.ListenAndServe(":9001", nil)
 		// }()
-		logging.SetSizeRotate(cfg.LogDir, "np-cli.vnc."+*name, int(cfg.LogSize.Bytes()), cfg.LogRotate, stdout)
+		logging.SetSizeRotate(logging.SizeRotateConfig{
+			Dir:         cfg.LogDir,
+			Name:        "np-cli.vnc." + *name,
+			Size:        int64(cfg.LogSize.Bytes()),
+			Rotate:      cfg.LogRotate,
+			WriteStdout: stdout,
+			WriteFile:   true,
+		})
 		defer logging.Flush()
 		vnc.RunWorker(uint16(*vport), *vcursor)
 		return

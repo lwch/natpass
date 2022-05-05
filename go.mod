@@ -14,8 +14,9 @@ require (
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
 	github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/sys v0.0.0-20220327210214-530d0810a4d0
+	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.10 // indirect
+	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	google.golang.org/protobuf v1.28.0
 )

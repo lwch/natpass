@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gorilla/websocket"
-	"github.com/jkstack/natpass/code/client/rule/vnc/worker"
+	"github.com/lwch/natpass/code/client/rule/vnc/worker"
 	"github.com/lwch/runtime"
 )
 

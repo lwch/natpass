@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/jkstack/natpass/code/client/rule/vnc/define"
+	"github.com/lwch/natpass/code/client/rule/vnc/define"
 	"golang.org/x/sys/windows"
 )
 

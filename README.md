@@ -1,10 +1,10 @@
 # natpass
 
-[![natpass](https://github.com/jkstack/natpass/actions/workflows/build.yml/badge.svg)](https://github.com/jkstack/natpass/actions/workflows/build.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/jkstack/natpass)](https://goreportcard.com/report/github.com/jkstack/natpass)
-[![go-mod](https://img.shields.io/github/go-mod/go-version/jkstack/natpass)](https://github.com/jkstack/natpass)
-[![license](https://img.shields.io/github/license/jkstack/natpass)](https://opensource.org/licenses/MIT)
-[![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/jkstack/natpass)
+[![natpass](https://github.com/lwch/natpass/actions/workflows/build.yml/badge.svg)](https://github.com/lwch/natpass/actions/workflows/build.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lwch/natpass)](https://goreportcard.com/report/github.com/lwch/natpass)
+[![go-mod](https://img.shields.io/github/go-mod/go-version/lwch/natpass)](https://github.com/lwch/natpass)
+[![license](https://img.shields.io/github/license/lwch/natpass)](https://opensource.org/licenses/MIT)
+[![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/lwch/natpass)
 [![QQ群711086098](https://img.shields.io/badge/QQ%E7%BE%A4-711086098-success)](https://jq.qq.com/?_wv=1027&k=6Fz2vkVE)
 
 新一代主机管理工具，支持shell管理，支持远程桌面管理[实现原理](docs/desc.md)
@@ -105,7 +105,7 @@ windows读取剪贴板内容
 
 ## stars
 
-![stars](https://starchart.cc/jkstack/natpass.svg)
+![stars](https://starchart.cc/lwch/natpass.svg)
 
 ## 免责声明
 
@@ -118,4 +118,4 @@ windows读取剪贴板内容
 
 ## 贡献代码
 
-为了更好的发展，我们鼓励大家为natpass项目做出贡献及提出建议，项目的地址为[https://github.com/jkstack/natpass](https://github.com/jkstack/natpass)，因此在gitee上提交的pr将不被接受，请大家将pr提交到github的同名项目中。
+为了更好的发展，我们鼓励大家为natpass项目做出贡献及提出建议，项目的地址为[https://github.com/lwch/natpass](https://github.com/lwch/natpass)，因此在gitee上提交的pr将不被接受，请大家将pr提交到github的同名项目中。

@@ -1,4 +1,4 @@
-module github.com/jkstack/natpass
+module github.com/lwch/natpass
 
 go 1.16
 

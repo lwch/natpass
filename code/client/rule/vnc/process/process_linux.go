@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
+	"github.com/lwch/natpass/code/client/rule/vnc/vncnetwork"
 )
 
 // CreateWorker create worker process

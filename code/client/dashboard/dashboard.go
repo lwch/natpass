@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"net/http/pprof"
 
-	"github.com/jkstack/natpass/code/client/conn"
-	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/rule"
+	"github.com/lwch/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/global"
+	"github.com/lwch/natpass/code/client/rule"
 )
 
 // Dashboard dashboard object

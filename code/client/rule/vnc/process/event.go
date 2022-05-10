@@ -1,8 +1,8 @@
 package process
 
 import (
-	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
-	"github.com/jkstack/natpass/code/network"
+	"github.com/lwch/natpass/code/client/rule/vnc/vncnetwork"
+	"github.com/lwch/natpass/code/network"
 )
 
 // MouseEvent dispatch mouse event to child process

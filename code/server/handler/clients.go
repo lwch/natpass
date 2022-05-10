@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jkstack/natpass/code/network"
+	"github.com/lwch/natpass/code/network"
 )
 
 type clients struct {

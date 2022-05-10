@@ -3,16 +3,16 @@ package app
 import (
 	rt "runtime"
 
-	"github.com/jkstack/natpass/code/client/conn"
-	"github.com/jkstack/natpass/code/client/dashboard"
-	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/rule"
-	"github.com/jkstack/natpass/code/client/rule/bench"
-	"github.com/jkstack/natpass/code/client/rule/shell"
-	"github.com/jkstack/natpass/code/client/rule/vnc"
-	"github.com/jkstack/natpass/code/network"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/dashboard"
+	"github.com/lwch/natpass/code/client/global"
+	"github.com/lwch/natpass/code/client/rule"
+	"github.com/lwch/natpass/code/client/rule/bench"
+	"github.com/lwch/natpass/code/client/rule/shell"
+	"github.com/lwch/natpass/code/client/rule/vnc"
+	"github.com/lwch/natpass/code/network"
 	"github.com/lwch/runtime"
 )
 

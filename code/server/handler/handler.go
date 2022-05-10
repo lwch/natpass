@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jkstack/natpass/code/network"
-	"github.com/jkstack/natpass/code/server/global"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/network"
+	"github.com/lwch/natpass/code/server/global"
 )
 
 type link struct {

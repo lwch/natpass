@@ -8,8 +8,8 @@ import (
 	"unicode/utf16"
 	"unsafe"
 
-	"github.com/jkstack/natpass/code/client/rule/vnc/define"
-	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
+	"github.com/lwch/natpass/code/client/rule/vnc/define"
+	"github.com/lwch/natpass/code/client/rule/vnc/vncnetwork"
 	"golang.org/x/sys/windows"
 )
 

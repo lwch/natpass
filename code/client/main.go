@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	rt "runtime"
 
-	"github.com/jkstack/natpass/code/client/app"
-	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/rule/vnc"
-	"github.com/jkstack/natpass/code/utils"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/app"
+	"github.com/lwch/natpass/code/client/global"
+	"github.com/lwch/natpass/code/client/rule/vnc"
+	"github.com/lwch/natpass/code/utils"
 	"github.com/lwch/runtime"
 )
 

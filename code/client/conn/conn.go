@@ -35,7 +35,9 @@ func New(cfg *global.Configure) *Conn {
 		write:       make(chan *network.Msg, 1024),
 		drop:        make(map[string]time.Time),
 	}
-	conn.conn = conn.connect()
+	var err error
+	conn.conn, err = conn.tryConnect()
+	runtime.Assert(err)
 	go conn.loopRead()
 	go conn.loopWrite()
 	go conn.keepalive()
@@ -43,13 +45,7 @@ func New(cfg *global.Configure) *Conn {
 	return conn
 }
 
-func (conn *Conn) connect() *network.Conn {
-	defer func() {
-		if err := recover(); err != nil {
-			logging.Error("connect error: %v", err)
-			panic(err)
-		}
-	}()
+func (conn *Conn) connect() (*network.Conn, error) {
 	var dial net.Conn
 	var err error
 	if conn.cfg.UseSSL {
@@ -57,12 +53,32 @@ func (conn *Conn) connect() *network.Conn {
 	} else {
 		dial, err = net.Dial("tcp", conn.cfg.Server)
 	}
-	runtime.Assert(err)
+	if err != nil {
+		logging.Error("dial: %v", err)
+		return nil, err
+	}
 	cn := network.NewConn(dial)
 	err = writeHandshake(cn, conn.cfg)
-	runtime.Assert(err)
+	if err != nil {
+		logging.Error("write handshake: %v", err)
+		return nil, err
+	}
 	logging.Info("%s connected", conn.cfg.Server)
-	return cn
+	return cn, nil
+}
+
+func (conn *Conn) tryConnect() (*network.Conn, error) {
+	var ret *network.Conn
+	var err error
+	for i := 0; i < 10; i++ {
+		ret, err = conn.connect()
+		if err == nil {
+			return ret, nil
+		}
+		logging.Error("connect error on %d times: %v", i+1, err)
+		time.Sleep(time.Second)
+	}
+	return nil, err
 }
 
 func writeHandshake(conn *network.Conn, cfg *global.Configure) error {
@@ -88,14 +104,16 @@ func (conn *Conn) loopRead() {
 				timeout++
 				if timeout >= 60 {
 					logging.Error("too many timeout times")
-					conn.conn = conn.connect()
+					conn.conn, err = conn.tryConnect()
+					runtime.Assert(err)
 					timeout = 0
 					continue
 				}
 				continue
 			}
 			logging.Error("read message: %v", err)
-			conn.conn = conn.connect()
+			conn.conn, err = conn.tryConnect()
+			runtime.Assert(err)
 			continue
 		}
 		timeout = 0
@@ -137,7 +155,8 @@ func (conn *Conn) loopWrite() {
 		if err != nil {
 			logging.Error("write message error on %s: %v",
 				conn.cfg.ID, err)
-			conn.conn = conn.connect()
+			conn.conn, err = conn.connect()
+			runtime.Assert(err)
 			continue
 		}
 	}

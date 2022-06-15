@@ -1,13 +1,13 @@
 package app
 
 import (
-	"github.com/jkstack/natpass/code/client/conn"
-	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/rule"
-	"github.com/jkstack/natpass/code/client/rule/shell"
-	"github.com/jkstack/natpass/code/client/rule/vnc"
-	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/global"
+	"github.com/lwch/natpass/code/client/rule"
+	"github.com/lwch/natpass/code/client/rule/shell"
+	"github.com/lwch/natpass/code/client/rule/vnc"
+	"github.com/lwch/natpass/code/network"
 )
 
 func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {

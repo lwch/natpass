@@ -3,8 +3,8 @@ package vnc
 import (
 	"encoding/json"
 
-	"github.com/jkstack/natpass/code/client/conn"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
 )
 
 func (v *VNC) mouseEvent(remote *conn.Conn, data []byte) {

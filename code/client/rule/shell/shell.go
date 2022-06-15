@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jkstack/natpass/code/client/conn"
-	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/client/rule"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/global"
+	"github.com/lwch/natpass/code/client/rule"
 	"github.com/lwch/runtime"
 )
 

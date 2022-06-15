@@ -3,7 +3,7 @@ package conn
 import (
 	"time"
 
-	"github.com/jkstack/natpass/code/network"
+	"github.com/lwch/natpass/code/network"
 	"google.golang.org/protobuf/proto"
 )
 

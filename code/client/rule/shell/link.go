@@ -4,10 +4,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/jkstack/natpass/code/client/conn"
-	"github.com/jkstack/natpass/code/network"
-	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/network"
+	"github.com/lwch/natpass/code/utils"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"google.golang.org/protobuf/proto"
 )

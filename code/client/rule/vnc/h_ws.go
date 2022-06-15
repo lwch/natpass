@@ -15,10 +15,10 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/jkstack/natpass/code/client/conn"
-	"github.com/jkstack/natpass/code/network"
-	"github.com/jkstack/natpass/code/utils"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/network"
+	"github.com/lwch/natpass/code/utils"
 	"github.com/lwch/runtime"
 )
 

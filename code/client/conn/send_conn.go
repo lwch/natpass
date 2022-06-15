@@ -3,8 +3,8 @@ package conn
 import (
 	"time"
 
-	"github.com/jkstack/natpass/code/client/global"
-	"github.com/jkstack/natpass/code/network"
+	"github.com/lwch/natpass/code/client/global"
+	"github.com/lwch/natpass/code/network"
 	"google.golang.org/protobuf/proto"
 )
 

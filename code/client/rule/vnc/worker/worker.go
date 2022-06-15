@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/gorilla/websocket"
-	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/rule/vnc/vncnetwork"
 	"github.com/lwch/rdesktop"
 	"github.com/lwch/runtime"
 	"google.golang.org/protobuf/proto"

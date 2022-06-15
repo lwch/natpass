@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jkstack/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/conn"
 )
 
 // Clipboard get/set clipboard

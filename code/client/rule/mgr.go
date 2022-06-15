@@ -4,7 +4,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/jkstack/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/conn"
 )
 
 // Link link interface

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/jkstack/natpass/code/client/rule"
+	"github.com/lwch/natpass/code/client/rule"
 )
 
 // Info information data

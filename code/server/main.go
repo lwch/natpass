@@ -11,11 +11,11 @@ import (
 
 	_ "net/http/pprof"
 
-	"github.com/jkstack/natpass/code/server/global"
-	"github.com/jkstack/natpass/code/server/handler"
-	"github.com/jkstack/natpass/code/utils"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/server/global"
+	"github.com/lwch/natpass/code/server/handler"
+	"github.com/lwch/natpass/code/utils"
 	"github.com/lwch/runtime"
 )
 

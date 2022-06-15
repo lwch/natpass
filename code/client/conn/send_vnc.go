@@ -4,7 +4,7 @@ import (
 	"image"
 	"time"
 
-	"github.com/jkstack/natpass/code/network"
+	"github.com/lwch/natpass/code/network"
 )
 
 // SendVNCImage send vnc image data

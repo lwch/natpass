@@ -2,8 +2,8 @@ package worker
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/jkstack/natpass/code/client/rule/vnc/vncnetwork"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/rule/vnc/vncnetwork"
 	"github.com/lwch/rdesktop"
 	"google.golang.org/protobuf/proto"
 )

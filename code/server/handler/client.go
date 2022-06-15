@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jkstack/natpass/code/network"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/network"
 )
 
 type client struct {

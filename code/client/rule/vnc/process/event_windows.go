@@ -3,8 +3,8 @@ package process
 import (
 	"syscall"
 
-	"github.com/jkstack/natpass/code/client/rule/vnc/define"
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/rule/vnc/define"
 )
 
 // CADEvent handle ctrl+alt+del event

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/jkstack/natpass/code/client/conn"
+	"github.com/lwch/natpass/code/client/conn"
 )
 
 // Resize resize terminal

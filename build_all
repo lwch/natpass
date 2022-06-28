@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=0.8.5
+VERSION=0.8.6
 
 DOCKER_BUILDKIT=1 docker build -t natpass -f contrib/build/Dockerfile .
 docker run --rm \

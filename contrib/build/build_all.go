@@ -190,14 +190,15 @@ func build(t target) {
 		fmt.Sprintf("GOARCH=%s", t.arch),
 		fmt.Sprintf("CC=%s", t.cc),
 		fmt.Sprintf("CXX=%s", t.cxx))
-	args := []string{"build", "-o", path.Join(buildDir, "np-cli"+t.ext), "-ldflags", ldflags}
 	if t.os == "windows" && !strings.Contains(t.arch, "arm") {
 		env = append(env, "CGO_ENABLED=1")
 	} else if t.os == "linux" && !strings.Contains(t.arch, "arm") {
 		env = append(env, "CGO_ENABLED=1")
+		ldflags += "-extldflags -static"
 	} else {
 		env = append(env, "CGO_ENABLED=0")
 	}
+	args := []string{"build", "-o", path.Join(buildDir, "np-cli"+t.ext), "-ldflags", ldflags}
 	args = append(args,
 		path.Join("code", "client", "main.go"))
 	cmd = exec.Command("go", args...)

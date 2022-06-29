@@ -3,7 +3,7 @@ ARG LIBPNG_VERSION=1.6.37
 ARG GO_VERSION=1.18.3
 ARG GO_PROXY=https://goproxy.cn,direct
 
-FROM debian:stable-slim
+FROM lwch/darwin-crosscompiler:11.3
 
 ARG APT_MIRROR
 ARG GO_VERSION

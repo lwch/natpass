@@ -37,13 +37,15 @@ type target struct {
 var targets = []target{
 	// darwin
 	{
-		os:      "darwin",
-		arch:    "amd64",
+		os:   "darwin",
+		arch: "amd64",
+		cc:   "o64-clang", cxx: "o64-clang++",
 		packExt: ".tar.gz",
 	},
 	{
-		os:      "darwin",
-		arch:    "arm64",
+		os:   "darwin",
+		arch: "arm64",
+		cc:   "aarch64-apple-darwin20.4-clang", cxx: "aarch64-apple-darwin20.4-clang++",
 		packExt: ".tar.gz",
 	},
 	// linux
@@ -195,6 +197,8 @@ func build(t target) {
 	} else if t.os == "linux" && !strings.Contains(t.arch, "arm") {
 		env = append(env, "CGO_ENABLED=1")
 		ldflags += "-extldflags -static"
+	} else if t.os == "darwin" {
+		env = append(env, "CGO_ENABLED=1")
 	} else {
 		env = append(env, "CGO_ENABLED=0")
 	}

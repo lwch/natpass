@@ -23,6 +23,8 @@ github.com/lwch/rdesktop v1.0.1-0.20220628063626-7a6b7d0f55ed h1:dqhAvlOZjOp/GB7
 github.com/lwch/rdesktop v1.0.1-0.20220628063626-7a6b7d0f55ed/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
 github.com/lwch/rdesktop v1.0.1-0.20220628065908-dcf9d8e979b4 h1:rqE8tCaMTAXrnY+cZJMFmAo7th6O9o4yQNXZdqJx6P4=
 github.com/lwch/rdesktop v1.0.1-0.20220628065908-dcf9d8e979b4/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
+github.com/lwch/rdesktop v1.0.1-0.20220629063135-58d39f3500ea h1:z7jbWpsZizCvtmomETTo5Agrz9W2hfiaXHAiycgXdAg=
+github.com/lwch/rdesktop v1.0.1-0.20220629063135-58d39f3500ea/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26 h1:sR3nbPhdfstDxYLp7c1EnsKH3z8+u+wgnhC3AI9/qf0=

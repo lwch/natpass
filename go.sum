@@ -17,8 +17,8 @@ github.com/kisielk/errcheck v1.6.1/go.mod h1:nXw/i/MfnvRHqXa7XXmQMUB0oNFGuBrNI8d
 github.com/lwch/logging v0.0.0-20211115073745-0db19179db17/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/logging v0.0.0-20220322084100-ec48185d95ab h1:zqeHtNXEg707Tq8gv5yE//rc6ue/SVSaUxlslbGBxrg=
 github.com/lwch/logging v0.0.0-20220322084100-ec48185d95ab/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
-github.com/lwch/rdesktop v1.0.1-0.20220701063801-973cdd33b7ce h1:BIhvOciYgQHY1fVy2RAFYqaw3S7D/lDjzn6vh4D0aNg=
-github.com/lwch/rdesktop v1.0.1-0.20220701063801-973cdd33b7ce/go.mod h1:9AqIceehSOVcxwpXDPEdYchCyJXT99bd9PpsaTHALlg=
+github.com/lwch/rdesktop v1.0.1-0.20220701082114-9c04919d90e7 h1:8f+ThHLTK8SateCpHzWrHjBzDT/dxLALOS0TFuG7gSw=
+github.com/lwch/rdesktop v1.0.1-0.20220701082114-9c04919d90e7/go.mod h1:9AqIceehSOVcxwpXDPEdYchCyJXT99bd9PpsaTHALlg=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26 h1:sR3nbPhdfstDxYLp7c1EnsKH3z8+u+wgnhC3AI9/qf0=

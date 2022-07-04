@@ -17,8 +17,10 @@ github.com/kisielk/errcheck v1.6.1/go.mod h1:nXw/i/MfnvRHqXa7XXmQMUB0oNFGuBrNI8d
 github.com/lwch/logging v0.0.0-20211115073745-0db19179db17/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/logging v0.0.0-20220322084100-ec48185d95ab h1:zqeHtNXEg707Tq8gv5yE//rc6ue/SVSaUxlslbGBxrg=
 github.com/lwch/logging v0.0.0-20220322084100-ec48185d95ab/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
-github.com/lwch/rdesktop v1.1.0 h1:FdxzbfN/kypFtisW5PLROSUoY+eB5eR+ZCn94wPOaek=
-github.com/lwch/rdesktop v1.1.0/go.mod h1:9AqIceehSOVcxwpXDPEdYchCyJXT99bd9PpsaTHALlg=
+github.com/lwch/rdesktop v1.1.1-0.20220704022857-896f85c43496 h1:x/g3N/3l+5CxeCAsBP1ldUxFryZsUrcfY3F+uzEjAgo=
+github.com/lwch/rdesktop v1.1.1-0.20220704022857-896f85c43496/go.mod h1:9AqIceehSOVcxwpXDPEdYchCyJXT99bd9PpsaTHALlg=
+github.com/lwch/rdesktop v1.1.1 h1:rcKfHDo9PbCFBwX+PEwXANufhnkfRa7E/hg0R/4VhnM=
+github.com/lwch/rdesktop v1.1.1/go.mod h1:9AqIceehSOVcxwpXDPEdYchCyJXT99bd9PpsaTHALlg=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d h1:Xg+zzPtvX22DaoJD5Bp0tqPdB8gn5WypghIJ4fluqiQ=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/yaml v0.0.0-20211206085137-772f80e85a26 h1:sR3nbPhdfstDxYLp7c1EnsKH3z8+u+wgnhC3AI9/qf0=
@@ -49,8 +51,6 @@ golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20210423082822-04245dca01da/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20211019181941-9d821ace8654/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b h1:2n253B2r0pYSmEV+UNCQoPfU/FiaizQEK5Gu4Bq4JE8=
-golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220702020025-31831981b65f h1:xdsejrW/0Wf2diT5CPp3XmKUNbr7Xvw8kYilQ+6qjRY=
 golang.org/x/sys v0.0.0-20220702020025-31831981b65f/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=

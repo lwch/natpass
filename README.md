@@ -73,6 +73,10 @@ deepin远程桌面
 
 ![deepin-vnc](docs/imgs/vnc_deepin.png)
 
+macos远程桌面
+
+![macos-vnc](docs/imgs/vnc_macos.png)
+
 windows读取剪贴板内容
 
 ![vnc-clipboard](docs/imgs/vnc_clipboard.png)

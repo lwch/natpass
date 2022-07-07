@@ -1,3 +1,4 @@
 # Table of contents
 
-* [Page 1](README.md)
+* 介绍
+  * [快速部署](README.md)

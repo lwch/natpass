@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os"
 	rt "runtime"
 
 	"github.com/kardianos/service"
@@ -105,9 +106,14 @@ func (a *App) run() {
 	}()
 
 	if a.cfg.DashboardEnabled {
+		go func() {
+			a.conn.Wait()
+			logging.Flush()
+			os.Exit(1)
+		}()
 		db := dashboard.New(a.cfg, a.conn, mgr, a.version)
 		runtime.Assert(db.ListenAndServe(a.cfg.DashboardListen, a.cfg.DashboardPort))
 	} else {
-		select {}
+		a.conn.Wait()
 	}
 }

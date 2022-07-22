@@ -11,6 +11,7 @@ import (
 	"github.com/lwch/natpass/code/client/global"
 	"github.com/lwch/natpass/code/client/rule"
 	"github.com/lwch/natpass/code/client/rule/bench"
+	"github.com/lwch/natpass/code/client/rule/code"
 	"github.com/lwch/natpass/code/client/rule/shell"
 	"github.com/lwch/natpass/code/client/rule/vnc"
 	"github.com/lwch/natpass/code/network"
@@ -77,6 +78,10 @@ func (a *App) run() {
 			b := bench.New(t)
 			mgr.Add(b)
 			go b.Handle(a.conn)
+		case "code-server":
+			cs := code.New(t)
+			mgr.Add(cs)
+			go cs.Handle(a.conn)
 		}
 	}
 

@@ -7,6 +7,7 @@ import "connect.proto";
 import "forward.proto";
 import "shell.proto";
 import "vnc.proto";
+import "http.proto";
 
 message handshake_payload {
     bytes enc = 1;
@@ -32,6 +33,9 @@ message msg {
         vnc_cad       = 24; // ctrl+alt+del
         vnc_scroll    = 25;
         vnc_clipboard = 26;
+        // http
+        http_request  = 30;
+        http_response = 31;
     }
     type      _type = 1;
     string     from = 2;
@@ -52,5 +56,8 @@ message msg {
         vnc_keyboard        vkbd = 33;
         vnc_scroll       vscroll = 34;
         vnc_clipboard vclipboard = 35;
+        // http
+        http_request        hreq = 40;
+        http_response       hrep = 41;
     }
 }

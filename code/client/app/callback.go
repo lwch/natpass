@@ -12,7 +12,7 @@ import (
 
 func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
-	tn := mgr.Get(create.GetName(), msg.GetFrom())
+	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
 		tn = shell.New(global.Rule{
 			Name:   create.GetName(),
@@ -21,7 +21,7 @@ func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 			Exec:   create.GetCshell().GetExec(),
 			Env:    create.GetCshell().GetEnv(),
 		}, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
-		mgr.Add(tn)
+		mgr.Add(tn.(rule.Rule))
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), nil, conn).(*shell.Link)
 	logging.Info("create link %s for shell rule [%s] from %s to %s",
@@ -39,7 +39,7 @@ func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 
 func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
-	tn := mgr.Get(create.GetName(), msg.GetFrom())
+	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
 		tn = vnc.New(global.Rule{
 			Name:   create.GetName(),
@@ -47,7 +47,7 @@ func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *net
 			Type:   "vnc",
 			Fps:    create.GetCvnc().GetFps(),
 		}, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
-		mgr.Add(tn)
+		mgr.Add(tn.(rule.Rule))
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), nil, conn).(*vnc.Link)
 	logging.Info("create link %s for vnc rule [%s] from %s to %s",

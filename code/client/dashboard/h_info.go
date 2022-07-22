@@ -16,11 +16,14 @@ func (db *Dashboard) Info(w http.ResponseWriter, r *http.Request) {
 	}
 	ret.Rules = len(db.cfg.Rules)
 	db.mgr.Range(func(t rule.Rule) {
-		n := len(t.GetLinks())
-		ret.VirtualLinks += n
-		if t.GetTypeName() == "shell" ||
-			t.GetTypeName() == "vnc" {
-			ret.Session += n
+		lr, ok := t.(rule.LinkedRule)
+		if ok {
+			n := len(lr.GetLinks())
+			ret.VirtualLinks += n
+			if t.GetTypeName() == "shell" ||
+				t.GetTypeName() == "vnc" {
+				ret.Session += n
+			}
 		}
 	})
 	w.Header().Set("Content-Type", "application/json")

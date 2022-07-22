@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package network;
+option go_package="./;network";
+
+message http_request {
+}
+
+message http_response {
+}

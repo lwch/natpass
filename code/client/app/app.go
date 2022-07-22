@@ -2,6 +2,7 @@ package app
 
 import (
 	"os"
+	"path/filepath"
 	rt "runtime"
 
 	"github.com/kardianos/service"
@@ -42,10 +43,20 @@ func (a *App) Stop(s service.Service) error {
 	return nil
 }
 
+func (a *App) clean() {
+	files, err := filepath.Glob(filepath.Join(a.cfg.TmpDir, "*"))
+	runtime.Assert(err)
+	for _, file := range files {
+		os.RemoveAll(file)
+	}
+}
+
 func (a *App) run() {
 	// go func() {
 	// 	http.ListenAndServe(":9000", nil)
 	// }()
+
+	a.clean()
 
 	stdout := true
 	if rt.GOOS == "windows" {
@@ -79,7 +90,7 @@ func (a *App) run() {
 			mgr.Add(b)
 			go b.Handle(a.conn)
 		case "code-server":
-			cs := code.New(t)
+			cs := code.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
 			mgr.Add(cs)
 			go cs.Handle(a.conn)
 		}
@@ -98,6 +109,8 @@ func (a *App) run() {
 					a.vncCreate(a.confDir, mgr, a.conn, msg)
 				case network.ConnectRequest_bench:
 					a.benchCreate(a.confDir, mgr, a.conn, msg)
+				case network.ConnectRequest_code:
+					a.codeCreate(a.confDir, mgr, a.conn, msg)
 				}
 			default:
 				linkID = msg.GetLinkId()

@@ -23,13 +23,12 @@ func (code *Code) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	link := code.NewLink(id, code.cfg.Target, nil, conn).(*Workspace)
 	conn.SendConnectReq(id, code.cfg)
 	ch := conn.ChanRead(id)
-	timeout := time.After(code.readTimeout)
 	var repMsg *network.Msg
 	for {
 		var msg *network.Msg
 		select {
 		case msg = <-ch:
-		case <-timeout:
+		case <-time.After(time.Minute):
 			logging.Error("create code-server %s by rule %s failed, timtout", link.id, link.parent.Name)
 			http.Error(w, "timeout", http.StatusBadGateway)
 			return
@@ -52,5 +51,6 @@ func (code *Code) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	logging.Info("create link %s for code-server rule [%s] from %s to %s",
 		link.GetID(), code.cfg.Name,
 		repMsg.GetTo(), repMsg.GetFrom())
+	go link.localRead()
 	fmt.Fprint(w, id)
 }

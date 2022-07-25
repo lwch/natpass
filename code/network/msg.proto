@@ -34,8 +34,11 @@ message msg {
         vnc_scroll    = 25;
         vnc_clipboard = 26;
         // code-server
-        code_request  = 30;
-        code_response = 31;
+        code_request       = 30;
+        code_response_hdr  = 31;
+        code_response_body = 32;
+        code_connect       = 33;
+        code_data          = 34;
     }
     type      _type = 1;
     string     from = 2;
@@ -57,9 +60,10 @@ message msg {
         vnc_scroll       vscroll = 34;
         vnc_clipboard vclipboard = 35;
         // code-server
-        code_request       csreq = 40;
-        code_response      csrep = 41;
-        code_connect      csconn = 42;
-        code_data         csdata = 43;
+        code_request             csreq = 40;
+        code_response_header csrep_hdr = 41;
+        code_response_body  csrep_body = 42;
+        code_connect            csconn = 43;
+        code_data               csdata = 44;
     }
 }

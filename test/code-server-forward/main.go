@@ -3,19 +3,51 @@ package main
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/lwch/runtime"
 )
 
-var cli = &http.Client{}
+var cli = &http.Client{
+	Transport: &http.Transport{
+		Dial: func(network, addr string) (net.Conn, error) {
+			return net.Dial("unix", "./code-server/code-server.sock")
+		},
+	},
+}
 var upgrader = websocket.Upgrader{}
-var dialer = websocket.Dialer{}
+var dialer = websocket.Dialer{
+	NetDial: func(network, addr string) (net.Conn, error) {
+		return net.Dial("unix", "./code-server/code-server.sock")
+	},
+}
 
 func main() {
+	dir := "/home/lwch/src/natpass/code-server"
+	exec := exec.Command("code-server", "--disable-update-check",
+		"--auth", "none",
+		"--socket", filepath.Join(dir, "code-server.sock"),
+		"--user-data-dir", filepath.Join(dir, "data"),
+		"--extensions-dir", filepath.Join(dir, "extensions"), ".")
+	exec.Stdout = os.Stdout
+	exec.Stderr = os.Stderr
+	runtime.Assert(exec.Start())
+	time.Sleep(time.Second)
+
+	go exec.Wait()
+
+	conn, err := net.Dial("unix", "./code-server/code-server.sock")
+	runtime.Assert(err)
+	conn.Close()
+
 	http.HandleFunc("/", next)
 	http.ListenAndServe(":8001", nil)
 }
@@ -23,7 +55,7 @@ func main() {
 func normal(w http.ResponseWriter, r *http.Request) {
 	u := r.URL
 	u.Scheme = "http"
-	u.Host = "127.0.0.1:8000"
+	u.Host = "unix"
 	req, err := http.NewRequest(r.Method, u.String(), r.Body)
 	runtime.Assert(err)
 
@@ -52,7 +84,7 @@ func normal(w http.ResponseWriter, r *http.Request) {
 func ws(w http.ResponseWriter, r *http.Request) {
 	u := r.URL
 	u.Scheme = "ws"
-	u.Host = "127.0.0.1:8000"
+	u.Host = "unix"
 
 	hdr := make(http.Header)
 	for key, values := range r.Header {

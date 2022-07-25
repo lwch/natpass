@@ -39,7 +39,7 @@ func (ws *Workspace) handleRequest(msg *network.Msg) {
 		n, err := response.Body.Read(buf)
 		if err != nil {
 			if err == io.EOF {
-				send := ws.remote.SendCodeResponseBody(ws.target, ws.id, req.GetRequestId(), idx, true, true, nil)
+				send := ws.remote.SendCodeResponseBody(ws.target, ws.id, req.GetRequestId(), idx, true, true, buf[:n])
 				ws.sendBytes += send
 				ws.sendPacket++
 				idx++

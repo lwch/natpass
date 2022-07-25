@@ -182,7 +182,7 @@ func (conn *Conn) AddLink(id string) {
 	logging.Info("add link %s", id)
 	conn.Lock()
 	if _, ok := conn.read[id]; !ok {
-		conn.read[id] = make(chan *network.Msg, 10)
+		conn.read[id] = make(chan *network.Msg, 1024)
 	}
 	conn.Unlock()
 }

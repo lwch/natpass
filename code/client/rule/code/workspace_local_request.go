@@ -17,7 +17,7 @@ func (ws *Workspace) SendRequest(r *http.Request) (uint64, error) {
 		return 0, err
 	}
 	ws.Lock()
-	ws.onMessage[reqID] = make(chan *network.Msg)
+	ws.onMessage[reqID] = make(chan *network.Msg, 1024)
 	ws.Unlock()
 	send := ws.remote.SendCodeRequest(ws.target, ws.id, reqID,
 		r.Method, r.URL.RequestURI(), body, r.Header)

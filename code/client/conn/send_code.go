@@ -32,7 +32,7 @@ func (conn *Conn) SendCodeRequest(to, linkID string, requestID uint64,
 			RequestId: requestID,
 			Method:    method,
 			Uri:       uri,
-			Body:      body,
+			Body:      dup(body),
 			Header:    makeCodeHeader(header),
 		},
 	}
@@ -87,7 +87,7 @@ func (conn *Conn) SendCodeResponseBody(to, linkID string, requestID uint64,
 			RequestId: requestID,
 			Index:     idx,
 			Mask:      mask,
-			Body:      data,
+			Body:      dup(data),
 		},
 	}
 	select {

@@ -9,11 +9,6 @@ import (
 
 // SendShellData send shell data
 func (conn *Conn) SendShellData(to string, id string, data []byte) uint64 {
-	dup := func(data []byte) []byte {
-		ret := make([]byte, len(data))
-		copy(ret, data)
-		return ret
-	}
 	var msg network.Msg
 	msg.To = to
 	msg.XType = network.Msg_shell_data

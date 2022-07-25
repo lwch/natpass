@@ -36,7 +36,7 @@ func New(cfg *global.Configure) *Conn {
 		cfg:         cfg,
 		read:        make(map[string]chan *network.Msg),
 		unknownRead: make(chan *network.Msg, 1024),
-		write:       make(chan *network.Msg, 1024),
+		write:       make(chan *network.Msg, 10*1024*1024),
 		drop:        make(map[string]time.Time),
 	}
 	runtime.Assert(conn.connect())

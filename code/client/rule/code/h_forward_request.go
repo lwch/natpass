@@ -13,7 +13,7 @@ import (
 func (code *Code) handleRequest(workspace *Workspace, w http.ResponseWriter, r *http.Request) {
 	reqID, err := workspace.SendRequest(r)
 	if err != nil {
-		logging.Error("send: %v", err)
+		logging.Error("send_request: %v", err)
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}

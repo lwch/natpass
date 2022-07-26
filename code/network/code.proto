@@ -36,7 +36,15 @@ message code_connect {
     map<string, code_header_values> header = 3;
 }
 
+message code_connect_response {
+    uint64 request_id = 1;
+    bool           ok = 2;
+    string        msg = 3;
+    map<string, code_header_values> header = 4;
+}
+
 message code_data {
     uint64 request_id = 1;
-    bytes        data = 2;
+    bool           ok = 2;
+    bytes        data = 3;
 }

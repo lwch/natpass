@@ -15,6 +15,7 @@ func (ws *Workspace) handleRequest(msg *network.Msg) {
 	req := msg.GetCsreq()
 	request, err := http.NewRequest(req.GetMethod(), "http://unix"+req.GetUri(), bytes.NewReader(req.GetBody()))
 	if err != nil {
+		// TODO: response error
 		logging.Error("build request [%s] [%s]: %v", ws.id, ws.name, err)
 		return
 	}
@@ -57,4 +58,27 @@ func (ws *Workspace) handleRequest(msg *network.Msg) {
 		ws.sendPacket++
 		idx++
 	}
+}
+
+func (ws *Workspace) handleConnect(msg *network.Msg) {
+	defer utils.Recover("handleConnect")
+
+	connect := msg.GetCsconn()
+	hdr := make(http.Header)
+	for key, values := range connect.GetHeader() {
+		for _, value := range values.GetValues() {
+			hdr.Add(key, value)
+		}
+	}
+
+	remote, resp, err := ws.dailer.Dial(connect.GetUri(), hdr)
+	if err != nil {
+		logging.Error("dial websocket [%s] [%s]: %v", ws.id, ws.name, err)
+		ws.remote.SendCodeResponseConnect(ws.target, ws.id, connect.GetRequestId(), false, err.Error(), nil)
+		return
+	}
+	defer remote.Close()
+	defer resp.Body.Close()
+	ws.remote.SendCodeResponseConnect(ws.target, ws.id, connect.GetRequestId(), true, "", resp.Header)
+	// TODO: forward
 }

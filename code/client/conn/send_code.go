@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/network"
 	"google.golang.org/protobuf/proto"
 )
@@ -41,6 +42,31 @@ func (conn *Conn) SendCodeRequest(to, linkID string, requestID uint64,
 		data, _ := proto.Marshal(&msg)
 		return uint64(len(data))
 	case <-time.After(conn.cfg.WriteTimeout):
+		logging.Info("send: droped %s", network.Msg_code_request.String())
+		return 0
+	}
+}
+
+// SendCodeConnect send connect
+func (conn *Conn) SendCodeConnect(to, linkID string, requestID uint64,
+	uri string, header http.Header) uint64 {
+	var msg network.Msg
+	msg.To = to
+	msg.XType = network.Msg_code_connect
+	msg.LinkId = linkID
+	msg.Payload = &network.Msg_Csconn{
+		Csconn: &network.CodeConnect{
+			RequestId: requestID,
+			Uri:       uri,
+			Header:    makeCodeHeader(header),
+		},
+	}
+	select {
+	case conn.write <- &msg:
+		data, _ := proto.Marshal(&msg)
+		return uint64(len(data))
+	case <-time.After(conn.cfg.WriteTimeout):
+		logging.Info("send: droped %s", network.Msg_code_connect.String())
 		return 0
 	}
 }
@@ -64,6 +90,7 @@ func (conn *Conn) SendCodeResponseHeader(to, linkID string, requestID uint64,
 		data, _ := proto.Marshal(&msg)
 		return uint64(len(data))
 	case <-time.After(conn.cfg.WriteTimeout):
+		logging.Info("send: droped %s", network.Msg_code_response_hdr.String())
 		return 0
 	}
 }
@@ -95,6 +122,32 @@ func (conn *Conn) SendCodeResponseBody(to, linkID string, requestID uint64,
 		data, _ := proto.Marshal(&msg)
 		return uint64(len(data))
 	case <-time.After(conn.cfg.WriteTimeout):
+		logging.Info("send: droped %s", network.Msg_code_response_body.String())
+		return 0
+	}
+}
+
+// SendCodeResponseConnect send response connect
+func (conn *Conn) SendCodeResponseConnect(to, linkID string, requestID uint64,
+	ok bool, msg string, header http.Header) uint64 {
+	var m network.Msg
+	m.To = to
+	m.XType = network.Msg_code_connect_response
+	m.LinkId = linkID
+	m.Payload = &network.Msg_CsconnRep{
+		CsconnRep: &network.CodeConnectResponse{
+			RequestId: requestID,
+			Ok:        ok,
+			Msg:       msg,
+			Header:    makeCodeHeader(header),
+		},
+	}
+	select {
+	case conn.write <- &m:
+		data, _ := proto.Marshal(&m)
+		return uint64(len(data))
+	case <-time.After(conn.cfg.WriteTimeout):
+		logging.Info("send: droped %s", network.Msg_code_connect_response.String())
 		return 0
 	}
 }

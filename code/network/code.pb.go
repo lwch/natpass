@@ -345,19 +345,91 @@ func (x *CodeConnect) GetHeader() map[string]*CodeHeaderValues {
 	return nil
 }
 
+type CodeConnectResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RequestId uint64                       `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Ok        bool                         `protobuf:"varint,2,opt,name=ok,proto3" json:"ok,omitempty"`
+	Msg       string                       `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
+	Header    map[string]*CodeHeaderValues `protobuf:"bytes,4,rep,name=header,proto3" json:"header,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (x *CodeConnectResponse) Reset() {
+	*x = CodeConnectResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_code_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CodeConnectResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CodeConnectResponse) ProtoMessage() {}
+
+func (x *CodeConnectResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_code_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CodeConnectResponse.ProtoReflect.Descriptor instead.
+func (*CodeConnectResponse) Descriptor() ([]byte, []int) {
+	return file_code_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CodeConnectResponse) GetRequestId() uint64 {
+	if x != nil {
+		return x.RequestId
+	}
+	return 0
+}
+
+func (x *CodeConnectResponse) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
+func (x *CodeConnectResponse) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+func (x *CodeConnectResponse) GetHeader() map[string]*CodeHeaderValues {
+	if x != nil {
+		return x.Header
+	}
+	return nil
+}
+
 type CodeData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	RequestId uint64 `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	Data      []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Ok        bool   `protobuf:"varint,2,opt,name=ok,proto3" json:"ok,omitempty"`
+	Data      []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 }
 
 func (x *CodeData) Reset() {
 	*x = CodeData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_code_proto_msgTypes[5]
+		mi := &file_code_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -370,7 +442,7 @@ func (x *CodeData) String() string {
 func (*CodeData) ProtoMessage() {}
 
 func (x *CodeData) ProtoReflect() protoreflect.Message {
-	mi := &file_code_proto_msgTypes[5]
+	mi := &file_code_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +455,7 @@ func (x *CodeData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeData.ProtoReflect.Descriptor instead.
 func (*CodeData) Descriptor() ([]byte, []int) {
-	return file_code_proto_rawDescGZIP(), []int{5}
+	return file_code_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CodeData) GetRequestId() uint64 {
@@ -391,6 +463,13 @@ func (x *CodeData) GetRequestId() uint64 {
 		return x.RequestId
 	}
 	return 0
+}
+
+func (x *CodeData) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
 }
 
 func (x *CodeData) GetData() []byte {
@@ -458,12 +537,28 @@ var file_code_proto_rawDesc = []byte{
 	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x6e, 0x65,
 	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x63, 0x6f, 0x64, 0x65, 0x5f, 0x68, 0x65, 0x61, 0x64, 0x65,
 	0x72, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a,
-	0x02, 0x38, 0x01, 0x22, 0x3e, 0x0a, 0x09, 0x63, 0x6f, 0x64, 0x65, 0x5f, 0x64, 0x61, 0x74, 0x61,
-	0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12,
-	0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64,
-	0x61, 0x74, 0x61, 0x42, 0x0c, 0x5a, 0x0a, 0x2e, 0x2f, 0x3b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x02, 0x38, 0x01, 0x22, 0xf4, 0x01, 0x0a, 0x15, 0x63, 0x6f, 0x64, 0x65, 0x5f, 0x63, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a,
+	0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x0e, 0x0a, 0x02,
+	0x6f, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x02, 0x6f, 0x6b, 0x12, 0x10, 0x0a, 0x03,
+	0x6d, 0x73, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x12, 0x42,
+	0x0a, 0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2a,
+	0x2e, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x63, 0x6f, 0x64, 0x65, 0x5f, 0x63, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x2e, 0x48,
+	0x65, 0x61, 0x64, 0x65, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x06, 0x68, 0x65, 0x61, 0x64,
+	0x65, 0x72, 0x1a, 0x56, 0x0a, 0x0b, 0x48, 0x65, 0x61, 0x64, 0x65, 0x72, 0x45, 0x6e, 0x74, 0x72,
+	0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
+	0x6b, 0x65, 0x79, 0x12, 0x31, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x63, 0x6f, 0x64,
+	0x65, 0x5f, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x52,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x4e, 0x0a, 0x09, 0x63, 0x6f,
+	0x64, 0x65, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x72, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x0e, 0x0a, 0x02, 0x6f, 0x6b, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x02, 0x6f, 0x6b, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x42, 0x0c, 0x5a, 0x0a, 0x2e, 0x2f,
+	0x3b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -478,30 +573,34 @@ func file_code_proto_rawDescGZIP() []byte {
 	return file_code_proto_rawDescData
 }
 
-var file_code_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_code_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_code_proto_goTypes = []interface{}{
-	(*CodeHeaderValues)(nil),   // 0: network.code_header_values
-	(*CodeRequest)(nil),        // 1: network.code_request
-	(*CodeResponseHeader)(nil), // 2: network.code_response_header
-	(*CodeResponseBody)(nil),   // 3: network.code_response_body
-	(*CodeConnect)(nil),        // 4: network.code_connect
-	(*CodeData)(nil),           // 5: network.code_data
-	nil,                        // 6: network.code_request.HeaderEntry
-	nil,                        // 7: network.code_response_header.HeaderEntry
-	nil,                        // 8: network.code_connect.HeaderEntry
+	(*CodeHeaderValues)(nil),    // 0: network.code_header_values
+	(*CodeRequest)(nil),         // 1: network.code_request
+	(*CodeResponseHeader)(nil),  // 2: network.code_response_header
+	(*CodeResponseBody)(nil),    // 3: network.code_response_body
+	(*CodeConnect)(nil),         // 4: network.code_connect
+	(*CodeConnectResponse)(nil), // 5: network.code_connect_response
+	(*CodeData)(nil),            // 6: network.code_data
+	nil,                         // 7: network.code_request.HeaderEntry
+	nil,                         // 8: network.code_response_header.HeaderEntry
+	nil,                         // 9: network.code_connect.HeaderEntry
+	nil,                         // 10: network.code_connect_response.HeaderEntry
 }
 var file_code_proto_depIdxs = []int32{
-	6, // 0: network.code_request.header:type_name -> network.code_request.HeaderEntry
-	7, // 1: network.code_response_header.header:type_name -> network.code_response_header.HeaderEntry
-	8, // 2: network.code_connect.header:type_name -> network.code_connect.HeaderEntry
-	0, // 3: network.code_request.HeaderEntry.value:type_name -> network.code_header_values
-	0, // 4: network.code_response_header.HeaderEntry.value:type_name -> network.code_header_values
-	0, // 5: network.code_connect.HeaderEntry.value:type_name -> network.code_header_values
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	7,  // 0: network.code_request.header:type_name -> network.code_request.HeaderEntry
+	8,  // 1: network.code_response_header.header:type_name -> network.code_response_header.HeaderEntry
+	9,  // 2: network.code_connect.header:type_name -> network.code_connect.HeaderEntry
+	10, // 3: network.code_connect_response.header:type_name -> network.code_connect_response.HeaderEntry
+	0,  // 4: network.code_request.HeaderEntry.value:type_name -> network.code_header_values
+	0,  // 5: network.code_response_header.HeaderEntry.value:type_name -> network.code_header_values
+	0,  // 6: network.code_connect.HeaderEntry.value:type_name -> network.code_header_values
+	0,  // 7: network.code_connect_response.HeaderEntry.value:type_name -> network.code_header_values
+	8,  // [8:8] is the sub-list for method output_type
+	8,  // [8:8] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_code_proto_init() }
@@ -571,6 +670,18 @@ func file_code_proto_init() {
 			}
 		}
 		file_code_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CodeConnectResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_code_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CodeData); i {
 			case 0:
 				return &v.state
@@ -589,7 +700,7 @@ func file_code_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_code_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

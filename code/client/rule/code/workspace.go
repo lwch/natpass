@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/client/conn"
 	"github.com/lwch/natpass/code/network"
@@ -30,6 +31,7 @@ type Workspace struct {
 	name   string
 	exec   *exec.Cmd
 	cli    *http.Client
+	dailer websocket.Dialer
 	remote *conn.Conn
 	// runtime
 	sendBytes  uint64
@@ -78,9 +80,10 @@ func (ws *Workspace) Exec(dir string) error {
 		logging.Error("can not create work dir[%s]: %v", workdir, err)
 		return err
 	}
+	sockDir := filepath.Join(workdir, ws.id+".sock")
 	ws.exec = exec.Command("code-server", "--disable-update-check",
 		"--auth", "none",
-		"--socket", filepath.Join(workdir, ws.id+".sock"),
+		"--socket", sockDir,
 		"--user-data-dir", filepath.Join(workdir, "data"),
 		"--extensions-dir", filepath.Join(workdir, "extensions"))
 	stdout, err := ws.exec.StdoutPipe()
@@ -109,8 +112,13 @@ func (ws *Workspace) Exec(dir string) error {
 	ws.cli = &http.Client{
 		Transport: &http.Transport{
 			Dial: func(network, addr string) (net.Conn, error) {
-				return net.Dial("unix", filepath.Join(workdir, ws.id+".sock"))
+				return net.Dial("unix", sockDir)
 			},
+		},
+	}
+	ws.dailer = websocket.Dialer{
+		NetDial: func(network, addr string) (net.Conn, error) {
+			return net.Dial("unix", sockDir)
 		},
 	}
 	go ws.log(stdout, stderr)
@@ -170,6 +178,8 @@ func (ws *Workspace) remoteRead() {
 		switch msg.GetXType() {
 		case network.Msg_code_request:
 			go ws.handleRequest(msg)
+		case network.Msg_code_connect:
+			go ws.handleConnect(msg)
 		}
 	}
 }
@@ -210,6 +220,8 @@ func (ws *Workspace) writeMessage(reqID uint64, msg *network.Msg) {
 		select {
 		case ch <- msg:
 		case <-time.After(ws.parent.writeTimeout):
+			logging.Error("code-server [%s] [%s]: message %s droped",
+				ws.id, ws.name, msg.GetXType().String())
 		}
 	}
 }
@@ -223,6 +235,8 @@ func (ws *Workspace) onResponse(reqID uint64) *network.Msg {
 		case msg := <-ch:
 			return msg
 		case <-time.After(ws.parent.readTimeout):
+			logging.Info("code-server [%s] [%s]: waiting for request %d timeout",
+				ws.id, ws.name, reqID)
 			return nil
 		}
 	}

@@ -3,6 +3,7 @@ package code
 import (
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"sync/atomic"
 
 	"github.com/lwch/logging"
@@ -21,6 +22,32 @@ func (ws *Workspace) SendRequest(r *http.Request) (uint64, error) {
 	ws.Unlock()
 	send := ws.remote.SendCodeRequest(ws.target, ws.id, reqID,
 		r.Method, r.URL.RequestURI(), body, r.Header)
+	ws.sendBytes += send
+	ws.sendPacket++
+	return reqID, nil
+}
+
+func (ws *Workspace) SendConnect(r *http.Request) (uint64, error) {
+	reqID := atomic.AddUint64(&ws.requestID, 1)
+	ws.Lock()
+	ws.onMessage[reqID] = make(chan *network.Msg, 1024)
+	ws.Unlock()
+
+	hdr := make(http.Header)
+	for key, values := range r.Header {
+		if strings.HasPrefix(key, "Sec-") {
+			continue
+		}
+		for _, value := range values {
+			hdr.Add(key, value)
+		}
+	}
+
+	hdr.Del("Connection")
+	hdr.Del("Upgrade")
+
+	send := ws.remote.SendCodeConnect(ws.target, ws.id, reqID,
+		r.URL.RequestURI(), hdr)
 	ws.sendBytes += send
 	ws.sendPacket++
 	return reqID, nil

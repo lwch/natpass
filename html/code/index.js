@@ -4,10 +4,12 @@ var page = {
     },
     connect: function() {
         $.get('/new', function(ret) {
-            page.id = ret;
-            $('#code').attr('src', `/forward/${page.id}/`);
+            page.id = ret.id;
+            page.name = ret.name;
+            $('#code').attr('src', `/forward/${page.name}/?id=${page.id}`);
         });
     },
-    id: ''
+    id: '',
+    name: ''
 };
 $(document).ready(page.init);

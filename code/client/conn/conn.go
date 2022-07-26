@@ -3,6 +3,7 @@ package conn
 import (
 	"context"
 	"crypto/tls"
+	"io"
 	"net"
 	"strings"
 	"sync"
@@ -90,11 +91,70 @@ func writeHandshake(conn *network.Conn, cfg *global.Configure) error {
 	return conn.WriteMessage(&msg, 5*time.Second)
 }
 
+func (conn *Conn) isDrop(linkID string) bool {
+	conn.lockDrop.RLock()
+	defer conn.lockDrop.RUnlock()
+	_, ok := conn.drop[linkID]
+	return ok
+}
+
+func (conn *Conn) getChan(linkID string) chan *network.Msg {
+	conn.RLock()
+	ch := conn.read[linkID]
+	conn.RUnlock()
+	if ch == nil {
+		ch = conn.unknownRead
+	}
+	return ch
+}
+
+func (conn *Conn) hookDispatch(ch chan *network.Msg, msg *network.Msg) bool {
+	switch msg.GetXType() {
+	case network.Msg_disconnect:
+		conn.lockDrop.Lock()
+		conn.drop[msg.GetLinkId()] = time.Now().Add(time.Minute)
+		conn.lockDrop.Unlock()
+		select {
+		case ch <- msg:
+		default:
+		}
+		return false
+	}
+	return true
+}
+
 func (conn *Conn) loopRead() {
 	defer utils.Recover("loopRead")
 	defer conn.close()
 	defer conn.cancel()
 	var timeout int
+	run := func(msg *network.Msg) bool {
+		timeout = 0
+		if msg.GetXType() == network.Msg_keepalive {
+			return true
+		}
+		logging.Debug("read message %s(%s) from %s",
+			msg.GetXType().String(), msg.GetLinkId(), msg.GetFrom())
+		linkID := msg.GetLinkId()
+		if conn.isDrop(linkID) {
+			return true
+		}
+		ch := conn.getChan(linkID)
+		if !conn.hookDispatch(ch, msg) {
+			return true
+		}
+		select {
+		case ch <- msg:
+		case <-time.After(conn.cfg.WriteTimeout):
+			logging.Error("drop message: %s", msg.GetXType().String())
+			conn.lockDrop.Lock()
+			conn.drop[msg.GetLinkId()] = time.Now().Add(time.Minute)
+			conn.lockDrop.Unlock()
+		case <-conn.ctx.Done():
+			return false
+		}
+		return true
+	}
 	for {
 		msg, _, err := conn.conn.ReadMessage(conn.cfg.ReadTimeout)
 		if err != nil {
@@ -106,36 +166,17 @@ func (conn *Conn) loopRead() {
 				}
 				continue
 			}
+			if strings.Contains(err.Error(), "use of closed network connection") {
+				logging.Error("read message: %v", err)
+				return
+			}
+			if err == io.EOF {
+				return
+			}
 			logging.Error("read message: %v", err)
 			continue
 		}
-		timeout = 0
-		if msg.GetXType() == network.Msg_keepalive {
-			continue
-		}
-		logging.Debug("read message %s(%s) from %s",
-			msg.GetXType().String(), msg.GetLinkId(), msg.GetFrom())
-		linkID := msg.GetLinkId()
-		conn.lockDrop.RLock()
-		_, drop := conn.drop[linkID]
-		conn.lockDrop.RUnlock()
-		if drop {
-			continue
-		}
-		conn.RLock()
-		ch := conn.read[linkID]
-		conn.RUnlock()
-		if ch == nil {
-			ch = conn.unknownRead
-		}
-		select {
-		case ch <- msg:
-		case <-time.After(conn.cfg.ReadTimeout):
-			logging.Error("drop message: %s", msg.GetXType().String())
-			conn.lockDrop.Lock()
-			conn.drop[msg.GetLinkId()] = time.Now().Add(time.Minute)
-			conn.lockDrop.Unlock()
-		case <-conn.ctx.Done():
+		if !run(msg) {
 			return
 		}
 	}

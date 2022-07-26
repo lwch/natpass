@@ -1,7 +1,7 @@
 package code
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -52,5 +52,15 @@ func (code *Code) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 		link.GetID(), code.cfg.Name,
 		repMsg.GetTo(), repMsg.GetFrom())
 	go link.localRead()
-	fmt.Fprint(w, id)
+	w.Header().Set("Content-Type", "application/json")
+	data, err := json.Marshal(map[string]string{
+		"id":   id,
+		"name": code.cfg.Name,
+	})
+	if err != nil {
+		logging.Error("json.Marshal: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(data)
 }

@@ -59,4 +59,5 @@ func (code *Code) handleWebsocket(workspace *Workspace, w http.ResponseWriter, r
 	go workspace.ws2remote(&wg, reqID, local)
 	go workspace.remote2ws(&wg, reqID, local)
 	wg.Wait()
+	workspace.Close()
 }

@@ -179,7 +179,12 @@ func (ws *Workspace) remoteRead() {
 		case network.Msg_code_request:
 			go ws.handleRequest(msg)
 		case network.Msg_code_connect:
+			ws.Lock()
+			ws.onMessage[msg.GetCsconn().GetRequestId()] = make(chan *network.Msg, 1024)
+			ws.Unlock()
 			go ws.handleConnect(msg)
+		case network.Msg_code_data:
+			ws.writeMessage(msg.GetCsdata().GetRequestId(), msg)
 		}
 	}
 }
@@ -207,6 +212,10 @@ func (ws *Workspace) localRead() {
 			ws.writeMessage(msg.GetCsrepHdr().GetRequestId(), msg)
 		case network.Msg_code_response_body:
 			ws.writeMessage(msg.GetCsrepBody().GetRequestId(), msg)
+		case network.Msg_code_connect_response:
+			ws.writeMessage(msg.GetCsconnRep().GetRequestId(), msg)
+		case network.Msg_code_data:
+			ws.writeMessage(msg.GetCsdata().GetRequestId(), msg)
 		}
 	}
 }
@@ -224,6 +233,12 @@ func (ws *Workspace) writeMessage(reqID uint64, msg *network.Msg) {
 				ws.id, ws.name, msg.GetXType().String())
 		}
 	}
+}
+
+func (ws *Workspace) chanResponse(reqID uint64) <-chan *network.Msg {
+	ws.RLock()
+	defer ws.RUnlock()
+	return ws.onMessage[reqID]
 }
 
 func (ws *Workspace) onResponse(reqID uint64) *network.Msg {

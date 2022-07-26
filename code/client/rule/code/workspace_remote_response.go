@@ -100,18 +100,26 @@ func (ws *Workspace) handleConnect(msg *network.Msg) {
 func (ws *Workspace) ws2remote(wg *sync.WaitGroup, reqID uint64, conn *websocket.Conn) {
 	defer wg.Done()
 	defer conn.Close()
+	defer ws.closeMessage(reqID)
 	for {
 		t, data, err := conn.ReadMessage()
 		if err != nil {
 			logging.Error("read_message [%s] [%s]: %v", ws.id, ws.name, err)
-			send := ws.remote.SendCodeData(ws.target, ws.id, reqID,
-				false, 0, []byte(err.Error()))
-			ws.sendBytes += send
-			ws.sendPacket++
+			ws.SendData(reqID, false, websocket.TextMessage, []byte(err.Error()))
 			return
 		}
+		ws.SendData(reqID, true, t, data)
+	}
+}
+
+func (ws *Workspace) SendData(reqID uint64, ok bool, t int, body []byte) {
+	for i := 0; i < len(body); i += 32 * 1024 {
+		end := i + 32*1024
+		if end > len(body) {
+			end = len(body)
+		}
 		send := ws.remote.SendCodeData(ws.target, ws.id, reqID,
-			true, t, data)
+			ok, t, body[i:end])
 		ws.sendBytes += send
 		ws.sendPacket++
 	}
@@ -120,10 +128,12 @@ func (ws *Workspace) ws2remote(wg *sync.WaitGroup, reqID uint64, conn *websocket
 func (ws *Workspace) remote2ws(wg *sync.WaitGroup, reqID uint64, conn *websocket.Conn) {
 	defer wg.Done()
 	defer conn.Close()
+	defer ws.closeMessage(reqID)
+	ch := ws.chanResponse(reqID)
 	for {
-		msg := ws.onResponse(reqID)
+		msg := <-ch
 		if msg == nil {
-			continue
+			return
 		}
 		if msg.GetXType() != network.Msg_code_data {
 			logging.Error("got invalid message type [%s] [%s]: %s",

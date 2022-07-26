@@ -20,7 +20,7 @@ func (code *Code) handleRequest(workspace *Workspace, w http.ResponseWriter, r *
 	defer workspace.closeMessage(reqID)
 	resp := workspace.onResponse(reqID)
 	if resp == nil {
-		logging.Error("waiting for [%s] [%s] no response, request_id=%d",
+		logging.Error("waiting for [%s] [%s] no response for request, request_id=%d",
 			workspace.id, workspace.name, reqID)
 		http.Error(w, "no response", http.StatusInternalServerError)
 		return

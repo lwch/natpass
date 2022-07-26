@@ -151,3 +151,28 @@ func (conn *Conn) SendCodeResponseConnect(to, linkID string, requestID uint64,
 		return 0
 	}
 }
+
+// SendCodeData send data
+func (conn *Conn) SendCodeData(to, linkID string, requestID uint64,
+	ok bool, t int, body []byte) uint64 {
+	var m network.Msg
+	m.To = to
+	m.XType = network.Msg_code_data
+	m.LinkId = linkID
+	m.Payload = &network.Msg_Csdata{
+		Csdata: &network.CodeData{
+			RequestId: requestID,
+			Ok:        ok,
+			Type:      uint32(t),
+			Data:      dup(body),
+		},
+	}
+	select {
+	case conn.write <- &m:
+		data, _ := proto.Marshal(&m)
+		return uint64(len(data))
+	case <-time.After(conn.cfg.WriteTimeout):
+		logging.Info("send: droped %s", network.Msg_code_data.String())
+		return 0
+	}
+}

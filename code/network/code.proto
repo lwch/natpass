@@ -46,5 +46,6 @@ message code_connect_response {
 message code_data {
     uint64 request_id = 1;
     bool           ok = 2;
-    bytes        data = 3;
+    uint32       type = 3;
+    bytes        data = 4;
 }

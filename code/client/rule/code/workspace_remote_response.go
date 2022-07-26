@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"sync"
 
+	"github.com/gorilla/websocket"
 	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/network"
 	"github.com/lwch/natpass/code/utils"
@@ -71,14 +73,73 @@ func (ws *Workspace) handleConnect(msg *network.Msg) {
 		}
 	}
 
-	remote, resp, err := ws.dailer.Dial(connect.GetUri(), hdr)
+	remote, resp, err := ws.dailer.Dial("ws://unix"+connect.GetUri(), hdr)
 	if err != nil {
 		logging.Error("dial websocket [%s] [%s]: %v", ws.id, ws.name, err)
-		ws.remote.SendCodeResponseConnect(ws.target, ws.id, connect.GetRequestId(), false, err.Error(), nil)
+		send := ws.remote.SendCodeResponseConnect(ws.target, ws.id, connect.GetRequestId(),
+			false, err.Error(), nil)
+		ws.sendBytes += send
+		ws.sendPacket++
 		return
 	}
 	defer remote.Close()
 	defer resp.Body.Close()
-	ws.remote.SendCodeResponseConnect(ws.target, ws.id, connect.GetRequestId(), true, "", resp.Header)
-	// TODO: forward
+	send := ws.remote.SendCodeResponseConnect(ws.target, ws.id, connect.GetRequestId(),
+		true, "", resp.Header)
+	ws.sendBytes += send
+	ws.sendPacket++
+
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+	go ws.ws2remote(&wg, connect.GetRequestId(), remote)
+	go ws.remote2ws(&wg, connect.GetRequestId(), remote)
+	wg.Wait()
+}
+
+func (ws *Workspace) ws2remote(wg *sync.WaitGroup, reqID uint64, conn *websocket.Conn) {
+	defer wg.Done()
+	defer conn.Close()
+	for {
+		t, data, err := conn.ReadMessage()
+		if err != nil {
+			logging.Error("read_message [%s] [%s]: %v", ws.id, ws.name, err)
+			send := ws.remote.SendCodeData(ws.target, ws.id, reqID,
+				false, 0, []byte(err.Error()))
+			ws.sendBytes += send
+			ws.sendPacket++
+			return
+		}
+		send := ws.remote.SendCodeData(ws.target, ws.id, reqID,
+			true, t, data)
+		ws.sendBytes += send
+		ws.sendPacket++
+	}
+}
+
+func (ws *Workspace) remote2ws(wg *sync.WaitGroup, reqID uint64, conn *websocket.Conn) {
+	defer wg.Done()
+	defer conn.Close()
+	for {
+		msg := ws.onResponse(reqID)
+		if msg == nil {
+			continue
+		}
+		if msg.GetXType() != network.Msg_code_data {
+			logging.Error("got invalid message type [%s] [%s]: %s",
+				ws.id, ws.name, msg.GetXType().String())
+			return
+		}
+		data := msg.GetCsdata()
+		if !data.GetOk() {
+			logging.Error("read message [%s] [%s]: %s",
+				ws.id, ws.name, string(data.GetData()))
+			return
+		}
+		err := conn.WriteMessage(int(data.GetType()), data.GetData())
+		if err != nil {
+			logging.Error("write_message [%s] [%s]: %v", ws.id, ws.name, err)
+			return
+		}
+	}
 }

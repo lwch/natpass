@@ -43,15 +43,21 @@ dashboard页面
 
 命令行
 
-| platform | 386 | x86_64 | arm | arm64 |
-| -------- | --- | ------ | --- | ----- |
+| platform | 386 | amd64 | arm | arm64 |
+| -------- | :-: | :---: | :-: | :---: |
 | windows | ✅ | ✅ | ✅ | ✅ |
-| macos   | ✅ | ✅ | ✅ | ✅ |
+| macos   |    | ✅ |     | ✅ |
 | linux   | ✅ | ✅ | ✅ | ✅ |
 
 ![shell](docs/imgs/shell.gif)
 
 远程桌面
+
+| platform | 386 | amd64 | arm | arm64 |
+| -------- | :-: | :---: | :-: | :---: |
+| windows | ✅ | ✅ | ❌ | ❌ |
+| macos   |    | ✅ |    | ✅ |
+| linux   | ✅ | ✅ | ❌ | ❌ |
 
 ![vnc](docs/imgs/vnc.gif)
 

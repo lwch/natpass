@@ -82,6 +82,7 @@ func (ws *Workspace) Exec(dir string) error {
 		return err
 	}
 	sockDir := filepath.Join(workdir, ws.id+".sock")
+	logging.Info("EXTENSIONS_GALLERY=%s", os.Getenv("EXTENSIONS_GALLERY"))
 	ws.exec = exec.Command("code-server",
 		"--auth", "none",
 		"--socket", sockDir,

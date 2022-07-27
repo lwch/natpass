@@ -86,6 +86,16 @@ func (shell *Shell) GetPort() uint16 {
 	return shell.cfg.LocalPort
 }
 
+// OnDisconnect on disconnect message
+func (shell *Shell) OnDisconnect(id string) {
+	shell.RLock()
+	link := shell.links[id]
+	shell.RUnlock()
+	if link != nil {
+		link.Close(false)
+	}
+}
+
 // Handle handle shell
 func (shell *Shell) Handle(c *conn.Conn) {
 	defer func() {

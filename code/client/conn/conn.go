@@ -16,16 +16,19 @@ import (
 	"github.com/lwch/runtime"
 )
 
+const dropBlockTimeout = 10 * time.Minute
+
 // Conn connection
 type Conn struct {
 	sync.RWMutex
-	cfg         *global.Configure
-	conn        *network.Conn
-	read        map[string]chan *network.Msg // link id => channel
-	unknownRead chan *network.Msg            // read message without link
-	write       chan *network.Msg
-	lockDrop    sync.RWMutex
-	drop        map[string]time.Time
+	cfg          *global.Configure
+	conn         *network.Conn
+	read         map[string]chan *network.Msg // link id => channel
+	unknownRead  chan *network.Msg            // read message without link
+	onDisconnect chan string
+	write        chan *network.Msg
+	lockDrop     sync.RWMutex
+	drop         map[string]time.Time
 	// runtime
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -34,11 +37,12 @@ type Conn struct {
 // New new connection
 func New(cfg *global.Configure) *Conn {
 	conn := &Conn{
-		cfg:         cfg,
-		read:        make(map[string]chan *network.Msg),
-		unknownRead: make(chan *network.Msg, 1024),
-		write:       make(chan *network.Msg, 10*1024*1024),
-		drop:        make(map[string]time.Time),
+		cfg:          cfg,
+		read:         make(map[string]chan *network.Msg),
+		unknownRead:  make(chan *network.Msg, 1024),
+		onDisconnect: make(chan string, 1024),
+		write:        make(chan *network.Msg, 10*1024*1024),
+		drop:         make(map[string]time.Time),
 	}
 	runtime.Assert(conn.connect())
 	conn.ctx, conn.cancel = context.WithCancel(context.Background())
@@ -112,12 +116,10 @@ func (conn *Conn) hookDispatch(ch chan *network.Msg, msg *network.Msg) bool {
 	switch msg.GetXType() {
 	case network.Msg_disconnect:
 		conn.lockDrop.Lock()
-		conn.drop[msg.GetLinkId()] = time.Now().Add(time.Minute)
+		conn.drop[msg.GetLinkId()] = time.Now().Add(dropBlockTimeout)
 		conn.lockDrop.Unlock()
-		select {
-		case ch <- msg:
-		default:
-		}
+		conn.onDisconnect <- msg.GetLinkId()
+		logging.Info("connection %s disconnected", msg.GetLinkId())
 		return false
 	}
 	return true
@@ -148,7 +150,7 @@ func (conn *Conn) loopRead() {
 		case <-time.After(conn.cfg.WriteTimeout):
 			logging.Error("drop message: %s", msg.GetXType().String())
 			conn.lockDrop.Lock()
-			conn.drop[msg.GetLinkId()] = time.Now().Add(time.Minute)
+			conn.drop[msg.GetLinkId()] = time.Now().Add(dropBlockTimeout)
 			conn.lockDrop.Unlock()
 		case <-conn.ctx.Done():
 			return false
@@ -248,6 +250,11 @@ func (conn *Conn) ChanUnknown() <-chan *network.Msg {
 	return conn.unknownRead
 }
 
+// ChanDisconnect get channel of disconnect
+func (conn *Conn) ChanDisconnect() <-chan string {
+	return conn.onDisconnect
+}
+
 func (conn *Conn) checkDrop() {
 	for {
 		time.Sleep(time.Second)
@@ -272,4 +279,19 @@ func (conn *Conn) checkDrop() {
 // Wait wait for connection closed
 func (conn *Conn) Wait() {
 	<-conn.ctx.Done()
+}
+
+// ChanClose close read chan
+func (conn *Conn) ChanClose(id string) {
+	conn.Lock()
+	ch := conn.read[id]
+	if ch != nil {
+		close(ch)
+	}
+	delete(conn.read, id)
+	conn.Unlock()
+
+	conn.lockDrop.Lock()
+	conn.drop[id] = time.Now().Add(dropBlockTimeout)
+	conn.lockDrop.Unlock()
 }

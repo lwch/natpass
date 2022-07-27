@@ -7,10 +7,11 @@ import (
 	"net/http"
 
 	"github.com/lwch/logging"
+	"github.com/lwch/natpass/code/client/conn"
 	"github.com/lwch/natpass/code/network"
 )
 
-func (code *Code) handleRequest(workspace *Workspace, w http.ResponseWriter, r *http.Request) {
+func (code *Code) handleRequest(conn *conn.Conn, workspace *Workspace, w http.ResponseWriter, r *http.Request) {
 	reqID, err := workspace.SendRequest(r)
 	if err != nil {
 		logging.Error("send_request: %v", err)
@@ -40,13 +41,12 @@ func (code *Code) handleRequest(workspace *Workspace, w http.ResponseWriter, r *
 		}
 	}
 
-	w.WriteHeader(int(hdr.GetCode()))
-
 	var idx uint32
+	var buf bytes.Buffer
 	for {
 		msg := workspace.onResponse(reqID)
 		if msg == nil {
-			logging.Error("no response")
+			logging.Error("no response [%s] [%s]", workspace.id, workspace.name)
 			http.Error(w, "no response", http.StatusBadGateway)
 			return
 		}
@@ -67,12 +67,15 @@ func (code *Code) handleRequest(workspace *Workspace, w http.ResponseWriter, r *
 			http.Error(w, fmt.Sprintf("read error: %s", string(resp.GetBody())), http.StatusResetContent)
 			return
 		}
-		_, err = io.Copy(w, bytes.NewReader(resp.GetBody()))
+		_, err = io.Copy(&buf, bytes.NewReader(resp.GetBody()))
 		if err != nil {
 			logging.Error("write body: %v", err)
+			http.Error(w, fmt.Sprintf("save data: %v", err), http.StatusInternalServerError)
 			return
 		}
 		if resp.GetMask()&2 > 0 {
+			w.WriteHeader(int(hdr.GetCode()))
+			io.Copy(w, &buf)
 			return
 		}
 		idx++

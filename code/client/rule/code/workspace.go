@@ -131,11 +131,15 @@ func (ws *Workspace) Exec(dir string) error {
 }
 
 // Close close workspace
-func (ws *Workspace) Close() {
+func (ws *Workspace) Close(send bool) {
 	if ws.exec != nil && ws.exec.Process != nil {
 		ws.exec.Process.Kill()
 	}
-	ws.remote.SendDisconnect(ws.target, ws.id)
+	if send {
+		ws.remote.SendDisconnect(ws.target, ws.id)
+	}
+	ws.parent.remove(ws.id)
+	ws.remote.ChanClose(ws.id)
 }
 
 func (ws *Workspace) log(stdout, stderr io.ReadCloser) {
@@ -168,7 +172,7 @@ func (ws *Workspace) Forward() {
 
 func (ws *Workspace) remoteRead() {
 	defer utils.Recover("remoteRead")
-	defer ws.Close()
+	defer ws.Close(true)
 	ch := ws.remote.ChanRead(ws.id)
 	for {
 		msg := <-ch
@@ -200,7 +204,7 @@ func (ws *Workspace) closeMessage(reqID uint64) {
 
 func (ws *Workspace) localRead() {
 	defer utils.Recover("localRead")
-	defer ws.Close()
+	defer ws.Close(true)
 	ch := ws.remote.ChanRead(ws.id)
 	for {
 		msg := <-ch

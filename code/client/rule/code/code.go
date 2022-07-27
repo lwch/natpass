@@ -1,6 +1,7 @@
 package code
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/lwch/natpass/code/client/conn"
 	"github.com/lwch/natpass/code/client/global"
 	"github.com/lwch/natpass/code/client/rule"
+	"github.com/lwch/natpass/code/network"
 	"github.com/lwch/runtime"
 )
 
@@ -81,6 +83,16 @@ func (code *Code) NewLink(id, remote string, localConn net.Conn, remoteConn *con
 	return ws
 }
 
+// OnDisconnect on disconnect message
+func (code *Code) OnDisconnect(id string) {
+	code.RLock()
+	workspace := code.workspace[id]
+	code.RUnlock()
+	if workspace != nil {
+		workspace.Close(false)
+	}
+}
+
 // Handle handle code-server
 func (code *Code) Handle(c *conn.Conn) {
 	defer func() {
@@ -102,4 +114,50 @@ func (code *Code) Handle(c *conn.Conn) {
 		Handler: mux,
 	}
 	runtime.Assert(svr.ListenAndServe())
+}
+
+func (code *Code) remove(id string) {
+	code.Lock()
+	delete(code.workspace, id)
+	code.Unlock()
+}
+
+func (code *Code) new(conn *conn.Conn) (string, error) {
+	id, err := runtime.UUID(16, "0123456789abcdef")
+	if err != nil {
+		logging.Error("failed to generate link_id for code-server: %s, err=%v",
+			code.Name, err)
+		return "", err
+	}
+	link := code.NewLink(id, code.cfg.Target, nil, conn).(*Workspace)
+	conn.SendConnectReq(id, code.cfg)
+	ch := conn.ChanRead(id)
+	var repMsg *network.Msg
+	for {
+		var msg *network.Msg
+		select {
+		case msg = <-ch:
+		case <-time.After(time.Minute):
+			logging.Error("create code-server %s by rule %s failed, timtout", link.id, link.parent.Name)
+			return "", errWaitingTimeout
+		}
+		if msg.GetXType() != network.Msg_connect_rep {
+			conn.Reset(id, msg)
+			time.Sleep(code.readTimeout / 10)
+			continue
+		}
+		rep := msg.GetCrep()
+		if !rep.GetOk() {
+			logging.Error("create code-server %s by rule %s failed, err=%s",
+				link.id, link.parent.Name, rep.GetMsg())
+			return "", errors.New(rep.GetMsg())
+		}
+		repMsg = msg
+		break
+	}
+	logging.Info("create link %s for code-server rule [%s] from %s to %s",
+		link.GetID(), code.cfg.Name,
+		repMsg.GetTo(), repMsg.GetFrom())
+	go link.localRead()
+	return id, nil
 }

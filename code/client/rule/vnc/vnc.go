@@ -47,7 +47,7 @@ func (v *VNC) NewLink(id, remote string, localConn net.Conn, remoteConn *conn.Co
 		remote: remoteConn,
 	}
 	if v.link != nil {
-		v.link.close()
+		v.link.Close(true)
 	}
 	v.link = link
 	return link
@@ -86,6 +86,11 @@ func (v *VNC) GetPort() uint16 {
 	return v.cfg.LocalPort
 }
 
+// OnDisconnect on disconnect message
+func (v *VNC) OnDisconnect(id string) {
+	// TODO
+}
+
 // Handle handle shell
 func (v *VNC) Handle(c *conn.Conn) {
 	defer func() {
@@ -109,4 +114,8 @@ func (v *VNC) Handle(c *conn.Conn) {
 		Handler: mux,
 	}
 	runtime.Assert(svr.ListenAndServe())
+}
+
+func (v *VNC) remove(id string) {
+	v.link = nil
 }

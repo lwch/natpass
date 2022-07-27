@@ -29,6 +29,7 @@ type LinkedRule interface {
 	GetRemote() string
 	GetTarget() string
 	GetLinks() []Link
+	OnDisconnect(string)
 }
 
 // Mgr rule manager
@@ -71,5 +72,18 @@ func (mgr *Mgr) Range(fn func(Rule)) {
 	defer mgr.RUnlock()
 	for _, t := range mgr.rules {
 		fn(t)
+	}
+}
+
+// OnDisconnect on disconnect message
+func (mgr *Mgr) OnDisconnect(id string) {
+	var links []LinkedRule
+	mgr.Range(func(r Rule) {
+		if lr, ok := r.(LinkedRule); ok {
+			links = append(links, lr)
+		}
+	})
+	for _, link := range links {
+		go link.OnDisconnect(id)
 	}
 }

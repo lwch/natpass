@@ -116,10 +116,18 @@ func (a *App) run() {
 				linkID = msg.GetLinkId()
 			}
 			if len(linkID) > 0 {
+				a.conn.ChanClose(linkID)
 				logging.Error("link of %s not found, type=%s",
 					linkID, msg.GetXType().String())
 				continue
 			}
+		}
+	}()
+
+	go func() {
+		for {
+			id := <-a.conn.ChanDisconnect()
+			mgr.OnDisconnect(id)
 		}
 	}()
 

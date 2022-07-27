@@ -20,7 +20,13 @@ func (code *Code) Forward(conn *conn.Conn, w http.ResponseWriter, r *http.Reques
 
 	var id string
 	if r.URL.Path == "/" {
-		id = r.FormValue("id")
+		var err error
+		id, err = code.new(conn)
+		if err != nil {
+			logging.Error("can not create workspace for [%s]: %v", code.Name, err)
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
 		http.SetCookie(w, &http.Cookie{
 			Name:  "__NATPASS_CONNECTION_ID__",
 			Value: id,
@@ -47,7 +53,7 @@ func (code *Code) Forward(conn *conn.Conn, w http.ResponseWriter, r *http.Reques
 	if code.isWebsocket(r) {
 		code.handleWebsocket(workspace, w, r)
 	} else {
-		code.handleRequest(workspace, w, r)
+		code.handleRequest(conn, workspace, w, r)
 	}
 }
 

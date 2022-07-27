@@ -82,7 +82,7 @@ func (link *Link) Forward() {
 }
 
 func (link *Link) remoteRead() {
-	defer link.close()
+	defer link.Close(true)
 	ch := link.remote.ChanRead(link.id)
 	for {
 		msg := <-ch
@@ -110,9 +110,6 @@ func (link *Link) remoteRead() {
 				data := link.ps.GetClipboard()
 				link.remote.SendVNCClipboardData(link.target, link.id, true, data)
 			}
-		case network.Msg_disconnect:
-			logging.Info("link %s disconnected", link.id)
-			return
 		}
 	}
 }
@@ -120,7 +117,7 @@ func (link *Link) remoteRead() {
 func (link *Link) localRead() {
 	// TODO: exit by context
 	defer utils.Recover("capture")
-	defer link.close()
+	defer link.Close(true)
 	img, err := link.ps.Capture(3 * time.Second)
 	if err != nil {
 		logging.Error("capture: %v", err)
@@ -152,11 +149,15 @@ func (link *Link) localRead() {
 	}
 }
 
-func (link *Link) close() {
+func (link *Link) Close(send bool) {
 	if link.ps != nil {
 		link.ps.Close()
 	}
-	link.remote.SendDisconnect(link.target, link.id)
+	if send {
+		link.remote.SendDisconnect(link.target, link.id)
+	}
+	link.parent.remove(link.id)
+	link.remote.ChanClose(link.id)
 }
 
 func cut(src *image.RGBA, rect image.Rectangle) *image.RGBA {

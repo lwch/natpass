@@ -1,3 +1,4 @@
+# 目前不支持arm架构的windows和linux操作系统
 - name: vnc            # 链路名称
   target: remote       # 目标客户端ID
   type: vnc            # web vnc

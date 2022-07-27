@@ -14,7 +14,6 @@ var upgrader = websocket.Upgrader{
 }
 
 func (code *Code) handleWebsocket(workspace *Workspace, w http.ResponseWriter, r *http.Request) {
-	defer workspace.Close(true)
 	reqID, err := workspace.SendConnect(r)
 	if err != nil {
 		logging.Error("send_connect: %v", err)

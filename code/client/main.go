@@ -105,7 +105,7 @@ func main() {
 	case "install":
 		runtime.Assert(sv.Install())
 		utils.BuildDir(cfg.LogDir, *user)
-		utils.BuildDir(cfg.TmpDir, *user)
+		utils.BuildDir(cfg.CodeDir, *user)
 	case "uninstall":
 		runtime.Assert(sv.Uninstall())
 	default:

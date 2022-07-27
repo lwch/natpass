@@ -6,4 +6,4 @@ log:
   dir: ./logs # 路径，相对于可执行文件所在目录的相对路径
   size: 50M   # 单个文件大小
   rotate: 7   # 保留数量
-tmpdir: ./tmp # 临时文件路径
+codedir: ./code # code-server配置保存路径

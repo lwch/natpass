@@ -88,7 +88,7 @@ func (a *App) codeCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *ne
 	logging.Info("create link %s for code-server rule [%s] from %s to %s",
 		msg.GetLinkId(), create.GetName(),
 		msg.GetFrom(), a.cfg.ID)
-	err := workspace.Exec(a.cfg.TmpDir)
+	err := workspace.Exec(a.cfg.CodeDir)
 	if err != nil {
 		logging.Error("create vnc failed: %v", err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetLinkId(), err.Error())

@@ -81,11 +81,13 @@ func (ws *Workspace) Exec(dir string) error {
 		return err
 	}
 	sockDir := filepath.Join(workdir, ws.id+".sock")
-	ws.exec = exec.Command("code-server", "--disable-update-check",
+	ws.exec = exec.Command("code-server",
 		"--auth", "none",
 		"--socket", sockDir,
 		"--user-data-dir", filepath.Join(workdir, "data"),
-		"--extensions-dir", filepath.Join(workdir, "extensions"))
+		"--extensions-dir", filepath.Join(workdir, "extensions"),
+		"--config", filepath.Join(workdir, "conf"))
+	ws.exec.Env = os.Environ()
 	stdout, err := ws.exec.StdoutPipe()
 	if err != nil {
 		logging.Error("can not get stdout pipe for link [%s] name [%s]", ws.id, ws.name)

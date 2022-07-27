@@ -2,7 +2,6 @@ package app
 
 import (
 	"os"
-	"path/filepath"
 	rt "runtime"
 
 	"github.com/kardianos/service"
@@ -43,20 +42,10 @@ func (a *App) Stop(s service.Service) error {
 	return nil
 }
 
-func (a *App) clean() {
-	files, err := filepath.Glob(filepath.Join(a.cfg.TmpDir, "*"))
-	runtime.Assert(err)
-	for _, file := range files {
-		os.RemoveAll(file)
-	}
-}
-
 func (a *App) run() {
 	// go func() {
 	// 	http.ListenAndServe(":9000", nil)
 	// }()
-
-	a.clean()
 
 	stdout := true
 	if rt.GOOS == "windows" {

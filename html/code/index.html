@@ -6,13 +6,16 @@
         <title>code - [{{.Name}}]</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/jquery/jquery-3.6.0.min.js"></script>
+        <script src="/fontawesome/js/all.min.js"></script>
         <link rel="stylesheet" href="/index.css" />
+        <script src="common.js"></script>
         <script src="/index.js"></script>
     </head>
     <body>
         <div class="container-fluid">
-            <div>
+            <div id="header">
                 <i id="fullscreen" class="fas fa-expand"></i>
+                <span id="info">send: 0 B/s, recv: 0 B/s</span>
                 <span id="closed" style="display: none;">连接已断开</span>
             </div>
             <!-- header -->

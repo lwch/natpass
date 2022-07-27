@@ -10,6 +10,8 @@ import (
 
 // Forward forward code-server requests
 func (code *Code) Forward(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
+	srcPath := r.URL.Path
+	srcQuery := r.URL.Query()
 	name := strings.TrimPrefix(r.URL.Path, "/forward/")
 	name = name[:strings.Index(name, "/")]
 
@@ -19,7 +21,10 @@ func (code *Code) Forward(conn *conn.Conn, w http.ResponseWriter, r *http.Reques
 	}
 
 	var id string
-	if r.URL.Path == "/" {
+
+	const argName = "natpass_connection_id"
+
+	if r.URL.Path == "/" && len(r.FormValue(argName)) == 0 {
 		var err error
 		id, err = code.new(conn)
 		if err != nil {
@@ -31,6 +36,9 @@ func (code *Code) Forward(conn *conn.Conn, w http.ResponseWriter, r *http.Reques
 			Name:  "__NATPASS_CONNECTION_ID__",
 			Value: id,
 		})
+		srcQuery.Set(argName, id)
+		http.Redirect(w, r, srcPath+"?"+srcQuery.Encode(), http.StatusTemporaryRedirect)
+		return
 	} else {
 		cookie, err := r.Cookie("__NATPASS_CONNECTION_ID__")
 		if err != nil {

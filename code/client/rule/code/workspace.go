@@ -18,6 +18,7 @@ import (
 	"github.com/lwch/natpass/code/client/conn"
 	"github.com/lwch/natpass/code/network"
 	"github.com/lwch/natpass/code/utils"
+	"google.golang.org/protobuf/proto"
 )
 
 var errWaitingTimeout = errors.New("waiting for code-server startup more than 1 minute")
@@ -181,6 +182,9 @@ func (ws *Workspace) remoteRead() {
 		if msg == nil {
 			return
 		}
+		data, _ := proto.Marshal(msg)
+		ws.recvBytes += uint64(len(data))
+		ws.recvPacket++
 		switch msg.GetXType() {
 		case network.Msg_code_request:
 			go ws.handleRequest(msg)
@@ -213,6 +217,9 @@ func (ws *Workspace) localRead() {
 		if msg == nil {
 			return
 		}
+		data, _ := proto.Marshal(msg)
+		ws.recvBytes += uint64(len(data))
+		ws.recvPacket++
 		switch msg.GetXType() {
 		case network.Msg_code_response_hdr:
 			ws.writeMessage(msg.GetCsrepHdr().GetRequestId(), msg)

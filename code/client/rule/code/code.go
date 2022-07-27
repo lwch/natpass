@@ -107,6 +107,7 @@ func (code *Code) Handle(c *conn.Conn) {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/new", pf(code.New))
+	mux.HandleFunc("/info", code.Info)
 	mux.HandleFunc("/forward/", pf(code.Forward))
 	mux.HandleFunc("/", pf(code.Render))
 	svr := &http.Server{

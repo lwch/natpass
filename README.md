@@ -41,41 +41,19 @@ dashboard页面
 
 ![dashboard](docs/imgs/dashboard.png)
 
-linux命令行效果
+命令行
 
-![linux-shell](docs/imgs/shell_linux.png)
+| platform | 386 | x86_64 | arm | arm64 |
+| -------- | --- | ------ | --- | ----- |
+| windows | ✅ | ✅ | ✅ | ✅ |
+| macos   | ✅ | ✅ | ✅ | ✅ |
+| linux   | ✅ | ✅ | ✅ | ✅ |
 
-windows命令行效果
+![shell](docs/imgs/shell.gif)
 
-![windows-shell](docs/imgs/shell_win.png)
+远程桌面
 
-windows2008远程桌面
-
-![win2008-vnc](docs/imgs/vnc_win2008.png)
-
-windows10远程桌面
-
-![win10-vnc](docs/imgs/vnc_win10.png)
-
-windows11远程桌面
-
-![win11-vnc](docs/imgs/vnc_win11.png)
-
-ubuntu远程桌面
-
-![ubuntu-vnc](docs/imgs/vnc_ubuntu.png)
-
-fedora远程桌面
-
-![fedora-vnc](docs/imgs/vnc_fedora.png)
-
-deepin远程桌面
-
-![deepin-vnc](docs/imgs/vnc_deepin.png)
-
-macos远程桌面
-
-![macos-vnc](docs/imgs/vnc_macos.png)
+![vnc](docs/imgs/vnc.gif)
 
 windows读取剪贴板内容
 

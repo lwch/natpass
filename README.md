@@ -81,6 +81,10 @@ windows读取剪贴板内容
 
 ![vnc-clipboard](docs/imgs/vnc_clipboard.png)
 
+code-server支持
+
+![code-server](docs/imgs/code_server.png)
+
 ## 性能
 
 在vmware环境下创建4C2G（AMD Ryzen 7 4800U with Radeon Graphics）测试环境，并进行all in one部署server、remote端和local端，使用bench规则进行压测，结果如下：

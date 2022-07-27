@@ -61,7 +61,7 @@ dashboard页面
 
 ![vnc](docs/imgs/vnc.gif)
 
-windows读取剪贴板内容
+windows剪贴板内容
 
 ![vnc-clipboard](docs/imgs/vnc_clipboard.png)
 

@@ -18,24 +18,29 @@ func (db *Dashboard) Rules(w http.ResponseWriter, r *http.Request) {
 	}
 	type item struct {
 		Name   string `json:"name"`
-		Remote string `json:"remote"`
+		Remote string `json:"remote,omitempty"`
 		Port   uint16 `json:"port"`
 		Type   string `json:"type"`
 		Links  []link `json:"links"`
 	}
 	var ret []item
 	db.mgr.Range(func(t rule.Rule) {
+		lr, isLR := t.(rule.LinkedRule)
 		var it item
 		it.Name = t.GetName()
-		it.Remote = t.GetRemote()
+		if isLR {
+			it.Remote = lr.GetRemote()
+		}
 		it.Port = t.GetPort()
 		it.Type = t.GetTypeName()
-		for _, l := range t.GetLinks() {
-			var lk link
-			lk.ID = l.GetID()
-			lk.RecvBytes, lk.SendBytes = l.GetBytes()
-			lk.RecvPacket, lk.SendPacket = l.GetPackets()
-			it.Links = append(it.Links, lk)
+		if isLR {
+			for _, l := range lr.GetLinks() {
+				var lk link
+				lk.ID = l.GetID()
+				lk.RecvBytes, lk.SendBytes = l.GetBytes()
+				lk.RecvPacket, lk.SendPacket = l.GetPackets()
+				it.Links = append(it.Links, lk)
+			}
 		}
 		ret = append(ret, it)
 	})

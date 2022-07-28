@@ -45,14 +45,17 @@ func (link *Link) GetPackets() (uint64, uint64) {
 }
 
 // Close close link
-func (link *Link) Close() {
+func (link *Link) Close(send bool) {
 	link.onClose()
 	p, err := os.FindProcess(link.pid)
 	if err == nil {
 		p.Kill()
 	}
-	link.remote.SendDisconnect(link.target, link.id)
+	if send {
+		link.remote.SendDisconnect(link.target, link.id)
+	}
 	link.parent.remove(link.id)
+	link.remote.ChanClose(link.id)
 }
 
 // Forward forward data
@@ -63,7 +66,7 @@ func (link *Link) Forward() {
 
 func (link *Link) remoteRead() {
 	defer utils.Recover("remoteRead")
-	defer link.Close()
+	defer link.Close(true)
 	ch := link.remote.ChanRead(link.id)
 	for {
 		msg := <-ch
@@ -84,16 +87,13 @@ func (link *Link) remoteRead() {
 					link.parent.Name, link.id, err)
 				return
 			}
-		case network.Msg_disconnect:
-			logging.Info("shell %s link %s closed by remote", link.parent.Name, link.id)
-			return
 		}
 	}
 }
 
 func (link *Link) localRead() {
 	defer utils.Recover("localRead")
-	defer link.Close()
+	defer link.Close(true)
 	buf := make([]byte, 16*1024)
 	for {
 		n, err := link.stdout.Read(buf)

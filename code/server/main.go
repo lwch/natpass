@@ -123,7 +123,7 @@ func main() {
 	switch *act {
 	case "install":
 		runtime.Assert(sv.Install())
-		utils.BuildLogDir(cfg.LogDir, *user)
+		utils.BuildDir(cfg.LogDir, *user)
 	case "uninstall":
 		runtime.Assert(sv.Uninstall())
 	default:

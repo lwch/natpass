@@ -15,7 +15,8 @@ var page = {
             $('#terms').empty();
             $.each(ret, function(_, rule) {
                 if (rule.type != 'shell' &&
-                    rule.type != 'vnc') {
+                    rule.type != 'vnc' &&
+                    rule.type != 'code-server') {
                     return;
                 }
                 $('#terms').append($(`<option value="${rule.port}">${rule.name}</option>`));

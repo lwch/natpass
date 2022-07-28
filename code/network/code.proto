@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package network;
+option go_package="./;network";
+
+message code_header_values {
+    repeated string values = 1;
+}
+
+// normal request
+message code_request {
+    uint64 request_id = 1;
+    string     method = 2;
+    string        uri = 3;
+    bytes        body = 4;
+    map<string, code_header_values> header = 5;
+}
+
+message code_response_header {
+    uint64 request_id = 1;
+    uint32       code = 2;
+    map<string, code_header_values> header = 3;
+}
+
+message code_response_body {
+    uint64 request_id = 1;
+    uint32      index = 2;
+    uint32       mask = 3;
+    bytes        body = 4;
+}
+
+// websocket
+message code_connect {
+    uint64 request_id = 1;
+    string        uri = 2;
+    map<string, code_header_values> header = 3;
+}
+
+message code_connect_response {
+    uint64 request_id = 1;
+    bool           ok = 2;
+    string        msg = 3;
+    map<string, code_header_values> header = 4;
+}
+
+message code_data {
+    uint64 request_id = 1;
+    bool           ok = 2;
+    uint32       type = 3;
+    bytes        data = 4;
+}

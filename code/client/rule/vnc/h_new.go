@@ -15,7 +15,7 @@ import (
 // New new vnc
 func (v *VNC) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 	if v.link != nil {
-		v.link.close()
+		v.link.Close(true)
 	}
 	q := r.FormValue("quality")
 	s := r.FormValue("show_cursor")

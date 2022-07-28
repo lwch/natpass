@@ -11,6 +11,7 @@ import (
 	"github.com/lwch/natpass/code/client/global"
 	"github.com/lwch/natpass/code/client/rule"
 	"github.com/lwch/natpass/code/client/rule/bench"
+	"github.com/lwch/natpass/code/client/rule/code"
 	"github.com/lwch/natpass/code/client/rule/shell"
 	"github.com/lwch/natpass/code/client/rule/vnc"
 	"github.com/lwch/natpass/code/network"
@@ -77,6 +78,10 @@ func (a *App) run() {
 			b := bench.New(t)
 			mgr.Add(b)
 			go b.Handle(a.conn)
+		case "code-server":
+			cs := code.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+			mgr.Add(cs)
+			go cs.Handle(a.conn)
 		}
 	}
 
@@ -93,15 +98,25 @@ func (a *App) run() {
 					a.vncCreate(a.confDir, mgr, a.conn, msg)
 				case network.ConnectRequest_bench:
 					a.benchCreate(a.confDir, mgr, a.conn, msg)
+				case network.ConnectRequest_code:
+					a.codeCreate(a.confDir, mgr, a.conn, msg)
 				}
 			default:
 				linkID = msg.GetLinkId()
 			}
 			if len(linkID) > 0 {
+				a.conn.ChanClose(linkID)
 				logging.Error("link of %s not found, type=%s",
 					linkID, msg.GetXType().String())
 				continue
 			}
+		}
+	}()
+
+	go func() {
+		for {
+			id := <-a.conn.ChanDisconnect()
+			mgr.OnDisconnect(id)
 		}
 	}()
 

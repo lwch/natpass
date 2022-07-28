@@ -42,6 +42,7 @@ type Configure struct {
 	DashboardListen  string
 	DashboardPort    uint16
 	Rules            []Rule
+	CodeDir          string
 }
 
 // LoadConf load configure file
@@ -65,12 +66,13 @@ func LoadConf(dir string) *Configure {
 			Listen  string `yaml:"listen"`
 			Port    uint16 `yaml:"port"`
 		} `yaml:"dashboard"`
-		Rules []Rule `yaml:"rules"`
+		Rules   []Rule `yaml:"rules"`
+		CodeDir string `yaml:"codedir"`
 	}
 	runtime.Assert(yaml.Decode(dir, &cfg))
 	for i, t := range cfg.Rules {
 		switch t.Type {
-		case "shell", "vnc", "bench":
+		case "shell", "vnc", "bench", "code-server":
 		default:
 			panic(fmt.Sprintf("unsupported type: %s", t.Type))
 		}
@@ -87,6 +89,11 @@ func LoadConf(dir string) *Configure {
 		runtime.Assert(err)
 		cfg.Log.Dir = filepath.Join(filepath.Dir(dir), cfg.Log.Dir)
 	}
+	if !filepath.IsAbs(cfg.CodeDir) {
+		dir, err := os.Executable()
+		runtime.Assert(err)
+		cfg.CodeDir = filepath.Join(filepath.Dir(dir), cfg.CodeDir)
+	}
 	return &Configure{
 		ID:               cfg.ID,
 		Server:           cfg.Server,
@@ -101,5 +108,6 @@ func LoadConf(dir string) *Configure {
 		DashboardListen:  cfg.Dashboard.Listen,
 		DashboardPort:    cfg.Dashboard.Port,
 		Rules:            cfg.Rules,
+		CodeDir:          cfg.CodeDir,
 	}
 }

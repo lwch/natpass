@@ -1,0 +1,41 @@
+html {
+    height: 100%;
+}
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+}
+.container-fluid {
+    height: 100%;
+    overflow-y: hidden;
+}
+#header {
+    padding-top: 4px;
+}
+#fullscreen {
+    float: right;
+    margin-right: 5px;
+}
+#info {
+    float: right;
+    margin-right: 5px;
+}
+#closed {
+    color: red;
+    float: right;
+    margin-right: 5px;
+    font-weight: bold;
+}
+label, span {
+    line-height: 38px;
+}
+#fullscreen {
+    cursor: pointer;
+    font-size: 38px;
+}
+#code {
+    width: 100%;
+    height: calc(100% - 42px);
+    border: none;
+}

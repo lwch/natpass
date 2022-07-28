@@ -36,13 +36,9 @@ var page = {
                 });
                 var op = '';
                 switch (rule.type) {
-                case 'reverse':
-                    op = `
-                    <a href="http://${location.hostname}:${rule.port}" target="_blank">http</a>
-                    <a href="https://${location.hostname}:${rule.port}" target="_blank">https</a>`;
-                    break;
                 case 'shell':
                 case 'vnc':
+                case 'code-server':
                     op = `<a href="http://${location.host}/terminal.html?name=${rule.name}" target="_blank">连接</a>`;
                     break;
                 }

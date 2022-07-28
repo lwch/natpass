@@ -26,6 +26,7 @@ message connect_request {
         shell = 2; // shell
         vnc   = 3; // vnc
         bench = 4; // benchmark
+        code  = 5; // code-server
     }
     string name = 1; // rule name
     type  _type = 2; // rule type

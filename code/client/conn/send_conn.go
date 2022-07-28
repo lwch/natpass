@@ -53,6 +53,13 @@ func (conn *Conn) SendConnectReq(id string, cfg global.Rule) {
 				XType: network.ConnectRequest_bench,
 			},
 		}
+	case "code-server":
+		msg.Payload = &network.Msg_Creq{
+			Creq: &network.ConnectRequest{
+				Name:  cfg.Name,
+				XType: network.ConnectRequest_code,
+			},
+		}
 	}
 	select {
 	case conn.write <- &msg:

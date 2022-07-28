@@ -1,8 +1,8 @@
 /bin
-/test
 /build
 /release
 /tmp
 /logs
 /run
 /*.yaml
+/test_conf

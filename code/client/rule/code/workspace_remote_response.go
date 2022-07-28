@@ -17,8 +17,11 @@ func (ws *Workspace) handleRequest(msg *network.Msg) {
 	req := msg.GetCsreq()
 	request, err := http.NewRequest(req.GetMethod(), "http://unix"+req.GetUri(), bytes.NewReader(req.GetBody()))
 	if err != nil {
-		// TODO: response error
 		logging.Error("build request [%s] [%s]: %v", ws.id, ws.name, err)
+		ws.remote.SendCodeResponseHeader(ws.target, ws.id, req.GetRequestId(),
+			http.StatusInternalServerError, nil)
+		ws.remote.SendCodeResponseBody(ws.target, ws.id, req.GetRequestId(),
+			0, false, true, []byte(err.Error()))
 		return
 	}
 	for key, values := range req.GetHeader() {
@@ -28,8 +31,11 @@ func (ws *Workspace) handleRequest(msg *network.Msg) {
 	}
 	response, err := ws.cli.Do(request)
 	if err != nil {
-		// TODO: response error
 		logging.Error("call request [%s] [%s] [%s]: %v", ws.id, ws.name, req.GetUri(), err)
+		ws.remote.SendCodeResponseHeader(ws.target, ws.id, req.GetRequestId(),
+			http.StatusInternalServerError, nil)
+		ws.remote.SendCodeResponseBody(ws.target, ws.id, req.GetRequestId(),
+			0, false, true, []byte(err.Error()))
 		return
 	}
 	defer response.Body.Close()

@@ -170,6 +170,7 @@ func (ws *Workspace) log(stdout, stderr io.ReadCloser) {
 	wg.Wait()
 }
 
+// Forward forward data from remote node
 func (ws *Workspace) Forward() {
 	go ws.remoteRead()
 }

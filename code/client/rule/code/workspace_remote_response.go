@@ -118,6 +118,7 @@ func (ws *Workspace) ws2remote(wg *sync.WaitGroup, reqID uint64, conn *websocket
 	}
 }
 
+// SendData send websocket data
 func (ws *Workspace) SendData(reqID uint64, ok bool, t int, body []byte) {
 	for i := 0; i < len(body); i += 32 * 1024 {
 		end := i + 32*1024

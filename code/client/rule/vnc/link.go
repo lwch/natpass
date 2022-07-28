@@ -149,6 +149,7 @@ func (link *Link) localRead() {
 	}
 }
 
+// Close close link
 func (link *Link) Close(send bool) {
 	if link.ps != nil {
 		link.ps.Close()

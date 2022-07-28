@@ -39,15 +39,15 @@ func (code *Code) Forward(conn *conn.Conn, w http.ResponseWriter, r *http.Reques
 		srcQuery.Set(argName, id)
 		http.Redirect(w, r, srcPath+"?"+srcQuery.Encode(), http.StatusTemporaryRedirect)
 		return
-	} else {
-		cookie, err := r.Cookie("__NATPASS_CONNECTION_ID__")
-		if err != nil {
-			logging.Error("get connection id: %v", err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		id = cookie.Value
 	}
+
+	cookie, err := r.Cookie("__NATPASS_CONNECTION_ID__")
+	if err != nil {
+		logging.Error("get connection id: %v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	id = cookie.Value
 
 	code.RLock()
 	workspace := code.workspace[id]

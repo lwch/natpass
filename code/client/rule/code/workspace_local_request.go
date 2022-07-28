@@ -10,6 +10,7 @@ import (
 	"github.com/lwch/natpass/code/network"
 )
 
+// SendRequest send request from local node
 func (ws *Workspace) SendRequest(r *http.Request) (uint64, error) {
 	reqID := atomic.AddUint64(&ws.requestID, 1)
 	body, err := ioutil.ReadAll(r.Body)
@@ -27,6 +28,7 @@ func (ws *Workspace) SendRequest(r *http.Request) (uint64, error) {
 	return reqID, nil
 }
 
+// SendConnect send websocket connect action from local node
 func (ws *Workspace) SendConnect(r *http.Request) (uint64, error) {
 	reqID := atomic.AddUint64(&ws.requestID, 1)
 	ws.Lock()

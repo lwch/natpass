@@ -51,13 +51,11 @@ func (ws *Workspace) handleRequest(msg *network.Msg) {
 				send := ws.remote.SendCodeResponseBody(ws.target, ws.id, req.GetRequestId(), idx, true, true, buf[:n])
 				ws.sendBytes += send
 				ws.sendPacket++
-				idx++
 				return
 			}
 			send := ws.remote.SendCodeResponseBody(ws.target, ws.id, req.GetRequestId(), idx, false, true, []byte(err.Error()))
 			ws.sendBytes += send
 			ws.sendPacket++
-			idx++
 			logging.Error("call request [%s] [%s] [%s] read response data: %v", ws.id, ws.name, req.GetUri(), err)
 			return
 		}

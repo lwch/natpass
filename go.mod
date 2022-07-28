@@ -13,10 +13,11 @@ require (
 	github.com/lwch/rdesktop v1.1.1
 	github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d
 	github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe
+	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/sys v0.0.0-20220721230656-c6bc011c0c49
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10
 	golang.org/x/text v0.3.7
-	golang.org/x/tools v0.1.11 // indirect
+	golang.org/x/tools v0.1.12 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/protobuf v1.28.0
 )

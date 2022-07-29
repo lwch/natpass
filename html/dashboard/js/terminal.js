@@ -29,27 +29,25 @@ var page = {
         $('#tab-content>.active').removeClass('show').removeClass('active');
         var idx = page.idx;
         var str = `
-        <li class="nav-item">
+        <li class="nav-item" id="tab-${idx}">
             <button class="nav-link active" type="button">
                 shell - [${$('#terms option:selected').text()}]
             </button>
         </li>`;
-        var obj = $(str);
-        obj.click(function() {
+        $('#tabs').append($(str));
+        $("#tabs #tab-${idx}").click(function() {
             var $this = $(this);
             $('#tabs>.nav-item>.active').removeClass('active');
             $this.find('button').addClass('active');
             $('#tab-content>.active').removeClass('show').removeClass('active');
-            $('#tab-'+idx).addClass('show').addClass('active');
+            $('#tab-content-'+idx).addClass('show').addClass('active');
         });
-        $('#tabs').append(obj);
         var str = `
-        <div class="tab-pane fade show active" id="tab-${idx}">
+        <div class="tab-pane fade show active" id="tab-content-${idx}">
             <iframe src="http://${location.hostname}:${$('#terms').val()}"
                     style="width:100%;min-height:800px" allowfullscreen></iframe>
         </div>`;
-        var obj = $(str);
-        $('#tab-content').append(obj);
+        $('#tab-content').append($(str));
         page.idx++;
     },
     idx: 0

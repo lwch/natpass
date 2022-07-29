@@ -29,25 +29,27 @@ var page = {
         $('#tab-content>.active').removeClass('show').removeClass('active');
         var idx = page.idx;
         var str = `
-        <li class="nav-item" id="tab-${idx}">
-            <button class="nav-link active" type="button">
-                shell - [${$('#terms option:selected').text()}]
-            </button>
+        <li class="nav-item">
+            <button class="nav-link active" type="button"></button>
         </li>`;
-        $('#tabs').append($(str));
-        $("#tabs #tab-${idx}").click(function() {
+        var obj = $(str);
+        obj.find('button').text('shell - ['+$('#terms option:selected').text()+']');
+        obj.click(function() {
             var $this = $(this);
             $('#tabs>.nav-item>.active').removeClass('active');
             $this.find('button').addClass('active');
             $('#tab-content>.active').removeClass('show').removeClass('active');
-            $('#tab-content-'+idx).addClass('show').addClass('active');
+            $('#tab-'+idx).addClass('show').addClass('active');
         });
+        $('#tabs').append(obj);
         var str = `
-        <div class="tab-pane fade show active" id="tab-content-${idx}">
-            <iframe src="http://${location.hostname}:${$('#terms').val()}"
-                    style="width:100%;min-height:800px" allowfullscreen></iframe>
+        <div class="tab-pane fade show active">
+            <iframe style="width:100%;min-height:800px" allowfullscreen></iframe>
         </div>`;
-        $('#tab-content').append($(str));
+        var obj = $(str);
+        obj.attr('id', 'tab-'+idx);
+        obj.find('iframe').attr('src', 'http://'+location.hostname+':'+$('#terms').val());
+        $('#tab-content').append(obj);
         page.idx++;
     },
     idx: 0

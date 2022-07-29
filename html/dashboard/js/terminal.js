@@ -48,7 +48,7 @@ var page = {
         </div>`;
         var obj = $(str);
         obj.attr('id', 'tab-'+idx);
-        obj.find('iframe').attr('src', 'http://'+location.hostname+':'+$('#terms').val());
+        obj.find('iframe').attr('src', 'http://'+location.hostname+':'+escape($('#terms').val()));
         $('#tab-content').append(obj);
         page.idx++;
     },

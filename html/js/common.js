@@ -2,6 +2,13 @@ function arg(key) {
     var url = new URL(location.href);
     return decodeURIComponent(url.searchParams.get(key));
 }
+function escape(htmlStr) {
+    return htmlStr.replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+}
 var humanize = {
     bytes: function(n) {
         return humanize.humanate_bytes(n, 1024, ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'])

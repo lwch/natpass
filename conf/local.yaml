@@ -1,6 +1,8 @@
 id: local              # 客户端ID
 server: 127.0.0.1:6154 # 服务器地址
-ssl: false             # 是否使用tls加密连接
+ssl:
+  enabled: false       # 是否使用tls连接
+  insecure: false      # 是否关闭SNI，若使用自签证书可将其设置为true
 dashboard: # web面板
   enabled: true   # 是否开放dashboard
   listen: 0.0.0.0 # 监听地址

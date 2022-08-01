@@ -134,3 +134,7 @@
 1. go版本升级到1.18.4
 2. 新增code-server支持
 3. 优化disconnect处理逻辑
+
+# v0.10.1
+
+修改客户端配置文件，新增ssl的insecure支持

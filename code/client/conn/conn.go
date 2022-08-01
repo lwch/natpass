@@ -57,7 +57,22 @@ func (conn *Conn) connect() error {
 	var dial net.Conn
 	var err error
 	if conn.cfg.UseSSL {
-		dial, err = tls.Dial("tcp", conn.cfg.Server, nil)
+		if conn.cfg.SSLInsecure {
+			rawConn, err := net.Dial("tcp", conn.cfg.Server)
+			if err != nil {
+				logging.Error("raw dial: %v", err)
+				return err
+			}
+			cfg := new(tls.Config)
+			cfg.InsecureSkipVerify = true
+			dial = tls.Client(rawConn, cfg)
+			err = dial.(*tls.Conn).Handshake()
+			if err != nil {
+				rawConn.Close()
+			}
+		} else {
+			dial, err = tls.Dial("tcp", conn.cfg.Server, nil)
+		}
 	} else {
 		dial, err = net.Dial("tcp", conn.cfg.Server)
 	}

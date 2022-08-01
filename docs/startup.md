@@ -36,13 +36,13 @@
 1. 建议使用tls加密连接，使用方式如下
 
         - 修改服务器端的server.yaml文件，配置tls相关文件路径，并重启服务
-        - 修改受控端的remote.yaml配置，将ssl设置为true，并重启服务
-        - 修改控制端的local.yaml配置，将ssl设置为true，并重启服务
+        - 修改受控端的remote.yaml配置，配置ssl相关选项，并重启服务
+        - 修改控制端的local.yaml配置，配置ssl相关选项，并重启服务
 
 2. 修改默认连接密钥，修改方式如下
 
         - 使用以下命令生成一个16位随机串
-          tr -dc A-Za-z0-9 < /dev/urandom|dd bs=16 count=1 2>/dev/null
+          tr -dc A-Za-z0-9 < /dev/urandom | dd bs=16 count=1 2>/dev/null && echo
         - 修改服务器端的common.yaml文件，将secret设置为新的密钥，并重启服务
         - 修改受控端的common.yaml文件，将secret设置为新的密钥，并重启服务
         - 修改控制端的common.yaml文件，将secret设置为新的密钥，并重启服务

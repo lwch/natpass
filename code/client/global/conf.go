@@ -31,6 +31,7 @@ type Configure struct {
 	ID               string
 	Server           string
 	UseSSL           bool
+	SSLInsecure      bool
 	Enc              [md5.Size]byte
 	Links            int
 	LogDir           string
@@ -51,8 +52,11 @@ func LoadConf(dir string) *Configure {
 		ID     string `yaml:"id"`
 		Server string `yaml:"server"`
 		Secret string `yaml:"secret"`
-		SSL    bool   `yaml:"ssl"`
-		Link   struct {
+		SSL    struct {
+			Enabled  bool `yaml:"enabled"`
+			Insecure bool `yaml:"insecure"`
+		} `yaml:"ssl"`
+		Link struct {
 			ReadTimeout  time.Duration `yaml:"read_timeout"`
 			WriteTimeout time.Duration `yaml:"write_timeout"`
 		} `yaml:"link"`
@@ -97,7 +101,8 @@ func LoadConf(dir string) *Configure {
 	return &Configure{
 		ID:               cfg.ID,
 		Server:           cfg.Server,
-		UseSSL:           cfg.SSL,
+		UseSSL:           cfg.SSL.Enabled,
+		SSLInsecure:      cfg.SSL.Insecure,
 		Enc:              md5.Sum([]byte(cfg.Secret)),
 		ReadTimeout:      cfg.Link.ReadTimeout,
 		WriteTimeout:     cfg.Link.WriteTimeout,

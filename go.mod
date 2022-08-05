@@ -7,7 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/gorilla/websocket v1.5.0
-	github.com/kardianos/service v1.2.2-0.20220428125717-29f8c79c511b
+	github.com/kardianos/service v1.2.1
 	github.com/kisielk/errcheck v1.6.1 // indirect
 	github.com/lwch/logging v0.0.0-20220322084100-ec48185d95ab
 	github.com/lwch/rdesktop v1.1.1

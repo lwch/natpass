@@ -44,7 +44,7 @@ var page = {
         $('#tabs').append(obj);
         var str = `
         <div class="tab-pane fade show active">
-            <iframe style="width:100%;min-height:800px" allowfullscreen></iframe>
+            <iframe style="width:100%;min-height:800px" allowfullscreen allow="clipboard-read;clipboard-write"></iframe>
         </div>`;
         var obj = $(str);
         obj.attr('id', 'tab-'+idx);

@@ -18,6 +18,5 @@ require (
 	golang.org/x/sys v0.0.0-20220817070843-5a390386f1f2
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.12 // indirect
-	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/protobuf v1.28.1
 )

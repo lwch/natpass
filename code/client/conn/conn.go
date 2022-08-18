@@ -3,7 +3,6 @@ package conn
 import (
 	"context"
 	"crypto/tls"
-	"io"
 	"net"
 	"strings"
 	"sync"
@@ -183,15 +182,8 @@ func (conn *Conn) loopRead() {
 				}
 				continue
 			}
-			if strings.Contains(err.Error(), "use of closed network connection") {
-				logging.Error("read message: %v", err)
-				return
-			}
-			if err == io.EOF {
-				return
-			}
 			logging.Error("read message: %v", err)
-			continue
+			return
 		}
 		if !run(msg) {
 			return

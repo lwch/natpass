@@ -15,7 +15,7 @@ require (
 	github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
+	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/protobuf v1.28.1

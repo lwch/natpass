@@ -2,7 +2,6 @@
 
 [![natpass](https://github.com/lwch/natpass/actions/workflows/build.yml/badge.svg)](https://github.com/lwch/natpass/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lwch/natpass)](https://goreportcard.com/report/github.com/lwch/natpass)
-[![go-mod](https://img.shields.io/github/go-mod/go-version/lwch/natpass)](https://github.com/lwch/natpass)
 [![license](https://img.shields.io/github/license/lwch/natpass)](https://opensource.org/licenses/MIT)
 [![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/lwch/natpass)
 [![gitter](https://badges.gitter.im/lwch-natpass/community.svg)](https://gitter.im/lwch-natpass/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)

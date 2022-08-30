@@ -5,7 +5,9 @@
 [![go-mod](https://img.shields.io/github/go-mod/go-version/lwch/natpass)](https://github.com/lwch/natpass)
 [![license](https://img.shields.io/github/license/lwch/natpass)](https://opensource.org/licenses/MIT)
 [![platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey.svg)](https://github.com/lwch/natpass)
+[![gitter](https://badges.gitter.im/lwch-natpass/community.svg)](https://gitter.im/lwch-natpass/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![QQ群711086098](https://img.shields.io/badge/QQ%E7%BE%A4-711086098-success)](https://jq.qq.com/?_wv=1027&k=6Fz2vkVE)
+![downloads](https://img.shields.io/github/downloads/lwch/natpass/total)
 
 新一代主机管理工具，支持shell管理，支持远程桌面管理[实现原理](docs/desc.md)
 

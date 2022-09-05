@@ -63,6 +63,24 @@ func main() {
 	if rt.GOOS != "windows" {
 		depends = append(depends, "After=network.target")
 	}
+	var opt service.KeyValue
+	switch rt.GOOS {
+	case "windows":
+		opt = service.KeyValue{
+			"StartType":              "automatic",
+			"OnFailure":              "restart",
+			"OnFailureDelayDuration": "5s",
+			"OnFailureResetPeriod":   10,
+		}
+	case "linux":
+		opt = service.KeyValue{
+			"LimitNOFILE": 65000,
+		}
+	case "darwin":
+		opt = service.KeyValue{
+			"SessionCreate": true,
+		}
+	}
 
 	appCfg := &service.Config{
 		Name:         "np-cli",
@@ -71,6 +89,7 @@ func main() {
 		UserName:     *user,
 		Arguments:    []string{"-conf", dir},
 		Dependencies: depends,
+		Option:       opt,
 	}
 
 	cfg := global.LoadConf(*conf)

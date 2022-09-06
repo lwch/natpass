@@ -27,7 +27,7 @@ RUN sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list && \
    curl -L https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz|tar -xz -C /usr/local && \
    cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-ENV PATH=$PATH:/usr/local/go/bin
+ENV PATH=$PATH:/usr/local/go/bin:/root/go/bin
 ENV GOPROXY=$GO_PROXY
 
 CMD /bin/bash

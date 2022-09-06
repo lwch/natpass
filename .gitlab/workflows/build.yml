@@ -3,7 +3,6 @@ image: lwch/natpass-builder:1.19
 stages:
   - lint
   - build
-  - release
 
 lint:
   stage: lint
@@ -17,9 +16,6 @@ build:
   stage: build
   script:
     - go run contrib/build/build_all.go
-
-release:
-  stage: release
   artifacts:
     paths:
       - release/*

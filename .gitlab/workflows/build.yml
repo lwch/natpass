@@ -1,0 +1,10 @@
+image: lwch/natpass-builder:1.19
+
+stages:
+  - build
+  - release
+
+build:
+  stage: build
+  script:
+    - go run contrib/build/build_all.go

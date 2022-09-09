@@ -1,12 +1,12 @@
 package global
 
 import (
-	"crypto/md5"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/lwch/natpass/code/hash"
 	"github.com/lwch/natpass/code/utils"
 	"github.com/lwch/runtime"
 	"github.com/lwch/yaml"
@@ -32,7 +32,7 @@ type Configure struct {
 	Server           string
 	UseSSL           bool
 	SSLInsecure      bool
-	Enc              [md5.Size]byte
+	Hasher           *hash.Hasher
 	Links            int
 	LogDir           string
 	LogSize          utils.Bytes
@@ -103,7 +103,7 @@ func LoadConf(dir string) *Configure {
 		Server:           cfg.Server,
 		UseSSL:           cfg.SSL.Enabled,
 		SSLInsecure:      cfg.SSL.Insecure,
-		Enc:              md5.Sum([]byte(cfg.Secret)),
+		Hasher:           hash.New(cfg.Secret, 60),
 		ReadTimeout:      cfg.Link.ReadTimeout,
 		WriteTimeout:     cfg.Link.WriteTimeout,
 		LogDir:           cfg.Log.Dir,

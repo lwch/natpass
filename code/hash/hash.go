@@ -10,12 +10,14 @@ import (
 	"time"
 )
 
+// Hasher hasher for handshake
 type Hasher struct {
 	sync.Mutex
 	period uint
 	h      hash.Hash
 }
 
+// New create hasher
 func New(secret string, period uint) *Hasher {
 	if period == 0 {
 		period = 30
@@ -26,6 +28,7 @@ func New(secret string, period uint) *Hasher {
 	}
 }
 
+// Hash hash func
 func (h *Hasher) Hash() []byte {
 	now := time.Now()
 	i := math.Floor(float64(now.Unix()) / float64(h.period))

@@ -1,11 +1,11 @@
 package global
 
 import (
-	"crypto/md5"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/lwch/natpass/code/hash"
 	"github.com/lwch/natpass/code/utils"
 	"github.com/lwch/runtime"
 	"github.com/lwch/yaml"
@@ -14,7 +14,7 @@ import (
 // Configure server configure
 type Configure struct {
 	Listen       uint16
-	Enc          [md5.Size]byte
+	Hasher       *hash.Hasher
 	TLSKey       string
 	TLSCrt       string
 	ReadTimeout  time.Duration
@@ -51,7 +51,7 @@ func LoadConf(dir string) *Configure {
 	}
 	return &Configure{
 		Listen:       cfg.Listen,
-		Enc:          md5.Sum([]byte(cfg.Secret)),
+		Hasher:       hash.New(cfg.Secret, 60),
 		TLSKey:       cfg.TLS.Key,
 		TLSCrt:       cfg.TLS.Crt,
 		ReadTimeout:  cfg.Link.ReadTimeout,

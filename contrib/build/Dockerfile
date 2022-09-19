@@ -1,5 +1,5 @@
 ARG APT_MIRROR=mirrors.ustc.edu.cn
-ARG GO_VERSION=1.19
+ARG GO_VERSION=1.19.1
 ARG GO_PROXY=https://goproxy.cn,direct
 
 FROM lwch/darwin-crosscompiler:11.3

@@ -91,7 +91,7 @@ func (h *Handler) readHandshake(c *network.Conn) (string, error) {
 	if msg.GetXType() != network.Msg_handshake {
 		return "", errNotHandshake
 	}
-	n := bytes.Compare(msg.GetHsp().GetEnc(), h.cfg.Enc[:])
+	n := bytes.Compare(msg.GetHsp().GetEnc(), h.cfg.Hasher.Hash())
 	if n != 0 {
 		return "", errInvalidHandshake
 	}

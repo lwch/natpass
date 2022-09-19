@@ -103,7 +103,7 @@ func writeHandshake(conn *network.Conn, cfg *global.Configure) error {
 	msg.To = "server"
 	msg.Payload = &network.Msg_Hsp{
 		Hsp: &network.HandshakePayload{
-			Enc: cfg.Enc[:],
+			Enc: cfg.Hasher.Hash(),
 		},
 	}
 	return conn.WriteMessage(&msg, 5*time.Second)

@@ -12,7 +12,7 @@ require (
 	github.com/lwch/rdesktop v1.1.1
 	github.com/lwch/runtime v1.0.0
 	github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe
-	golang.org/x/sys v0.0.0-20220915200043-7b5979e65e41
+	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec
 	golang.org/x/text v0.3.7
 	google.golang.org/protobuf v1.28.1
 )

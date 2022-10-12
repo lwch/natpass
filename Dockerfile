@@ -1,8 +1,8 @@
 FROM golang:latest AS build
 
-ADD build.go /tmp/build.go
+ADD build.go /build.go
 
-WORKDIR /tmp
+WORKDIR /
 
 RUN go mod init build && \
    go mod tidy && \

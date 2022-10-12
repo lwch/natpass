@@ -14,8 +14,8 @@ func BuildDir(dir, u string) {
 	if len(u) > 0 {
 		us, err := user.Lookup(u)
 		runtime.Assert(err)
-		uid, _ := strconv.ParseInt(us.Uid, 10, 64)
-		gid, _ := strconv.ParseInt(us.Gid, 10, 64)
+		uid, _ := strconv.ParseInt(us.Uid, 10, 32)
+		gid, _ := strconv.ParseInt(us.Gid, 10, 32)
 		runtime.Assert(os.Chown(dir, int(uid), int(gid)))
 	}
 }

@@ -1,4 +1,4 @@
-name: builder
+name: build-builder
 
 on:
   push:

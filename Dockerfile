@@ -5,7 +5,7 @@ COPY release.go \
     go.sum \
     /
 
-RUN CGO_ENABLED=0 go build -o /bin/release release.go
+RUN CGO_ENABLED=0 go build -o /bin/release /release.go
 
 FROM alpine:latest
 

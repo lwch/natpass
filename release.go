@@ -32,12 +32,11 @@ func main() {
 		fmt.Println("Missing GITHUB_REPOSITORY env")
 		os.Exit(1)
 	}
-	ref, ok := os.LookupEnv("GITHUB_REF")
+	version, ok := os.LookupEnv("BUILD_VERSION")
 	if !ok {
 		fmt.Println("Missing GITHUB_REF env")
 		os.Exit(1)
 	}
-	version := strings.TrimPrefix(ref, "refs/tags/")
 
 	tmp := strings.SplitN(repo, "/", 2)
 	if len(tmp) != 2 {

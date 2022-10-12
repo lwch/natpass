@@ -30,6 +30,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: lwch/natpass-builder:$GO_VERSION
+          tags: lwch/natpass-builder:${{ env.GO_VERSION }}
           build-args: |
-            GO_VERSION=$GO_VERSION
+            GO_VERSION=${{ env.GO_VERSION }}

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-cd $(dirname $(realpath $0))/../../
-
 BUILD_VERSION=${BUILD_VERSION:-0.0.0}
 
 HASH=`git log -n1 --pretty=format:%h`

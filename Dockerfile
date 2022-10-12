@@ -1,12 +1,11 @@
 FROM golang:latest AS build
 
-ADD build.go /build.go
+COPY build.go \
+   go.mod \
+   go.sum \
+   /
 
-WORKDIR /
-
-RUN go mod init build && \
-   go mod tidy && \
-   go build -o /bin/build build.go
+RUN CGO_ENABLED=0 go build -o /bin/build /build.go
 
 FROM lwch/darwin-crosscompiler:11.3
 

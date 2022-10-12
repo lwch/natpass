@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - uses: actions/checkout@v3
 

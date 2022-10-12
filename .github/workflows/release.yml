@@ -1,0 +1,15 @@
+name: release
+
+on:
+  push:
+    tags: [ v*.*.* ]
+
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: build
+        uses: lwch/natpass@builder

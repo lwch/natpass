@@ -4,6 +4,8 @@ ARG APT_MIRROR
 ARG GO_VERSION
 ARG GO_PROXY
 
+ADD build.go /tmp
+
 RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list; fi && \
    if [ -n "$APT_MIRROR" ]; then sed -i "s|security.debian.org|$APT_MIRROR|g" /etc/apt/sources.list; fi && \
    dpkg --add-architecture i386 && \
@@ -18,9 +20,11 @@ RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/a
    apt-get install -y libx11-dev:amd64 && \
    apt-get clean && \
    curl -L https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz|tar -xz -C /usr/local && \
-   cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+   cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+   go build -o /bin/build build.go && \
+   rm -fr /tmp/build.go
 
 ENV PATH=$PATH:/usr/local/go/bin
 ENV GOPROXY=$GO_PROXY
 
-CMD /bin/bash
+CMD /bin/build

@@ -13,3 +13,6 @@ jobs:
 
       - name: build
         uses: lwch/natpass@builder
+
+      - name: release
+        uses: lwch/natpass@release

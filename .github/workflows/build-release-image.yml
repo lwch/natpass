@@ -3,6 +3,8 @@ name: build-release
 on:
   push:
     branches: [ release ]
+  schedule:
+    - cron: '30 0 * * *'
 
 jobs:
 

@@ -98,7 +98,7 @@ var targets = []target{
 
 func main() {
 	if v, ok := os.LookupEnv("BUILD_VERSION"); ok {
-		version = v
+		version = strings.TrimPrefix(v, "v")
 	}
 
 	logging.Info("go env...")

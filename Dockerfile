@@ -1,10 +1,20 @@
+FROM golang:latest AS build
+
+ADD build.go /tmp/build.go
+
+WORKDIR /tmp
+
+RUN go mod init build && \
+   go mod tidy && \
+   go build -o /bin/build build.go
+
 FROM lwch/darwin-crosscompiler:11.3
 
 ARG APT_MIRROR
 ARG GO_VERSION
 ARG GO_PROXY
 
-ADD build.go /tmp/build.go
+COPY --from=build /bin/build /bin/build
 
 RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list; fi && \
    if [ -n "$APT_MIRROR" ]; then sed -i "s|security.debian.org|$APT_MIRROR|g" /etc/apt/sources.list; fi && \
@@ -24,8 +34,5 @@ RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/a
 
 ENV PATH=$PATH:/usr/local/go/bin
 ENV GOPROXY=$GO_PROXY
-
-RUN go build -o /bin/build build.go && \
-   rm -fr /tmp/build.go
 
 CMD /bin/build

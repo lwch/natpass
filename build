@@ -1,11 +1,30 @@
 #!/bin/sh
 
-VERSION=0.11.0
+cd $(dirname $(realpath $0))/../../
 
-DOCKER_BUILDKIT=1 docker build -t natpass -f contrib/build/Dockerfile .
-docker run --rm \
-   -v `pwd`:/build \
-   -v $HOME/.cache/go-build:/root/.cache/go-build \
-   -v $HOME/go/pkg/mod:/root/go/pkg/mod \
-   -e BUILD_VERSION=$VERSION \
-   natpass /build/contrib/build/build "$@"
+BUILD_VERSION=${BUILD_VERSION:-0.0.0}
+
+HASH=`git log -n1 --pretty=format:%h`
+REVERSION=`git log --oneline|wc -l|tr -d ' '`
+BUILD_TIME=`date +'%Y-%m-%d %H:%M:%S'`
+LDFLAGS="-X 'main.gitHash=$HASH'
+-X 'main.gitReversion=$REVERSION'
+-X 'main.buildTime=$BUILD_TIME'
+-X 'main.version=$BUILD_VERSION'"
+
+if [ "$GOOS" = "windows" ]; then
+LDFLAGS="$LDFLAGS
+--extldflags '-static -fpic -lssp'"
+fi
+
+go run contrib/bindata/main.go -pkg shell -o code/client/rule/shell/assets.go \
+   -prefix html/shell "$@" html/shell/...
+go run contrib/bindata/main.go -pkg vnc -o code/client/rule/vnc/assets.go \
+   -prefix html/vnc "$@" html/vnc/...
+go run contrib/bindata/main.go -pkg code -o code/client/rule/code/assets.go \
+   -prefix html/code "$@" html/code/...
+go run contrib/bindata/main.go -pkg dashboard -o code/client/dashboard/assets.go \
+   -prefix html/dashboard "$@" html/dashboard/...
+
+go build -ldflags "$LDFLAGS" -o bin/np-svr code/server/*.go
+go build -ldflags "$LDFLAGS" -tags "$TAGS" -o bin/np-cli code/client/*.go

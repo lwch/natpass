@@ -1,0 +1,4 @@
+name: natpass build environment
+runs:
+  using: docker
+  image: docker://lwch/natpass-builder:1.19.2

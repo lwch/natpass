@@ -9,12 +9,18 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+
       - uses: actions/checkout@v3
 
       - name: build
         uses: lwch/natpass@builder
+        env:
+          BUILD_VERSION: ${{ steps.get_version.outputs.VERSION }}
 
       - name: release
         uses: lwch/natpass@release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_VERSION: ${{ steps.get_version.outputs.VERSION }}

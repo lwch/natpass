@@ -1,0 +1,4 @@
+name: natpass release environment
+runs:
+  using: docker
+  image: docker://lwch/natpass-release:latest

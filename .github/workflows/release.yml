@@ -16,3 +16,5 @@ jobs:
 
       - name: release
         uses: lwch/natpass@release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

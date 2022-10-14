@@ -8,12 +8,12 @@ require (
 	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/gorilla/websocket v1.5.0
 	github.com/kardianos/service v1.2.2
-	github.com/lwch/logging v0.0.0-20220322084100-ec48185d95ab
+	github.com/lwch/logging v0.0.0-20221013035348-e250895ebb72
 	github.com/lwch/rdesktop v1.1.1
 	github.com/lwch/runtime v1.0.0
 	github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe
-	golang.org/x/sys v0.0.0-20221010170243-090e33056c14
-	golang.org/x/text v0.3.7
+	golang.org/x/sys v0.0.0-20221013171732-95e765b1cc43
+	golang.org/x/text v0.3.8
 	google.golang.org/protobuf v1.28.1
 )
 

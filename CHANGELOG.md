@@ -175,3 +175,7 @@
 
 1. go版本升级到1.19.2
 2. 实现actions自动打包
+
+## TODO
+
+1. 修正windows下日志文件无法rotate的问题

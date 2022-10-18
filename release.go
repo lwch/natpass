@@ -64,6 +64,7 @@ func main() {
 
 	files, err := filepath.Glob(filepath.Join("release", "*"))
 	runtime.Assert(err)
+nextFile:
 	for _, file := range files {
 		fi, err := os.Stat(file)
 		runtime.Assert(err)
@@ -73,10 +74,11 @@ func main() {
 		for i := 0; i < retry; i++ {
 			deleteIfExists(gcli, owner, repo, releaseID, filepath.Base(file))
 			if upload(gcli, owner, repo, releaseID, file) {
-				break
+				continue nextFile
 			}
 			time.Sleep(time.Second)
 		}
+		panic(fmt.Sprintf("can not upload file: %s", filepath.Base(file)))
 	}
 }
 

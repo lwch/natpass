@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/ast"
@@ -20,6 +21,8 @@ import (
 	htmlmini "github.com/tdewolff/minify/v2/html"
 	"golang.org/x/oauth2"
 )
+
+const retry = 5
 
 func main() {
 	token, ok := os.LookupEnv("GITHUB_TOKEN")
@@ -67,7 +70,13 @@ func main() {
 		if fi.IsDir() {
 			continue
 		}
-		upload(gcli, owner, repo, releaseID, file)
+		for i := 0; i < retry; i++ {
+			deleteIfExists(gcli, owner, repo, releaseID, filepath.Base(file))
+			if upload(gcli, owner, repo, releaseID, file) {
+				break
+			}
+			time.Sleep(time.Second)
+		}
 	}
 }
 
@@ -96,7 +105,7 @@ func createOrDrop(cli *github.Client, owner, repo, version, body string) int64 {
 	return ret.GetID()
 }
 
-func upload(cli *github.Client, owner, repo string, id int64, dir string) {
+func upload(cli *github.Client, owner, repo string, id int64, dir string) bool {
 	log.Printf("upload file %s...", dir)
 	f, err := os.Open(dir)
 	runtime.Assert(err)
@@ -106,8 +115,32 @@ func upload(cli *github.Client, owner, repo string, id int64, dir string) {
 	var rep *github.Response
 	_, rep, err = cli.Repositories.UploadReleaseAsset(
 		context.Background(), owner, repo, id, &opt, f)
-	runtime.Assert(err)
+	if err != nil {
+		return false
+	}
 	defer rep.Body.Close()
+	return true
+}
+
+func deleteIfExists(cli *github.Client, owner, repo string, id int64, name string) bool {
+	var opt github.ListOptions
+	opt.PerPage = 1000
+	assets, rep, err := cli.Repositories.ListReleaseAssets(context.Background(), owner, repo, id, &opt)
+	if err != nil {
+		return false
+	}
+	defer rep.Body.Close()
+	for _, asset := range assets {
+		if *asset.Name == name {
+			log.Printf("delete file %s...", name)
+			rep, err = cli.Repositories.DeleteReleaseAsset(context.Background(), owner, repo, asset.GetID())
+			if err != nil {
+				return false
+			}
+			defer rep.Body.Close()
+		}
+	}
+	return true
 }
 
 func getChangeLog(version string) string {

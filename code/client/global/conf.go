@@ -73,6 +73,20 @@ func LoadConf(dir string) *Configure {
 		Rules   []Rule `yaml:"rules"`
 		CodeDir string `yaml:"codedir"`
 	}
+	cfg.ID = "unset"
+	cfg.Server = "127.0.0.1:6154"
+	cfg.SSL.Enabled = false
+	cfg.SSL.Insecure = false
+	cfg.Dashboard.Enabled = true
+	cfg.Dashboard.Listen = "0.0.0.0"
+	cfg.Dashboard.Port = 8080
+	cfg.Secret = "0123456789"
+	cfg.Link.ReadTimeout = time.Second
+	cfg.Link.WriteTimeout = time.Second
+	cfg.Log.Dir = "./logs"
+	cfg.Log.Size = 50 * 1024 * 1024
+	cfg.Log.Rotate = 7
+	cfg.CodeDir = "./code"
 	runtime.Assert(yaml.Decode(dir, &cfg))
 	for i, t := range cfg.Rules {
 		switch t.Type {

@@ -43,6 +43,13 @@ func LoadConf(dir string) *Configure {
 			Crt string `yaml:"crt"`
 		} `yaml:"tls"`
 	}
+	cfg.Listen = 6154
+	cfg.Secret = "0123456789"
+	cfg.Link.ReadTimeout = time.Second
+	cfg.Link.WriteTimeout = time.Second
+	cfg.Log.Dir = "./logs"
+	cfg.Log.Size = 50 * 1024 * 1024
+	cfg.Log.Rotate = 7
 	runtime.Assert(yaml.Decode(dir, &cfg))
 	if !filepath.IsAbs(cfg.Log.Dir) {
 		dir, err := os.Executable()

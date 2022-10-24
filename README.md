@@ -11,7 +11,7 @@
 
 1. [如何部署](docs/startup.md)
 2. [规则配置](docs/rules.md)
-3. [开发文档](https://jkstack.github.io/natpass/)
+3. [开发文档](https://lwch.gitbook.io/natpass/dev)
 
 功能与特性：
 

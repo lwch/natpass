@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"io"
+	"time"
 
 	"github.com/lwch/rdesktop"
 	"github.com/lwch/runtime"
@@ -36,17 +37,13 @@ type screen struct {
 }
 
 func newScreen() *screen {
-	ctx, cancel := context.WithCancel(context.Background())
 	cli, err := rdesktop.New()
 	runtime.Assert(err)
-	return &screen{
-		ctx:    ctx,
-		cancel: cancel,
-		cli:    cli,
-	}
+	return &screen{cli: cli}
 }
 
 func (s *screen) Open() error {
+	s.ctx, s.cancel = context.WithCancel(context.Background())
 	return nil
 }
 
@@ -68,6 +65,7 @@ func (s *screen) VideoRecord(selectedProp prop.Media) (video.Reader, error) {
 			if err == nil {
 				break
 			}
+			time.Sleep(time.Second)
 		}
 		release = func() {}
 		return
@@ -111,9 +109,6 @@ func main() {
 	}
 	x264Params.BitRate = 1_000_000 // 500kbps
 
-	if err != nil {
-		panic(err)
-	}
 	codecSelector := mediadevices.NewCodecSelector(
 		mediadevices.WithVideoEncoders(&x264Params),
 	)

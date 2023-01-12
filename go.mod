@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	github.com/kisielk/errcheck v1.6.2 // indirect
+	github.com/kisielk/errcheck v1.6.3 // indirect
 	golang.org/x/image v0.3.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.7.0 // indirect

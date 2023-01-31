@@ -88,11 +88,15 @@ func (a *App) Run(*cobra.Command, []string) {
 
 // Install register service
 func (a *App) Install(*cobra.Command, []string) {
+	cfg := global.LoadConf(ConfDir)
+
 	err := buildService(a.p).Install()
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+	utils.BuildDir(cfg.LogDir, User)
+	utils.BuildDir(cfg.CodeDir, User)
 	fmt.Println("register service np-cli success")
 }
 

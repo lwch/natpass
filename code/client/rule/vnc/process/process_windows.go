@@ -100,9 +100,9 @@ func createWorker(name, confDir string, tk windows.Token, showCursor bool) (*Pro
 	startup.Cb = uint32(unsafe.Sizeof(startup))
 	startup.Desktop = windows.StringToUTF16Ptr("WinSta0\\default")
 	startup.Flags = windows.STARTF_USESHOWWINDOW
-	str := dir + fmt.Sprintf(" -conf %s -action vnc.worker -name %s -vport %d", confDir, name, port)
+	str := dir + fmt.Sprintf(" vnc --conf %s --name %s --port %d", confDir, name, port)
 	if showCursor {
-		str += "-vcursor"
+		str += "--cursor"
 	}
 	cmd := windows.StringToUTF16Ptr(str)
 	if tk == 0 {

@@ -18,94 +18,112 @@ import (
 	"github.com/lwch/runtime"
 )
 
-// App application
-type App struct {
+type program struct {
 	confDir string
 	cfg     *global.Configure
-	version string
 	conn    *conn.Conn
 }
 
-// New create application
-func New(ver, dir string, cfg *global.Configure) *App {
-	return &App{version: ver, confDir: dir, cfg: cfg}
+func newProgram() *program {
+	return &program{}
 }
 
-// Start start application
-func (a *App) Start(s service.Service) error {
-	go a.run()
+func (p *program) setConfDir(dir string) *program {
+	p.confDir = dir
+	return p
+}
+
+func (p *program) setConfigure(cfg *global.Configure) *program {
+	p.cfg = cfg
+	return p
+}
+
+// Start main entry for service
+func (p *program) Start(s service.Service) error {
+	go p.run()
 	return nil
 }
 
-// Stop stop application
-func (a *App) Stop(s service.Service) error {
+// Stop stop service callback
+func (*program) Stop(s service.Service) error {
 	return nil
 }
 
-func (a *App) run() {
+func (p *program) run() {
 	// go func() {
 	// 	http.ListenAndServe(":9000", nil)
 	// }()
 
+	// initialize logging
 	stdout := true
 	if rt.GOOS == "windows" {
 		stdout = false
 	}
 	logging.SetSizeRotate(logging.SizeRotateConfig{
-		Dir:         a.cfg.LogDir,
+		Dir:         p.cfg.LogDir,
 		Name:        "np-cli",
-		Size:        int64(a.cfg.LogSize.Bytes()),
-		Rotate:      a.cfg.LogRotate,
+		Size:        int64(p.cfg.LogSize.Bytes()),
+		Rotate:      p.cfg.LogRotate,
 		WriteStdout: stdout,
 		WriteFile:   true,
 	})
 	defer logging.Flush()
 
-	a.conn = conn.New(a.cfg)
+	// create connection and handshake
+	p.conn = conn.New(p.cfg)
+
+	// build rule manager
 	mgr := rule.New()
 
-	for _, t := range a.cfg.Rules {
+	// add rules from configure file, wait http request from web browser
+	for _, t := range p.cfg.Rules {
 		switch t.Type {
 		case "shell":
-			sh := shell.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+			sh := shell.New(t, p.cfg.ReadTimeout, p.cfg.WriteTimeout)
 			mgr.Add(sh)
-			go sh.Handle(a.conn)
+			go sh.Handle(p.conn)
 		case "vnc":
-			v := vnc.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+			v := vnc.New(t, p.cfg.ReadTimeout, p.cfg.WriteTimeout)
 			mgr.Add(v)
-			go v.Handle(a.conn)
+			go v.Handle(p.conn)
 		case "bench":
 			b := bench.New(t)
 			mgr.Add(b)
-			go b.Handle(a.conn)
+			go b.Handle(p.conn)
 		case "code-server":
-			cs := code.New(t, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+			cs := code.New(t, p.cfg.ReadTimeout, p.cfg.WriteTimeout)
 			mgr.Add(cs)
-			go cs.Handle(a.conn)
+			go cs.Handle(p.conn)
 		}
 	}
 
+	// handle request from remote node
 	go func() {
 		for {
-			msg := <-a.conn.ChanUnknown()
+			msg := <-p.conn.ChanUnknown()
 			var linkID string
 			switch msg.GetXType() {
 			case network.Msg_connect_req:
 				switch msg.GetCreq().GetXType() {
 				case network.ConnectRequest_shell:
-					a.shellCreate(mgr, a.conn, msg)
+					// fork /bin/bash command and ack
+					p.shellCreate(mgr, p.conn, msg)
 				case network.ConnectRequest_vnc:
-					a.vncCreate(a.confDir, mgr, a.conn, msg)
+					// fork np-cli vnc child process and ack
+					p.vncCreate(p.confDir, mgr, p.conn, msg)
 				case network.ConnectRequest_bench:
-					a.benchCreate(a.confDir, mgr, a.conn, msg)
+					// bench handler response ok directly
+					p.benchCreate(p.confDir, mgr, p.conn, msg)
 				case network.ConnectRequest_code:
-					a.codeCreate(a.confDir, mgr, a.conn, msg)
+					// fork code-server child process and ack
+					p.codeCreate(p.confDir, mgr, p.conn, msg)
 				}
 			default:
 				linkID = msg.GetLinkId()
 			}
+			// invalid message type, close channel directly
 			if len(linkID) > 0 {
-				a.conn.ChanClose(linkID)
+				p.conn.ChanClose(linkID)
 				logging.Error("link of %s not found, type=%s",
 					linkID, msg.GetXType().String())
 				continue
@@ -113,22 +131,26 @@ func (a *App) run() {
 		}
 	}()
 
+	// on disconnect message dispatcher, also to close the forked process
 	go func() {
 		for {
-			id := <-a.conn.ChanDisconnect()
+			id := <-p.conn.ChanDisconnect()
 			mgr.OnDisconnect(id)
 		}
 	}()
 
-	if a.cfg.DashboardEnabled {
+	if p.cfg.DashboardEnabled {
+		// if the dashboard is enabled, wait the connection close async
 		go func() {
-			a.conn.Wait()
+			p.conn.Wait()
 			logging.Flush()
 			os.Exit(1)
 		}()
-		db := dashboard.New(a.cfg, a.conn, mgr, a.version)
-		runtime.Assert(db.ListenAndServe(a.cfg.DashboardListen, a.cfg.DashboardPort))
+		// handle dashboard
+		db := dashboard.New(p.cfg, p.conn, mgr, Version)
+		runtime.Assert(db.ListenAndServe(p.cfg.DashboardListen, p.cfg.DashboardPort))
 	} else {
-		a.conn.Wait()
+		// wait the connection close
+		p.conn.Wait()
 	}
 }

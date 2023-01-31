@@ -197,3 +197,5 @@
 ## TODO
 
 1. 升级第三方库
+2. 命令行交互切换到cobra库
+3. 新增start、stop、restart、status命令行交互命令

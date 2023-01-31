@@ -11,7 +11,7 @@ import (
 	"github.com/lwch/natpass/code/network"
 )
 
-func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
+func (p *program) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
@@ -21,13 +21,13 @@ func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 			Type:   "shell",
 			Exec:   create.GetCshell().GetExec(),
 			Env:    create.GetCshell().GetEnv(),
-		}, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+		}, p.cfg.ReadTimeout, p.cfg.WriteTimeout)
 		mgr.Add(tn.(rule.Rule))
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), nil, conn).(*shell.Link)
 	logging.Info("create link %s for shell rule [%s] from %s to %s",
 		msg.GetLinkId(), create.GetName(),
-		msg.GetFrom(), a.cfg.ID)
+		msg.GetFrom(), p.cfg.ID)
 	err := lk.Exec()
 	if err != nil {
 		logging.Error("create shell failed: %v", err)
@@ -38,7 +38,7 @@ func (a *App) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	lk.Forward()
 }
 
-func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
+func (p *program) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
@@ -47,13 +47,13 @@ func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *net
 			Target: msg.GetFrom(),
 			Type:   "vnc",
 			Fps:    create.GetCvnc().GetFps(),
-		}, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+		}, p.cfg.ReadTimeout, p.cfg.WriteTimeout)
 		mgr.Add(tn.(rule.Rule))
 	}
 	lk := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), nil, conn).(*vnc.Link)
 	logging.Info("create link %s for vnc rule [%s] from %s to %s",
 		msg.GetLinkId(), create.GetName(),
-		msg.GetFrom(), a.cfg.ID)
+		msg.GetFrom(), p.cfg.ID)
 	lk.SetQuality(create.GetCvnc().GetQuality())
 	err := lk.Fork(confDir)
 	if err != nil {
@@ -65,15 +65,15 @@ func (a *App) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *net
 	lk.Forward()
 }
 
-func (a *App) benchCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
+func (p *program) benchCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	logging.Info("create link %s for bench rule [%s] from %s to %s",
 		msg.GetLinkId(), create.GetName(),
-		msg.GetFrom(), a.cfg.ID)
+		msg.GetFrom(), p.cfg.ID)
 	conn.SendConnectOK(msg.GetFrom(), msg.GetLinkId())
 }
 
-func (a *App) codeCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
+func (p *program) codeCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) {
 	create := msg.GetCreq()
 	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
@@ -81,14 +81,14 @@ func (a *App) codeCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg *ne
 			Name:   create.GetName(),
 			Target: msg.GetFrom(),
 			Type:   "code-server",
-		}, a.cfg.ReadTimeout, a.cfg.WriteTimeout)
+		}, p.cfg.ReadTimeout, p.cfg.WriteTimeout)
 		mgr.Add(tn.(rule.Rule))
 	}
 	workspace := tn.NewLink(msg.GetLinkId(), msg.GetFrom(), nil, conn).(*code.Workspace)
 	logging.Info("create link %s for code-server rule [%s] from %s to %s",
 		msg.GetLinkId(), create.GetName(),
-		msg.GetFrom(), a.cfg.ID)
-	err := workspace.Exec(a.cfg.CodeDir)
+		msg.GetFrom(), p.cfg.ID)
+	err := workspace.Exec(p.cfg.CodeDir)
 	if err != nil {
 		logging.Error("create vnc failed: %v", err)
 		conn.SendConnectError(msg.GetFrom(), msg.GetLinkId(), err.Error())

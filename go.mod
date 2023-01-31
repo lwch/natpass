@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/creack/pty v1.1.18
-	github.com/dustin/go-humanize v1.0.0
+	github.com/dustin/go-humanize v1.0.1
 	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/gorilla/websocket v1.5.0
 	github.com/kardianos/service v1.2.2

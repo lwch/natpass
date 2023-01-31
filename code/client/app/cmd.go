@@ -15,8 +15,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// User --user param
 var User string
+
+// ConfDir --conf param
 var ConfDir string
+
+// Version application version
 var Version string
 
 // vnc child process params
@@ -26,6 +31,7 @@ var (
 	VncCursor bool
 )
 
+// App application
 type App struct {
 	p *program
 }

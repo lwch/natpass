@@ -194,8 +194,9 @@
 4. xterm.js升级到5.1.0
 5. 升级第三方库
 
-## TODO
+## v0.12.0
 
-1. 升级第三方库
-2. 命令行交互切换到cobra库
-3. 新增start、stop、restart、status命令行交互命令
+1. 命令行交互切换到cobra库
+2. 新增start、stop、restart、status命令行交互命令
+3. 升级第三方库
+4. 补充代码注释

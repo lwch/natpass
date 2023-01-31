@@ -101,6 +101,8 @@ func main() {
 		version = strings.TrimPrefix(v, "v")
 	}
 
+	fixSafeDir()
+
 	logging.Info("go env...")
 	cmd := exec.Command("go", "env")
 	cmd.Stdout = os.Stdout
@@ -115,6 +117,15 @@ func main() {
 		logging.Info("build target %s/%s...", target.os, target.arch)
 		build(target)
 	}
+}
+
+func fixSafeDir() {
+	dir, err := os.Getwd()
+	runtime.Assert(err)
+	cmd := exec.Command("git", "config", "--global", "--add", "safe.directory", dir)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	runtime.Assert(cmd.Run())
 }
 
 func bindata() {

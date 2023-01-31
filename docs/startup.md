@@ -7,7 +7,7 @@
 1. 在服务器上[下载](https://github.com/lwch/natpass/releases)并解压到任意目录
 2. 使用以下命令启动服务器端程序
 
-        sudo ./np-svr -conf server.yaml
+        sudo ./np-svr --conf server.yaml
 
 3. （可选）开放外网防火墙，默认端口6154
 
@@ -17,7 +17,7 @@
 2. （可选）修改remote.yaml配置文件，修改*server*地址
 3. 使用以下命令启动客户端程序
 
-        sudo ./np-cli -conf remote.yaml -user `whoami`
+        sudo ./np-cli --conf remote.yaml --user `whoami`
 
 ## 控制端部署
 
@@ -26,7 +26,7 @@
 3. （可选）修改rule.d目录下的规则配置文件，[rule配置方法](rules.md)
 4. 使用以下命令启动客户端程序
 
-        sudo ./np-cli -conf local.yaml
+        sudo ./np-cli --conf local.yaml
 5. 在以上操作成功后即可在浏览器中通过local.yaml中配置的端口号进行访问，默认地址：
 
         http://127.0.0.1:8080

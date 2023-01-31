@@ -25,10 +25,9 @@ func CreateWorker(name, confDir string, showCursor bool) (*Process, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmd := exec.Command(dir, "-conf", confDir,
-		"-action", "vnc.worker",
-		"-name", name,
-		"-vport", fmt.Sprintf("%d", port))
+	cmd := exec.Command(dir, "vnc", "--conf", confDir,
+		"--name", name,
+		"--port", fmt.Sprintf("%d", port))
 	err = cmd.Start()
 	if err != nil {
 		p.Close()

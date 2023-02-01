@@ -3,6 +3,7 @@ module github.com/lwch/natpass
 go 1.17
 
 require (
+	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 	github.com/creack/pty v1.1.18
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-bindata/go-bindata/v3 v3.1.3

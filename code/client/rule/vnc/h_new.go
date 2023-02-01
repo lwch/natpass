@@ -51,7 +51,7 @@ func (v *VNC) New(conn *conn.Conn, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if msg.GetXType() != network.Msg_connect_rep {
-			conn.Reset(id, msg)
+			conn.Requeue(id, msg)
 			time.Sleep(v.readTimeout / 10)
 			continue
 		}

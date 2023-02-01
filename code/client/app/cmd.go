@@ -163,7 +163,7 @@ func (a *App) Status(*cobra.Command, []string) {
 	}
 }
 
-// Vnc handle vnc child process
+// Vnc handle vnc child process handler
 func (a *App) Vnc(*cobra.Command, []string) {
 	defer utils.Recover("vnc.worker")
 

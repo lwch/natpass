@@ -28,8 +28,7 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install Modules
-        run: cd themes/docsy && npm install
+      - run: npm ci
 
       - name: Build
         run: hugo --minify

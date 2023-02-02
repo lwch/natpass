@@ -24,7 +24,7 @@ jobs:
           extended: true
 
       - name: Install Modules
-        run: cd themes/docsy && npm install
+        run: cd themes/docsy && npm install && npm install postcss-cli
 
       - name: Build
         run: hugo --minify

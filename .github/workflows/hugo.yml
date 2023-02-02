@@ -23,6 +23,9 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
+      - name: Install Modules
+        run: cd themes/docsy && npm install
+
       - name: Build
         run: hugo --minify
 

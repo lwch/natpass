@@ -1,4 +1,4 @@
-baseURL = "/natpass"
+baseURL = "https://lwch.github.io/natpass"
 title = "NatPass开源文档"
 
 # Language settings

@@ -14,7 +14,7 @@ require (
 	github.com/lwch/runtime v1.0.0
 	github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe
 	github.com/spf13/cobra v1.6.1
-	golang.org/x/sys v0.4.0
+	golang.org/x/sys v0.5.0
 	golang.org/x/text v0.6.0
 	google.golang.org/protobuf v1.28.1
 )

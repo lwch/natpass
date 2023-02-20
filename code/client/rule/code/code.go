@@ -143,7 +143,7 @@ func (code *Code) new(conn *conn.Conn) (string, error) {
 			return "", errWaitingTimeout
 		}
 		if msg.GetXType() != network.Msg_connect_rep {
-			conn.Reset(id, msg)
+			conn.Requeue(id, msg)
 			time.Sleep(code.readTimeout / 10)
 			continue
 		}

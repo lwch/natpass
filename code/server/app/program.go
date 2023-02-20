@@ -6,6 +6,7 @@ import (
 	"net"
 	rt "runtime"
 
+	"github.com/common-nighthawk/go-figure"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/server/global"
@@ -46,6 +47,10 @@ func (p *program) run() {
 		WriteFile:   true,
 	})
 	defer logging.Flush()
+
+	fg := figure.NewFigure("NatPass", "alligator2", false)
+	figure.Write(&logging.DefaultLogger, fg)
+	logging.DefaultLogger.Write(nil)
 
 	// go func() {
 	// 	http.ListenAndServe(":7878", nil)

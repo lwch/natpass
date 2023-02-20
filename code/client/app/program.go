@@ -4,6 +4,7 @@ import (
 	"os"
 	rt "runtime"
 
+	"github.com/common-nighthawk/go-figure"
 	"github.com/kardianos/service"
 	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/client/conn"
@@ -68,6 +69,10 @@ func (p *program) run() {
 		WriteFile:   true,
 	})
 	defer logging.Flush()
+
+	fg := figure.NewFigure("NatPass", "alligator2", false)
+	figure.Write(&logging.DefaultLogger, fg)
+	logging.DefaultLogger.Write(nil)
 
 	// create connection and handshake
 	p.conn = conn.New(p.cfg)

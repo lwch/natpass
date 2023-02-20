@@ -11,7 +11,6 @@ import (
 	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/client/global"
 	"github.com/lwch/natpass/code/network"
-	"github.com/lwch/natpass/code/network/encoding/proto"
 	"github.com/lwch/natpass/code/utils"
 	"github.com/lwch/runtime"
 )
@@ -82,7 +81,6 @@ func (conn *Conn) connect() error {
 		return err
 	}
 	cn := network.NewConn(dial)
-	cn.SetCodec(proto.New())
 	err = writeHandshake(cn, conn.cfg)
 	if err != nil {
 		logging.Error("write handshake: %v", err)

@@ -77,3 +77,5 @@ vnc规则用于创建一个网页端的code-server页面，主要用于远程开
 3. `type`: code-server
 4. `local_addr`: 本地监听地址，如只允许局域网访问可绑定在局域网IP地址上
 5. `local_port`: 本地监听端口号
+
+连接成功后即可使用浏览器访问`local_port`所对应的端口来创建code-server，如http://127.0.0.1:8000

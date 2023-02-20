@@ -17,9 +17,9 @@ import (
 	"github.com/lwch/natpass/code/network/encoding/proto"
 )
 
-var errTooLong = errors.New("too long")
-var errChecksum = errors.New("invalid checksum")
-var errTimeout = errors.New("timeout")
+var errTooLong = errors.New("transport: too long")
+var errChecksum = errors.New("transport: invalid checksum")
+var errTimeout = errors.New("transport: timeout")
 
 // Conn network connection
 type Conn struct {

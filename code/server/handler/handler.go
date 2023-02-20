@@ -8,6 +8,7 @@ import (
 
 	"github.com/lwch/logging"
 	"github.com/lwch/natpass/code/network"
+	"github.com/lwch/natpass/code/network/encoding/proto"
 	"github.com/lwch/natpass/code/server/global"
 )
 
@@ -49,6 +50,7 @@ func New(cfg *global.Configure) *Handler {
 // Handle main loop
 func (h *Handler) Handle(conn net.Conn) {
 	c := network.NewConn(conn)
+	c.SetCodec(proto.New())
 	var id string
 	defer func() {
 		if len(id) > 0 {

@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/kardianos/service v1.2.2
 	github.com/lwch/logging v0.0.0-20221013035348-e250895ebb72
-	github.com/lwch/rdesktop v1.2.0
+	github.com/lwch/rdesktop v1.2.1
 	github.com/lwch/runtime v1.0.0
 	github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe
 	github.com/spf13/cobra v1.6.1

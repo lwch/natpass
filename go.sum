@@ -24,8 +24,8 @@ github.com/kisielk/errcheck v1.6.3/go.mod h1:nXw/i/MfnvRHqXa7XXmQMUB0oNFGuBrNI8d
 github.com/lwch/logging v0.0.0-20211115073745-0db19179db17/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
 github.com/lwch/logging v0.0.0-20221013035348-e250895ebb72 h1:F2ZW/bIZQ+uYB1VsJ+H6355/0U+FOef+YAw39ZYTE0c=
 github.com/lwch/logging v0.0.0-20221013035348-e250895ebb72/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
-github.com/lwch/rdesktop v1.2.1 h1:TLwToBDvl6lrhKWLCl7yJvk0Uwqwt0ebS+nWdJu7/IA=
-github.com/lwch/rdesktop v1.2.1/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
+github.com/lwch/rdesktop v1.2.2 h1:N+yZuil1cWOae8cAmdVWHwPJTf5fLyrITnzzLlSLeAw=
+github.com/lwch/rdesktop v1.2.2/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
 github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/runtime v1.0.0 h1:siMQ16oBQ7Kx+M0KnUrAhRe0j8I493zfIqmII0r2wRc=
 github.com/lwch/runtime v1.0.0/go.mod h1:D9d6Uzg9Nea3M+bkNyLHNk6Nhlz/j1c4mze1gG0tReI=

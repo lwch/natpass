@@ -34,6 +34,12 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
+      - name: Set up xcode
+        if: startsWith(matrix.os, 'macos')
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
       - name: Lint
         run: |
           go install golang.org/x/lint/golint@latest

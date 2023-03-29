@@ -3,6 +3,7 @@ github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be/go.mod 
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.18 h1:n56/Zwd5o6whRC5PMGretI4IdRLlmBXYNjScPaBgsbY=
 github.com/creack/pty v1.1.18/go.mod h1:MOBLtS5ELjhRRrroQr9kyvTxUAFNvYEK993ew/Vr4O4=
+github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/go-bindata/go-bindata/v3 v3.1.3 h1:F0nVttLC3ws0ojc7p60veTurcOm//D4QBODNM7EGrCI=
@@ -20,11 +21,10 @@ github.com/kardianos/service v1.2.2/go.mod h1:CIMRFEJVL+0DS1a3Nx06NaMn4Dz63Ng6O7
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
 github.com/kisielk/errcheck v1.6.3 h1:dEKh+GLHcWm2oN34nMvDzn1sqI0i0WxPvrgiJA5JuM8=
 github.com/kisielk/errcheck v1.6.3/go.mod h1:nXw/i/MfnvRHqXa7XXmQMUB0oNFGuBrNI8d8NLy0LPw=
-github.com/lwch/logging v0.0.0-20221013035348-e250895ebb72 h1:F2ZW/bIZQ+uYB1VsJ+H6355/0U+FOef+YAw39ZYTE0c=
-github.com/lwch/logging v0.0.0-20221013035348-e250895ebb72/go.mod h1:aXQui5bsF/d4I+z6szuiBWY5m4y9t6pyZ2Q/sLgkBBg=
+github.com/lwch/logging v1.0.1 h1:5v3XR5jaad/yuJsaC7OY8BfhHGHLT/pscc3iAVQTaKk=
+github.com/lwch/logging v1.0.1/go.mod h1:hiA9neZf+38gqBOAselhBL3NRz00+dr8d6vrHh8BJ88=
 github.com/lwch/rdesktop v1.2.2 h1:N+yZuil1cWOae8cAmdVWHwPJTf5fLyrITnzzLlSLeAw=
 github.com/lwch/rdesktop v1.2.2/go.mod h1:vZtkNUaG1bDuzJavu8OQQoBbHVS6cYJE7y4oxtmhYYM=
-github.com/lwch/runtime v0.0.0-20190520054850-8c97e19e0c6d/go.mod h1:uEt0zu1MDC7WnVvodPBGSYAD/KMKk0v36xE8UE5veM8=
 github.com/lwch/runtime v1.0.0 h1:siMQ16oBQ7Kx+M0KnUrAhRe0j8I493zfIqmII0r2wRc=
 github.com/lwch/runtime v1.0.0/go.mod h1:D9d6Uzg9Nea3M+bkNyLHNk6Nhlz/j1c4mze1gG0tReI=
 github.com/lwch/yaml v0.0.0-20220711084242-14c4f5845abe h1:PJ1zNqqiHW2q480seGnr9G8/Oke/JxF4HscxEuV+a6Y=

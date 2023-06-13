@@ -1,5 +1,8 @@
 FROM golang:latest AS build
 
+ARG GO_PROXY
+ENV GOPROXY=$GO_PROXY
+
 COPY build.go \
    go.mod \
    go.sum \
@@ -15,8 +18,8 @@ ARG GO_PROXY
 
 COPY --from=build /bin/build /bin/build
 
-RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list; fi && \
-   if [ -n "$APT_MIRROR" ]; then sed -i "s|security.debian.org|$APT_MIRROR|g" /etc/apt/sources.list; fi && \
+RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/apt/sources.list.d/debian.sources; fi && \
+   if [ -n "$APT_MIRROR" ]; then sed -i "s|security.debian.org|$APT_MIRROR|g" /etc/apt/sources.list.d/debian.sources; fi && \
    dpkg --add-architecture i386 && \
    dpkg --add-architecture amd64 && \
    apt-get update && apt-get upgrade -y && \
@@ -29,7 +32,8 @@ RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/a
    apt-get install -y libx11-dev:amd64 && \
    apt-get clean && \
    curl -L https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz|tar -xz -C /usr/local && \
-   cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+   cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+   git config --global --add safe.directory /github/workspace
 
 ENV PATH=$PATH:/usr/local/go/bin
 ENV GOPROXY=$GO_PROXY

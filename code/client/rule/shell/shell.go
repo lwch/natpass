@@ -18,14 +18,14 @@ import (
 type Shell struct {
 	sync.RWMutex
 	Name         string
-	cfg          global.Rule
+	cfg          *global.Rule
 	links        map[string]*Link
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 }
 
 // New new shell
-func New(cfg global.Rule, readTimeout, writeTimeout time.Duration) *Shell {
+func New(cfg *global.Rule, readTimeout, writeTimeout time.Duration) *Shell {
 	return &Shell{
 		Name:         cfg.Name,
 		cfg:          cfg,
@@ -113,6 +113,10 @@ func (shell *Shell) Handle(c *conn.Conn) {
 	mux.HandleFunc("/ws/", pf(shell.WS))
 	mux.HandleFunc("/resize", pf(shell.Resize))
 	mux.HandleFunc("/", shell.Render)
+	if shell.cfg.LocalPort == 0 {
+		shell.cfg.LocalPort = global.GeneratePort()
+		logging.Info("generate port for %s: %d", shell.Name, shell.cfg.LocalPort)
+	}
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", shell.cfg.LocalAddr, shell.cfg.LocalPort),
 		Handler: mux,

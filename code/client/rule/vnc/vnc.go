@@ -19,7 +19,7 @@ import (
 type VNC struct {
 	sync.RWMutex
 	Name         string
-	cfg          global.Rule
+	cfg          *global.Rule
 	link         *Link
 	readTimeout  time.Duration
 	writeTimeout time.Duration
@@ -27,7 +27,7 @@ type VNC struct {
 }
 
 // New new vnc
-func New(cfg global.Rule, readTimeout, writeTimeout time.Duration) *VNC {
+func New(cfg *global.Rule, readTimeout, writeTimeout time.Duration) *VNC {
 	return &VNC{
 		Name:         cfg.Name,
 		cfg:          cfg,
@@ -109,6 +109,10 @@ func (v *VNC) Handle(c *conn.Conn) {
 	mux.HandleFunc("/clipboard", pf(v.Clipboard))
 	mux.HandleFunc("/ws/", pf(v.WS))
 	mux.HandleFunc("/", v.Render)
+	if v.cfg.LocalPort == 0 {
+		v.cfg.LocalPort = global.GeneratePort()
+		logging.Info("generate port for %s: %d", v.Name, v.cfg.LocalPort)
+	}
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", v.cfg.LocalAddr, v.cfg.LocalPort),
 		Handler: mux,

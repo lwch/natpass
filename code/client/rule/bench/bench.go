@@ -15,7 +15,7 @@ import (
 // Bench benchmark handler
 type Bench struct {
 	Name string
-	cfg  global.Rule
+	cfg  *global.Rule
 }
 
 // Link bench link
@@ -39,7 +39,7 @@ func (link *Link) GetPackets() (uint64, uint64) {
 }
 
 // New new benchmark handler
-func New(cfg global.Rule) *Bench {
+func New(cfg *global.Rule) *Bench {
 	return &Bench{
 		Name: cfg.Name,
 		cfg:  cfg,
@@ -92,6 +92,10 @@ func (bench *Bench) Handle(conn *conn.Conn) {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		bench.http(conn, w, r)
 	})
+	if bench.cfg.LocalPort == 0 {
+		bench.cfg.LocalPort = global.GeneratePort()
+		logging.Info("generate port for %s: %d", bench.Name, bench.cfg.LocalPort)
+	}
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", bench.cfg.LocalAddr, bench.cfg.LocalPort),
 		Handler: mux,

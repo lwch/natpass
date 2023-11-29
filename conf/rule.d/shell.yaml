@@ -2,7 +2,7 @@
   target: remote       # 目标客户端ID
   type: shell          # web shell
   local_addr: 0.0.0.0  # 本地监听地址
-  local_port: 2222     # 本地监听端口号
+  # local_port: 2222     # 本地监听端口号
   #exec: /bin/bash     # 运行命令
                        # windows默认powershell或cmd
                        # 其他系统bash或sh

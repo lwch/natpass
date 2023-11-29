@@ -1,6 +1,6 @@
 #!/bin/sh
 VERSION=dev
-GO_VERSION=1.20.3
+GO_VERSION=1.20.11
 docker run -it --rm -e BUILD_VERSION=$VERSION \
     -e GOPROXY=https://goproxy.cn \
     -v `pwd`:/code -w /code lwch/natpass-builder:$GO_VERSION

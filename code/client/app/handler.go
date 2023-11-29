@@ -30,7 +30,7 @@ func (p *program) shellCreate(mgr *rule.Mgr, conn *conn.Conn, msg *network.Msg) 
 	create := msg.GetCreq()
 	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
-		tn = shell.New(global.Rule{
+		tn = shell.New(&global.Rule{
 			Name:   create.GetName(),
 			Target: msg.GetFrom(),
 			Type:   "shell",
@@ -57,7 +57,7 @@ func (p *program) vncCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg 
 	create := msg.GetCreq()
 	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
-		tn = vnc.New(global.Rule{
+		tn = vnc.New(&global.Rule{
 			Name:   create.GetName(),
 			Target: msg.GetFrom(),
 			Type:   "vnc",
@@ -92,7 +92,7 @@ func (p *program) codeCreate(confDir string, mgr *rule.Mgr, conn *conn.Conn, msg
 	create := msg.GetCreq()
 	tn := mgr.GetLinked(create.GetName(), msg.GetFrom())
 	if tn == nil {
-		tn = code.New(global.Rule{
+		tn = code.New(&global.Rule{
 			Name:   create.GetName(),
 			Target: msg.GetFrom(),
 			Type:   "code-server",

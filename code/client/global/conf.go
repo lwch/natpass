@@ -42,7 +42,7 @@ type Configure struct {
 	DashboardEnabled bool
 	DashboardListen  string
 	DashboardPort    uint16
-	Rules            []Rule
+	Rules            []*Rule
 	CodeDir          string
 }
 
@@ -70,8 +70,8 @@ func LoadConf(dir string) *Configure {
 			Listen  string `yaml:"listen"`
 			Port    uint16 `yaml:"port"`
 		} `yaml:"dashboard"`
-		Rules   []Rule `yaml:"rules"`
-		CodeDir string `yaml:"codedir"`
+		Rules   []*Rule `yaml:"rules"`
+		CodeDir string  `yaml:"codedir"`
 	}
 	cfg.ID = "unset"
 	cfg.Server = "127.0.0.1:6154"

@@ -20,14 +20,14 @@ import (
 type Code struct {
 	sync.RWMutex
 	Name         string
-	cfg          global.Rule
+	cfg          *global.Rule
 	workspace    map[string]*Workspace
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 }
 
 // New new code-server handler
-func New(cfg global.Rule, readTimeout, writeTimeout time.Duration) *Code {
+func New(cfg *global.Rule, readTimeout, writeTimeout time.Duration) *Code {
 	return &Code{
 		Name:         cfg.Name,
 		cfg:          cfg,
@@ -110,6 +110,10 @@ func (code *Code) Handle(c *conn.Conn) {
 	mux.HandleFunc("/info", code.Info)
 	mux.HandleFunc("/forward/", pf(code.Forward))
 	mux.HandleFunc("/", pf(code.Render))
+	if code.cfg.LocalPort == 0 {
+		code.cfg.LocalPort = global.GeneratePort()
+		logging.Info("generate port for %s: %d", code.Name, code.cfg.LocalPort)
+	}
 	svr := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", code.cfg.LocalAddr, code.cfg.LocalPort),
 		Handler: mux,

@@ -10,7 +10,7 @@ COPY build.go \
 
 RUN CGO_ENABLED=0 go build -o /bin/build /build.go
 
-FROM lwch/darwin-crosscompiler:11.3
+FROM lwch/darwin-crosscompiler:12.4
 
 ARG APT_MIRROR
 ARG GO_VERSION
@@ -23,7 +23,7 @@ RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/a
    dpkg --add-architecture i386 && \
    dpkg --add-architecture amd64 && \
    apt-get update && apt-get upgrade -y && \
-   apt-get install -y gcc libc6-dev libssl-dev && \
+   apt-get install -y gcc libc6-dev && \
    apt-get install -y gcc-multilib && \
    apt-get install -y gcc-mingw-w64 && \
    apt-get install -y curl git && \

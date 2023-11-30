@@ -45,7 +45,7 @@ var targets = []target{
 	{
 		os:   "darwin",
 		arch: "arm64",
-		cc:   "aarch64-apple-darwin20.4-clang", cxx: "aarch64-apple-darwin20.4-clang++",
+		cc:   "oa64-clang", cxx: "oa64-clang++",
 		packExt: ".tar.gz",
 	},
 	// linux

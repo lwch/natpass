@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/sys v0.15.0
 	golang.org/x/text v0.14.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (

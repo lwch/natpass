@@ -22,7 +22,7 @@ RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/a
    if [ -n "$APT_MIRROR" ]; then sed -i "s|security.debian.org|$APT_MIRROR|g" /etc/apt/sources.list.d/debian.sources; fi && \
    dpkg --add-architecture i386 && \
    dpkg --add-architecture amd64 && \
-   apt-get update && apt-get upgrade -y && \
+   apt-get --allow-releaseinfo-change update && apt-get upgrade -y && \
    apt-get install -y gcc libc6-dev && \
    apt-get install -y gcc-multilib && \
    apt-get install -y gcc-mingw-w64 && \
@@ -38,4 +38,4 @@ RUN if [ -n "$APT_MIRROR" ]; then sed -i "s|deb.debian.org|$APT_MIRROR|g" /etc/a
 ENV PATH=$PATH:/usr/local/go/bin
 ENV GOPROXY=$GO_PROXY
 
-CMD /bin/build
+CMD [ "/bin/build" ]

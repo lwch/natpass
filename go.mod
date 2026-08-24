@@ -7,7 +7,7 @@ require (
 	github.com/creack/pty v1.1.21
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-bindata/go-bindata/v3 v3.1.3
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.3
 	github.com/kardianos/service v1.2.2
 	github.com/lwch/logging v1.0.1
 	github.com/lwch/rdesktop v1.2.2
@@ -25,7 +25,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/tools v0.16.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
